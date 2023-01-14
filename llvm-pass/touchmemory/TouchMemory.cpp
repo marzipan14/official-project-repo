@@ -3,23 +3,26 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
+#include "llvm/ADT/SetVector.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/IRBuilder.h"
 using namespace llvm;
 
-namespace {
-    struct TouchMemoryPass : public ModulePass {
-        static char ID;
-        TouchMemoryPass() : ModulePass(ID) {}
+using Result = SetVector<BasicBlock*>;
 
-        virtual bool runOnModule(Module &M) {
+namespace {
+    struct TouchMemoryPass : public FunctionPass {
+        static char ID;
+        TouchMemoryPass() : FunctionPass(ID) {}
+
+        virtual bool runOnFunction(Function &F) {
             Result basicBlocks;
 
-            for(auto &F : M) {
-                for(auto &BB : F) {
-                    for(auto &I : BB) {
-                        if(strcmp(I.getOpcodeName(), "ret") == 0) {
-                            basicBlocks.insert(&BB);
-                            break;
-                        }
+            for(auto &BB : F) {
+                for(auto &I : BB) {
+                    if(strcmp(I.getOpcodeName(), "ret") == 0) {
+                        basicBlocks.insert(&BB);
+                        break;
                     }
                 }
             }
@@ -31,7 +34,7 @@ namespace {
                 auto* storeInst = Builder.CreateStore(Builder.getInt32(42), allocaInst, true);
             }
             
-            return false;
+            return true;
         }
     };
 }
