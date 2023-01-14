@@ -1,9 +1,7 @@
 ### How to compile the pass ###
 
-    mkdir build
+    cmake -B ./build
     cd build
-    cmake ..
     make
-    cd ..
-    clang -flegacy-pass-manager -Xclang -load -Xclang build/touchmemory/libTouchMemoryPass.* ./test.c
+    clang -flegacy-pass-manager -Xclang -load -Xclang ./touchmemory/libTouchMemoryPass.* ./test.c
 
