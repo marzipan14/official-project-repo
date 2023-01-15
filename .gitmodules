@@ -1,3 +1,0 @@
-[submodule "unikraft"]
-	path = unikraft
-	url = https://github.com/project-flexos/unikraft.git
