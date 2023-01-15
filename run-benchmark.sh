@@ -154,7 +154,7 @@ function compile_redis {
       -y LWIP_UKNETDEV_POLLONLY \
       -y LWIP_TCP_KEEPALIVE;
     make prepare;
-    kraft -v build --no-progress --fast"
+    kraft -v build --no-progress --fast --compartmentalize"
 }
 
 function install_dependencies {
@@ -173,12 +173,12 @@ function prepare_results_file {
 function run_benchmark {
   echo "Running the benchmark..."
   for BYTE in "${BYTES[@]}"; do
-  	for ((I=1; I<="$ITERATIONS";I++)) do
+    for ((I=1; I<="$ITERATIONS";I++)) do
       start_unikernel
       run_experiment "$BYTE" "$I"
       amend_results_file
-		  DOCKER_EXEC pkill qemu-system-x86
-	  done
+      DOCKER_EXEC pkill qemu-system-x86
+    done
   done
 }
 
@@ -191,7 +191,7 @@ function start_unikernel {
     -m 1024 \
     -i "$UNIKERNEL_INITRD" \
     -b "$BRIDGE" \
-    -p 1 \
+    -p 3 \
     -a "netdev.ipv4_addr=$UNIKERNEL_IP netdev.ipv4_gw_addr=$BRIDGE_IP netdev.ipv4_subnet_mask=255.255.255.0 vfs.rootdev=ramfs -- /redis.conf"
 
   echo "Sleeping $BOOT_WARMUP_SLEEP..."
