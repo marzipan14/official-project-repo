@@ -26,6 +26,7 @@ NUM_REQUESTS=${NUM_REQUESTS:-100000}
 BYTES=(2 4)
 # BYTES=(2 4 8 16 32 64 128 256)
 PATCHES="./patches"
+LLVM_PASS="./llvm-pass"
 
 function cleanup {
   echo "Cleaning up..."
@@ -61,10 +62,37 @@ function setup_container {
     add_instrumentation
     add_instrumentation_flags
   elif [[ "$benchmark" == "exit-points" ]]; then
-    send_patch "$PATCHES/0006-Touch-memory-at-every-exit-point.patch" "/root/.unikraft/libs/redis/patches"
+    send_patch "0006-Touch-memory-at-every-exit-point.patch" "/root/.unikraft/libs/redis/patches"
+  elif [[ "$benchmark" == "llvm" ]]; then
+    send_pass
+    compile_pass
+    add_llvm_flags
   fi
 
   compile_redis
+}
+
+function send_pass {
+  docker cp -r "$LLVM_PASS" "$CONTAINER:/root/.unikraft"
+}
+
+function compile_pass {
+  DOCKER_EXEC bash -c "
+    cd /root/.unikraft/llvm-pass/
+    cmake -B ./build
+    cd build
+    make
+  "
+}
+
+function add_llvm_flags {
+  echo "Adding LLVM flags..."
+  DOCKER_EXEC bash -c "
+    echo '
+      LIBREDIS_CFLAGS-y += -flegacy-pass-manager -Xclang -load -Xclang /root/.unikraft/llvm-pass/build/libTouchMemory.so
+    ' | \
+    cat - /root/.unikraft/libs/redis/Makefile.uk > /tmp/out && mv /tmp/out /root/.unikraft/libs/redis/Makefile.uk
+  "
 }
 
 function create_bridge {
@@ -126,7 +154,7 @@ function compile_redis {
       -y LWIP_UKNETDEV_POLLONLY \
       -y LWIP_TCP_KEEPALIVE;
     make prepare;
-    kraft -v build --no-progress --fast --compartmentalize"
+    kraft -v build --no-progress --fast"
 }
 
 function install_dependencies {
