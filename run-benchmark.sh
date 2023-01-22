@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -o errexit
-set -o nounset
 set -o pipefail
 if [[ "${TRACE-0}" == "1" ]]; then set -o xtrace; fi
 cd "$(dirname "$0")"
@@ -55,8 +54,10 @@ function setup_container {
   local benchmark="$1"
 
   echo "Setting up..."
-	install_dependencies
-	create_bridge
+  install_dependencies
+  create_bridge
+  add_llvm_flags
+  add_clang_compatibility
 
   if [[ "$benchmark" == "instrumentation" ]]; then
     add_instrumentation
@@ -65,31 +66,59 @@ function setup_container {
     send_patch "0006-Touch-memory-at-every-exit-point.patch" "/root/.unikraft/libs/redis/patches"
   elif [[ "$benchmark" == "llvm" ]]; then
     send_pass
-    compile_pass
-    add_llvm_flags
+    add_llvm_pass_flags
   fi
 
   compile_redis
 }
 
+function add_clang_compatibility {
+  echo "Adding clang compatibility..."
+  DOCKER_EXEC bash -c "
+    cd /root/.unikraft;
+    find . -type f -exec sed -i 's/#pragma GCC optimize(\"O0\")/ /g' {} \\;
+    find . -type f -exec sed -i 's/#pragma GCC push_options/#pragma clang attribute push(__attribute__((optnone)), apply_to = any(function)) /g' {} \\;
+    find . -type f -exec sed -i 's/#pragma GCC pop_options/#pragma clang attribute pop /g' {} \\;
+    find . -type f -exec sed -i 's/__attribute__((fallthrough))/ /g' {} \\;
+    find . -type f -exec sed -i 's/ __VA_OPT__(,) /, ##/g' {} \\;
+  "
+}
+
 function send_pass {
-  docker cp -r "$LLVM_PASS" "$CONTAINER:/root/.unikraft"
+  docker cp "$LLVM_PASS" "$CONTAINER:/root/.unikraft"
+  compile_pass
 }
 
 function compile_pass {
+  echo "Compiling pass..."
   DOCKER_EXEC bash -c "
     cd /root/.unikraft/llvm-pass/
     cmake -B ./build
-    cd build
+    cd ./build
     make
   "
 }
 
+function add_llvm_pass_flags {
+  echo "Adding LLVM pass flags..."
+  add_flags "LIBREDIS_CFLAGS-y += -Xclang -load -Xclang /root/.unikraft/llvm-pass/build/touchmemory/libTouchMemoryPass.so"
+}
+
 function add_llvm_flags {
   echo "Adding LLVM flags..."
+  add_flags '
+    AR=llvm-ar
+    CC=clang
+    CXX=clang++
+    NM=llvm-nm
+    RANLIB=llvm-ranlib
+  '
+}
+
+function add_flags {
   DOCKER_EXEC bash -c "
     echo '
-      LIBREDIS_CFLAGS-y += -flegacy-pass-manager -Xclang -load -Xclang /root/.unikraft/llvm-pass/build/libTouchMemory.so
+      $1
     ' | \
     cat - /root/.unikraft/libs/redis/Makefile.uk > /tmp/out && mv /tmp/out /root/.unikraft/libs/redis/Makefile.uk
   "
@@ -119,19 +148,13 @@ function add_instrumentation {
         static volatile int __A_VARIABLE; __A_VARIABLE = 1;
       }
       #endif
-    ' | \
     cat - /root/.unikraft/libs/redis/main.c > /tmp/out && mv /tmp/out /root/.unikraft/libs/redis/main.c
   "
 }
 
 function add_instrumentation_flags {
   echo "Adding instrumentation flags..."
-  DOCKER_EXEC bash -c "
-    echo '
-      LIBREDIS_CFLAGS-y += -finstrument-functions -finstrument-functions-exclude-function-list=__cyg_profile_func_enter,__cyg_profile_func_exit
-    ' | \
-    cat - /root/.unikraft/libs/redis/Makefile.uk > /tmp/out && mv /tmp/out /root/.unikraft/libs/redis/Makefile.uk
-  "
+  add_flags "LIBREDIS_CFLAGS-y += -finstrument-functions -finstrument-functions-exclude-function-list=__cyg_profile_func_enter,__cyg_profile_func_exit"
 }
 
 function send_patch {
@@ -159,7 +182,7 @@ function compile_redis {
 
 function install_dependencies {
   echo "Installing dependencies..."
-  DOCKER_EXEC bash -c "apt -y install redis-tools"
+  DOCKER_EXEC bash -c "apt -y install redis-tools cmake clang llvm"
 }
 
 function prepare_results_file {
@@ -226,6 +249,15 @@ if [[ -z "$1" ]]; then
   echo "You must provide a benchmark!"
   exit
 fi
+
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+  echo "Options:"
+  echo "./run-benchmark.sh pure\tRun without augmentations"
+  echo "./run-benchmark.sh instrumentation\tRun with -finstrument-functions"
+  echo "./run-benchmark.sh exit-points\tTouch local memory at every exit point (source-level)"
+  echo "./run-benchmark.sh llvm\tTouch local memory at every exit point (IR-level)"
+  exit
+fi  
 
 benchmark="$1"
 

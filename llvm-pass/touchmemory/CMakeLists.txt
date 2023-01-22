@@ -9,5 +9,6 @@ target_compile_features(TouchMemoryPass PRIVATE cxx_range_for cxx_auto_type)
 
 set_target_properties(TouchMemoryPass PROPERTIES
     COMPILE_FLAGS "-fno-rtti"
+    LINK_FLAGS "-Wl,-znodelete"
 )
 

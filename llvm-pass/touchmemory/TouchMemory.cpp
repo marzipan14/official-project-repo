@@ -1,5 +1,5 @@
 #include "llvm/Pass.h"
-#include "llvm/IR/Function.h"
+#include "llvm/IR/Module.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
@@ -10,19 +10,21 @@ using namespace llvm;
 using Result = SetVector<BasicBlock*>;
 
 namespace {
-  struct TouchMemoryPass : public FunctionPass {
+  struct TouchMemoryPass : public ModulePass {
     static char ID;
-    TouchMemoryPass() : FunctionPass(ID) {}
+    TouchMemoryPass() : ModulePass(ID) {}
 
-    virtual bool runOnFunction(Function &F) {
+    virtual bool runOnModule(Module &M) {
       Result basicBlocks;
-      for (auto &BB : F) {
-        for (auto &I : BB) {
-            if(strcmp(I.getOpcodeName(), "ret") == 0) {
-                basicBlocks.insert(&BB);
-                break;
-            }
-        }
+      for (auto &F : M) {
+      	for (auto &BB : F) {
+            for (auto &I : BB) {
+            	if(strcmp(I.getOpcodeName(), "ret") == 0) {
+                    basicBlocks.insert(&BB);
+                    break;
+      	        }
+	    }
+	}
       }
 
       for(auto* BB : basicBlocks) {
@@ -43,6 +45,9 @@ static void registerTouchMemoryPass(const PassManagerBuilder &,
                          legacy::PassManagerBase &PM) {
   PM.add(new TouchMemoryPass());
 }
+
 static RegisterStandardPasses
-  RegisterMyPass(PassManagerBuilder::EP_EarlyAsPossible,
-                 registerTouchMemoryPass);
+    RegisterMyPass(PassManagerBuilder::EP_ModuleOptimizerEarly, registerTouchMemoryPass);
+
+static RegisterStandardPasses
+    RegisterMyPass0(PassManagerBuilder::EP_EnabledOnOptLevel0, registerTouchMemoryPass);
