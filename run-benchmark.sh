@@ -22,8 +22,8 @@ RESULTS=${RESULTS:-./output.txt}
 BOOT_WARMUP_SLEEP=${BOOT_WARMUP_SLEEP:-4}
 NUM_REQUESTS=${NUM_REQUESTS:-100000}
 
-BYTES=(2 4)
-# BYTES=(2 4 8 16 32 64 128 256)
+# BYTES=(2 4)
+BYTES=(2 4 8 16 32 64 128 256)
 PATCHES="./patches"
 LLVM_PASS="./llvm-pass"
 
@@ -139,22 +139,23 @@ function add_instrumentation {
       #ifndef ADD_INSTRUMENTATION
       #define ADD_INSTRUMENTATION
   
-      void __cyg_profile_func_enter (void *func, void	*call_site);
-      void __cyg_profile_func_exit (void *func, void *call_site);
+      void __cyg_profile_func_enter (void *func, void	*call_site) __attribute__((no_instrument_function));
+      void __cyg_profile_func_exit (void *func, void *call_site) __attribute__((no_instrument_function));
 
-      void __cyg_profile_func_enter (void *this_fn, void *call_site) {}
+      void __cyg_profile_func_enter (void *this_fn, void *call_site) __attribute__((no_instrument_function)){}
   
-      void __cyg_profile_func_exit (void *this_fn, void *call_site) {
+      void __cyg_profile_func_exit (void *this_fn, void *call_site) __attribute__((no_instrument_function)){
         static volatile int __A_VARIABLE; __A_VARIABLE = 1;
       }
       #endif
+    ' | \
     cat - /root/.unikraft/libs/redis/main.c > /tmp/out && mv /tmp/out /root/.unikraft/libs/redis/main.c
   "
 }
 
 function add_instrumentation_flags {
   echo "Adding instrumentation flags..."
-  add_flags "LIBREDIS_CFLAGS-y += -finstrument-functions -finstrument-functions-exclude-function-list=__cyg_profile_func_enter,__cyg_profile_func_exit"
+  add_flags "LIBREDIS_CFLAGS-y += -finstrument-functions"
 }
 
 function send_patch {
