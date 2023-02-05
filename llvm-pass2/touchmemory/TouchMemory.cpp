@@ -25,13 +25,8 @@ namespace {
             allocaInst = Builder.CreateAlloca(Builder.getInt32Ty());
           }
 
-          for (auto &I : BB) {
-            if(strcmp(I.getOpcodeName(), "ret") == 0) {
-              Builder.SetInsertPoint(&BB.back());
-              auto* storeInst = Builder.CreateStore(Builder.getInt32(42), allocaInst, true);
-              break;
-      	    }
-          }
+          Builder.SetInsertPoint(&BB.back());
+          auto* storeInst = Builder.CreateStore(Builder.getInt32(42), allocaInst, true);
 
         }
       }

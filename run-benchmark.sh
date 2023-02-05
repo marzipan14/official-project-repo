@@ -25,7 +25,6 @@ NUM_REQUESTS=${NUM_REQUESTS:-100000}
 # BYTES=(2 4)
 BYTES=(2 4 8 16 32 64 128 256)
 PATCHES="./patches"
-LLVM_PASS="./llvm-pass"
 
 function cleanup {
   echo "Cleaning up..."
@@ -65,8 +64,11 @@ function setup_container {
   elif [[ "$benchmark" == "exit-points" ]]; then
     send_patch "0006-Touch-memory-at-every-exit-point.patch" "/root/.unikraft/libs/redis/patches"
   elif [[ "$benchmark" == "llvm" ]]; then
-    send_pass
-    add_llvm_pass_flags
+    send_pass "llvm-pass"
+    add_llvm_pass_flags "llvm-pass"
+  elif [[ "$benchmark" == "basic-blocks" ]]; then
+    send_pass "llvm-pass2"
+    add_llvm_pass_flags "llvm-pass2"
   fi
 
   compile_redis
@@ -85,14 +87,16 @@ function add_clang_compatibility {
 }
 
 function send_pass {
-  docker cp "$LLVM_PASS" "$CONTAINER:/root/.unikraft"
-  compile_pass
+  pass_name="$1"
+  docker cp "./$pass_name" "$CONTAINER:/root/.unikraft"
+  compile_pass "$pass_name"
 }
 
 function compile_pass {
+  pass_name="$1"
   echo "Compiling pass..."
   DOCKER_EXEC bash -c "
-    cd /root/.unikraft/llvm-pass/
+    cd /root/.unikraft/$pass_name/
     cmake -B ./build
     cd ./build
     make
@@ -100,8 +104,9 @@ function compile_pass {
 }
 
 function add_llvm_pass_flags {
+  pass_name="$1"
   echo "Adding LLVM pass flags..."
-  add_flags "LIBREDIS_CFLAGS-y += -Xclang -load -Xclang /root/.unikraft/llvm-pass/build/touchmemory/libTouchMemoryPass.so"
+  add_flags "LIBREDIS_CFLAGS-y += -Xclang -load -Xclang /root/.unikraft/$pass_name/build/touchmemory/libTouchMemoryPass.so"
 }
 
 function add_llvm_flags {
@@ -257,6 +262,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
   echo "./run-benchmark.sh instrumentation\tRun with -finstrument-functions"
   echo "./run-benchmark.sh exit-points\tTouch local memory at every exit point (source-level)"
   echo "./run-benchmark.sh llvm\tTouch local memory at every exit point (IR-level)"
+  echo "./run-benchmark.sh basic-blocks\tTouch local memory at the end of every basic block (IR-level)"
   exit
 fi  
 
