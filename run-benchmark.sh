@@ -53,7 +53,6 @@ function setup_container {
   local benchmark="$1"
 
   echo "Setting up..."
-  install_dependencies
   create_bridge
   add_llvm_flags
   add_clang_compatibility
@@ -184,11 +183,6 @@ function compile_redis {
       -y LWIP_TCP_KEEPALIVE;
     make prepare;
     kraft -v build --no-progress --fast --compartmentalize"
-}
-
-function install_dependencies {
-  echo "Installing dependencies..."
-  DOCKER_EXEC bash -c "apt -y install redis-tools cmake clang llvm"
 }
 
 function prepare_results_file {
