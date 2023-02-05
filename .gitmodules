@@ -10,3 +10,6 @@
 [submodule "lib-redis"]
 	path = lib-redis
 	url = git@github.com:marzipan14/lib-redis.git
+[submodule "app-test"]
+	path = app-test
+	url = git@github.com:marzipan14/app-test.git

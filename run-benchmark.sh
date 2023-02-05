@@ -54,7 +54,6 @@ function setup_container {
 
   echo "Setting up..."
   create_bridge
-  add_llvm_flags
   add_clang_compatibility
 
   if [[ "$benchmark" == "instrumentation" ]]; then
@@ -106,17 +105,6 @@ function add_llvm_pass_flags {
   pass_name="$1"
   echo "Adding LLVM pass flags..."
   add_flags "LIBREDIS_CFLAGS-y += -Xclang -load -Xclang /root/.unikraft/$pass_name/build/touchmemory/libTouchMemoryPass.so"
-}
-
-function add_llvm_flags {
-  echo "Adding LLVM flags..."
-  add_flags '
-    AR=llvm-ar
-    CC=clang
-    CXX=clang++
-    NM=llvm-nm
-    RANLIB=llvm-ranlib
-  '
 }
 
 function add_flags {
