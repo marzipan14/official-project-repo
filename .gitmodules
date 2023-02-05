@@ -1,3 +1,6 @@
 [submodule "unikraft"]
 	path = unikraft
 	url = git@github.com:marzipan14/unikraft.git
+[submodule "app-redis"]
+	path = app-redis
+	url = git@github.com:marzipan14/app-redis.git
