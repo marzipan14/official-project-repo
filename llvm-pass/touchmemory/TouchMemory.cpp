@@ -6,6 +6,9 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/BasicBlock.h"
+#include "llvm/IR/Type.h"
+#include "llvm/IR/GlobalVariable.h"
+#include "llvm/IR/Constant.h"
 using namespace llvm;
 
 namespace {
@@ -15,20 +18,29 @@ namespace {
 
     virtual bool runOnModule(Module &M) {
 
+      auto* intType = Type::getInt32Ty(M.getContext());
+
+      auto* globalVar = M.getOrInsertGlobal("__A_VARIABLE", intType, [&] {
+      	return new GlobalVariable(
+	  M,
+	  intType,
+	  false,
+	  GlobalVariable::InternalLinkage,
+	  Constant::getNullValue(intType),
+	  "__A_VARIABLE"
+	);
+      });
+
       for (auto &F : M) {
-        AllocaInst* allocaInst;
+
       	for (auto &BB : F) {
 
           IRBuilder<> Builder(&BB);
-          if(&BB == &(*F.begin())) {
-            Builder.SetInsertPoint(&BB.front());
-            allocaInst = Builder.CreateAlloca(Builder.getInt32Ty());
-          }
 
           for (auto &I : BB) {
             if(strcmp(I.getOpcodeName(), "ret") == 0) {
               Builder.SetInsertPoint(&BB.back());
-              auto* storeInst = Builder.CreateStore(Builder.getInt32(42), allocaInst, true);
+              auto* storeInst = Builder.CreateStore(Builder.getInt32(42), globalVar, true);
               break;
       	    }
           }

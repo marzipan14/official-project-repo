@@ -15,18 +15,27 @@ namespace {
 
     virtual bool runOnModule(Module &M) {
 
+      auto* intType = Type::getInt32Ty(M.getContext());
+
+      auto* globalVar = M.getOrInsertGlobal("__A_VARIABLE", intType, [&] {
+      	return new GlobalVariable(
+	  M,
+	  intType,
+	  false,
+	  GlobalVariable::InternalLinkage,
+	  Constant::getNullValue(intType),
+	  "__A_VARIABLE"
+	);
+      });
+
       for (auto &F : M) {
         AllocaInst* allocaInst;
       	for (auto &BB : F) {
 
           IRBuilder<> Builder(&BB);
-          if(&BB == &(*F.begin())) {
-            Builder.SetInsertPoint(&BB.front());
-            allocaInst = Builder.CreateAlloca(Builder.getInt32Ty());
-          }
 
           Builder.SetInsertPoint(&BB.back());
-          auto* storeInst = Builder.CreateStore(Builder.getInt32(42), allocaInst, true);
+          auto* storeInst = Builder.CreateStore(Builder.getInt32(42), globalVar, true);
 
         }
       }
