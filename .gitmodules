@@ -7,3 +7,9 @@
 [submodule "lib-redis"]
 	path = lib-redis
 	url = git@github.com:marzipan14/lib-redis.git
+[submodule "lib-flexos-example"]
+	path = lib-flexos-example
+	url = git@github.com:marzipan14/lib-flexos-example.git
+[submodule "app-flexos-example"]
+	path = app-flexos-example
+	url = git@github.com:marzipan14/app-flexos-example.git
