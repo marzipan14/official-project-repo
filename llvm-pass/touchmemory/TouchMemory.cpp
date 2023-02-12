@@ -20,16 +20,14 @@ namespace {
 
       auto* intType = Type::getInt32Ty(M.getContext());
 
-      auto* globalVar = M.getOrInsertGlobal("__A_VARIABLE", intType, [&] {
-      	return new GlobalVariable(
+      auto* globalVar = new GlobalVariable(
 	  M,
 	  intType,
 	  false,
 	  GlobalVariable::InternalLinkage,
 	  Constant::getNullValue(intType),
 	  "__A_VARIABLE"
-	);
-      });
+      );
 
       for (auto &F : M) {
 
