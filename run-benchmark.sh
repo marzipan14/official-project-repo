@@ -17,7 +17,7 @@ UNIKERNEL_IP=${UNIKERNEL_IP:-172.0.1.2}
 UNIKERNEL_IMAGE=${UNIKERNEL_IMAGE:-/root/.unikraft/apps/redis/build/redis_kvm-x86_64}
 
 ITERATIONS=${ITERATIONS:-10}
-# ITERATIONS=${ITERATIONS:-50}
+ITERATIONS=${ITERATIONS:-50}
 RESULTS=${RESULTS:-./output.txt}
 BOOT_WARMUP_SLEEP=${BOOT_WARMUP_SLEEP:-4}
 NUM_REQUESTS=${NUM_REQUESTS:-100000}
@@ -170,7 +170,8 @@ function compile_redis {
       -y LWIP_UKNETDEV_POLLONLY \
       -y LWIP_TCP_KEEPALIVE;
     make prepare;
-    kraft -v build --no-progress --fast --compartmentalize"
+    kraft -v build --no-progress --fast --compartmentalize |& grep 'AAA*' | sed 's/AAA//g' - > log.log;"
+    docker cp "$CONTAINER:/root/.unikraft/apps/redis/log.log" "./"
 }
 
 function prepare_results_file {
@@ -253,5 +254,5 @@ benchmark="$1"
 start_container
 trap "cleanup" EXIT
 setup_container "$benchmark"
-prepare_results_file
-run_benchmark
+# prepare_results_file
+# run_benchmark
