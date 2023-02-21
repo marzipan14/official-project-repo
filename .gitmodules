@@ -19,3 +19,9 @@
 [submodule "lib-newlib"]
 	path = lib-newlib
 	url = git@github.com:marzipan14/lib-newlib.git
+[submodule "lib-pthread-embedded"]
+	path = lib-pthread-embedded
+	url = git@github.com:marzipan14/lib-pthread-embedded.git
+[submodule "lib-tlsf"]
+	path = lib-tlsf
+	url = git@github.com:marzipan14/lib-tlsf.git
