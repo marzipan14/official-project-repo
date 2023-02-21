@@ -15,4 +15,7 @@
 	url = git@github.com:marzipan14/app-flexos-example.git
 [submodule "lib-lwip"]
 	path = lib-lwip
-	url = git@github.com:project-flexos/lib-lwip.git
+	url = git@github.com:marzipan14/lib-lwip.git
+[submodule "lib-newlib"]
+	path = lib-newlib
+	url = git@github.com:marzipan14/lib-newlib.git
