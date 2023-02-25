@@ -1,0 +1,7203 @@
+From 6808132be154c17372fac306ce276be0df7b9af5 Mon Sep 17 00:00:00 2001
+From: Mateusz Krajewski <mkrajewski413@gmail.com>
+Date: Sat, 25 Feb 2023 20:56:45 +0000
+Subject: [PATCH 1/1] Touch memory at every exit point pthread-embedded
+
+Signed-off-by: Mateusz Krajewski <mkrajewski413@gmail.com>
+---
+ cleanup.c                        |   3 +
+ create.c                         |   2 +
+ global.c                         |   1 +
+ platform/dspbios/dspbios-osal.c  |  37 +++++++++++
+ platform/dspbios/main.c          |   2 +
+ platform/helper/tls-helper.c     |   8 +++
+ platform/hermit/pte_osal.c       | 101 ++++++++++++++++++++++++++-----
+ platform/psl1ght/main.c          |   6 ++
+ platform/psl1ght/psl1ght_osal.c  |  40 ++++++++++++
+ platform/psp/main.c              |   6 ++
+ platform/psp/psp_osal.c          |   1 +
+ pte_callUserDestroyRoutines.c    |   2 +
+ pte_cancellable_wait.c           |   2 +
+ pte_cond_check_need_init.c       |   2 +
+ pte_detach.c                     |   4 ++
+ pte_getprocessors.c              |   2 +
+ pte_is_attr.c                    |   2 +
+ pte_mutex_check_need_init.c      |   2 +
+ pte_new.c                        |   1 +
+ pte_relmillisecs.c               |   2 +
+ pte_reuse.c                      |   3 +
+ pte_rwlock_cancelwrwait.c        |   2 +
+ pte_rwlock_check_need_init.c     |   2 +
+ pte_spinlock_check_need_init.c   |   2 +
+ pte_threadDestroy.c              |   4 ++
+ pte_threadStart.c                |   2 +
+ pte_throw.c                      |   4 ++
+ pte_tkAssocCreate.c              |   3 +
+ pte_tkAssocDestroy.c             |   2 +
+ pthread_attr_destroy.c           |   3 +
+ pthread_attr_getdetachstate.c    |   3 +
+ pthread_attr_getinheritsched.c   |   3 +
+ pthread_attr_getschedparam.c     |   3 +
+ pthread_attr_getschedpolicy.c    |   4 ++
+ pthread_attr_getscope.c          |   1 +
+ pthread_attr_getstackaddr.c      |   1 +
+ pthread_attr_getstacksize.c      |   1 +
+ pthread_attr_init.c              |   4 ++
+ pthread_attr_setdetachstate.c    |   4 ++
+ pthread_attr_setinheritsched.c   |   4 ++
+ pthread_attr_setschedparam.c     |   4 ++
+ pthread_attr_setschedpolicy.c    |   4 ++
+ pthread_attr_setscope.c          |   1 +
+ pthread_attr_setstackaddr.c      |   1 +
+ pthread_attr_setstacksize.c      |   1 +
+ pthread_barrier_destroy.c        |   4 ++
+ pthread_barrier_init.c           |   4 ++
+ pthread_barrier_wait.c           |   3 +
+ pthread_barrierattr_destroy.c    |   2 +
+ pthread_barrierattr_getpshared.c |   2 +
+ pthread_barrierattr_init.c       |   2 +
+ pthread_barrierattr_setpshared.c |   2 +
+ pthread_cancel.c                 |   4 ++
+ pthread_cond_destroy.c           |   1 +
+ pthread_cond_init.c              |   3 +
+ pthread_cond_signal.c            |   3 +
+ pthread_cond_wait.c              |   9 +++
+ pthread_condattr_destroy.c       |   2 +
+ pthread_condattr_getpshared.c    |   2 +
+ pthread_condattr_init.c          |   2 +
+ pthread_condattr_setpshared.c    |   2 +
+ pthread_delay_np.c               |   1 +
+ pthread_detach.c                 |   2 +
+ pthread_equal.c                  |   2 +
+ pthread_exit.c                   |   2 +
+ pthread_getconcurrency.c         |   2 +
+ pthread_getschedparam.c          |   4 ++
+ pthread_getspecific.c            |   2 +
+ pthread_init.c                   |   3 +
+ pthread_join.c                   |   2 +
+ pthread_key_create.c             |   2 +
+ pthread_key_delete.c             |   2 +
+ pthread_kill.c                   |   2 +
+ pthread_mutex_destroy.c          |   2 +
+ pthread_mutex_init.c             |   3 +
+ pthread_mutex_lock.c             |   4 ++
+ pthread_mutex_timedlock.c        |   2 +
+ pthread_mutex_trylock.c          |   3 +
+ pthread_mutex_unlock.c           |   2 +
+ pthread_mutexattr_destroy.c      |   2 +
+ pthread_mutexattr_getkind_np.c   |   2 +
+ pthread_mutexattr_getpshared.c   |   2 +
+ pthread_mutexattr_gettype.c      |   2 +
+ pthread_mutexattr_init.c         |   2 +
+ pthread_mutexattr_setkind_np.c   |   2 +
+ pthread_mutexattr_setpshared.c   |   2 +
+ pthread_mutexattr_settype.c      |   2 +
+ pthread_num_processors_np.c      |   2 +
+ pthread_once.c                   |   3 +
+ pthread_rwlock_destroy.c         |   1 +
+ pthread_rwlock_init.c            |   3 +
+ pthread_rwlock_rdlock.c          |   8 +++
+ pthread_rwlock_timedrdlock.c     |   8 +++
+ pthread_rwlock_timedwrlock.c     |   7 +++
+ pthread_rwlock_tryrdlock.c       |   8 +++
+ pthread_rwlock_trywrlock.c       |   1 +
+ pthread_rwlock_unlock.c          |   1 +
+ pthread_rwlock_wrlock.c          |   7 +++
+ pthread_rwlockattr_destroy.c     |   2 +
+ pthread_rwlockattr_getpshared.c  |   2 +
+ pthread_rwlockattr_init.c        |   2 +
+ pthread_rwlockattr_setpshared.c  |   2 +
+ pthread_self.c                   |   2 +
+ pthread_setcancelstate.c         |   3 +
+ pthread_setcanceltype.c          |   1 +
+ pthread_setconcurrency.c         |   1 +
+ pthread_setschedparam.c          |   7 +++
+ pthread_setspecific.c            |   1 +
+ pthread_spin_destroy.c           |   3 +
+ pthread_spin_init.c              |   1 +
+ pthread_spin_lock.c              |   1 +
+ pthread_spin_trylock.c           |   7 +++
+ pthread_spin_unlock.c            |   7 +++
+ pthread_terminate.c              |   2 +
+ pthread_testcancel.c             |   4 ++
+ pthread_timechange_handler_np.c  |   2 +
+ sched_get_priority_max.c         |   2 +
+ sched_get_priority_min.c         |   2 +
+ sched_setscheduler.c             |   2 +
+ sched_yield.c                    |   2 +
+ sem_close.c                      |   2 +
+ sem_destroy.c                    |   3 +
+ sem_getvalue.c                   |   1 +
+ sem_init.c                       |   3 +
+ sem_open.c                       |   2 +
+ sem_post.c                       |   1 +
+ sem_post_multiple.c              |   1 +
+ sem_timedwait.c                  |   2 +
+ sem_trywait.c                    |   1 +
+ sem_unlink.c                     |   2 +
+ sem_wait.c                       |   2 +
+ tests/barrier1.c                 |   2 +
+ tests/barrier2.c                 |   2 +
+ tests/barrier3.c                 |   3 +
+ tests/barrier4.c                 |   2 +
+ tests/barrier5.c                 |   2 +
+ tests/benchlib.c                 |   4 ++
+ tests/benchtest1.c               |   3 +
+ tests/benchtest2.c               |   4 ++
+ tests/benchtest3.c               |   3 +
+ tests/benchtest4.c               |   2 +
+ tests/benchtest5.c               |   2 +
+ tests/cancel1.c                  |   3 +
+ tests/cancel2.c                  |   2 +
+ tests/cancel3.c                  |   4 ++
+ tests/cancel4.c                  |   3 +
+ tests/cancel5.c                  |   4 ++
+ tests/cancel6a.c                 |   4 ++
+ tests/cancel6d.c                 |   3 +
+ tests/cleanup0.c                 |   5 ++
+ tests/cleanup1.c                 |   5 ++
+ tests/cleanup2.c                 |   5 ++
+ tests/cleanup3.c                 |   5 ++
+ tests/condvar1.c                 |   2 +
+ tests/condvar1_1.c               |   2 +
+ tests/condvar1_2.c               |   2 +
+ tests/condvar2.c                 |   2 +
+ tests/condvar2_1.c               |   3 +
+ tests/condvar3.c                 |   3 +
+ tests/condvar3_1.c               |   3 +
+ tests/condvar3_2.c               |   3 +
+ tests/condvar3_3.c               |   2 +
+ tests/condvar4.c                 |   3 +
+ tests/condvar5.c                 |   3 +
+ tests/condvar6.c                 |   3 +
+ tests/condvar7.c                 |   3 +
+ tests/condvar8.c                 |   3 +
+ tests/condvar9.c                 |   3 +
+ tests/count1.c                   |   3 +
+ tests/create1.c                  |   3 +
+ tests/create2.c                  |   3 +
+ tests/create3.c                  |   3 +
+ tests/delay1.c                   |   2 +
+ tests/delay2.c                   |   3 +
+ tests/detach1.c                  |   3 +
+ tests/equal1.c                   |   3 +
+ tests/errno1.c                   |   3 +
+ tests/exception1.c               |   3 +
+ tests/exception2.c               |   4 ++
+ tests/exception3.c               |   5 ++
+ tests/exit1.c                    |   3 +
+ tests/exit2.c                    |   3 +
+ tests/exit3.c                    |   3 +
+ tests/exit4.c                    |   3 +
+ tests/exit5.c                    |   3 +
+ tests/inherit1.c                 |   3 +
+ tests/join0.c                    |   3 +
+ tests/join1.c                    |   3 +
+ tests/join2.c                    |   3 +
+ tests/join3.c                    |   3 +
+ tests/join4.c                    |   4 ++
+ tests/kill1.c                    |   2 +
+ tests/mutex1.c                   |   2 +
+ tests/mutex1e.c                  |   2 +
+ tests/mutex1n.c                  |   2 +
+ tests/mutex1r.c                  |   2 +
+ tests/mutex2.c                   |   2 +
+ tests/mutex2e.c                  |   2 +
+ tests/mutex2r.c                  |   2 +
+ tests/mutex3.c                   |   3 +
+ tests/mutex3e.c                  |   3 +
+ tests/mutex3r.c                  |   3 +
+ tests/mutex4.c                   |   3 +
+ tests/mutex5.c                   |   2 +
+ tests/mutex6.c                   |   3 +
+ tests/mutex6e.c                  |   3 +
+ tests/mutex6es.c                 |   3 +
+ tests/mutex6n.c                  |   3 +
+ tests/mutex6r.c                  |   3 +
+ tests/mutex6rs.c                 |   3 +
+ tests/mutex6s.c                  |   3 +
+ tests/mutex7.c                   |   3 +
+ tests/mutex7e.c                  |   3 +
+ tests/mutex7n.c                  |   3 +
+ tests/mutex7r.c                  |   3 +
+ tests/mutex8.c                   |   3 +
+ tests/mutex8e.c                  |   3 +
+ tests/mutex8n.c                  |   3 +
+ tests/mutex8r.c                  |   3 +
+ tests/once1.c                    |   4 ++
+ tests/once2.c                    |   4 ++
+ tests/once3.c                    |   4 ++
+ tests/once4.c                    |   5 ++
+ tests/priority1.c                |   3 +
+ tests/priority2.c                |   3 +
+ tests/reuse1.c                   |   3 +
+ tests/reuse2.c                   |   3 +
+ tests/rwlock1.c                  |   2 +
+ tests/rwlock2.c                  |   2 +
+ tests/rwlock2_t.c                |   2 +
+ tests/rwlock3.c                  |   3 +
+ tests/rwlock3_t.c                |   3 +
+ tests/rwlock4.c                  |   3 +
+ tests/rwlock4_t.c                |   3 +
+ tests/rwlock5.c                  |   3 +
+ tests/rwlock5_t.c                |   3 +
+ tests/rwlock6.c                  |   4 ++
+ tests/rwlock6_t.c                |   4 ++
+ tests/rwlock6_t2.c               |   3 +
+ tests/rwlock7.c                  |   3 +
+ tests/rwlock8.c                  |   3 +
+ tests/self1.c                    |   2 +
+ tests/self2.c                    |   3 +
+ tests/semaphore1.c               |   3 +
+ tests/semaphore2.c               |   2 +
+ tests/semaphore3.c               |   3 +
+ tests/semaphore4.c               |   3 +
+ tests/semaphore4t.c              |   3 +
+ tests/semaphore5.c               |   3 +
+ tests/semaphore6.c               |   3 +
+ tests/spin1.c                    |   2 +
+ tests/spin2.c                    |   3 +
+ tests/spin3.c                    |   3 +
+ tests/spin4.c                    |   4 ++
+ tests/stress1.c                  |   5 ++
+ tests/test_main.c                |  15 +++++
+ tests/tsd1.c                     |   5 ++
+ tests/tsd2.c                     |   5 ++
+ tests/valid1.c                   |   3 +
+ tests/valid2.c                   |   2 +
+ 260 files changed, 909 insertions(+), 16 deletions(-)
+
+diff --git a/cleanup.c b/cleanup.c
+index a0eb35d..20813fd 100644
+--- a/cleanup.c
++++ b/cleanup.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * cleanup.c
+  *
+@@ -96,6 +97,7 @@ pte_pop_cleanup (int execute)
+ 
+     }
+ 
++  __A_VARIABLE = 1;
+   return (cleanup);
+ 
+ }				/* pte_pop_cleanup */
+@@ -151,4 +153,5 @@ pte_push_cleanup (pte_cleanup_t * cleanup,
+ 
+   pthread_setspecific (pte_cleanupKey, (void *) cleanup);
+ 
++  __A_VARIABLE = 1;
+ }				/* pte_push_cleanup */
+diff --git a/create.c b/create.c
+index 1cb6539..29af6eb 100644
+--- a/create.c
++++ b/create.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * create.c
+  *
+@@ -254,6 +255,7 @@ FAIL0:
+         }
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ 
+ }				/* pthread_create */
+diff --git a/global.c b/global.c
+index 8c62e17..caf2a2c 100644
+--- a/global.c
++++ b/global.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * global.c
+  *
+diff --git a/platform/dspbios/dspbios-osal.c b/platform/dspbios/dspbios-osal.c
+index e23c073..5ecadb4 100644
+--- a/platform/dspbios/dspbios-osal.c
++++ b/platform/dspbios/dspbios-osal.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * psp_osal.h
+  *
+@@ -88,6 +89,7 @@ static dspbiosThreadData * getThreadData(TSK_Handle threadHandle)
+ 
+   pThreadData = (dspbiosThreadData *) pteTlsGetValue(pTls, threadDataKey);
+ 
++  __A_VARIABLE = 1;
+   return pThreadData;
+ }
+ 
+@@ -98,6 +100,7 @@ static int msecsToSysTicks(int msecs)
+ 
+   ticks = ticks / 100; // sim only
+ 
++  __A_VARIABLE = 1;
+   return ticks;
+ }
+ 
+@@ -122,6 +125,7 @@ void dspbiosGarbageCollectorMain()
+     }
+ 
+   /* Never returns */
++    __A_VARIABLE = 1;
+ }
+ 
+ /****************************************************************************
+@@ -169,6 +173,7 @@ pte_osResult pte_osInit(void)
+ 	}
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+ 
+@@ -183,6 +188,7 @@ pte_osResult pte_osInit(void)
+ void dspbiosStubThreadEntry (void *argv, pte_osThreadEntryPoint entryPoint)
+ {
+   (*(entryPoint))(argv);
++  __A_VARIABLE = 1;
+   return;
+ }
+ 
+@@ -282,6 +288,7 @@ pte_osResult pte_osThreadCreate(pte_osThreadEntryPoint entryPoint,
+     }
+ 
+ FAIL0:
++  __A_VARIABLE = 1;
+   return result;
+ }
+ 
+@@ -300,6 +307,7 @@ pte_osResult pte_osThreadStart(pte_osThreadHandle osThreadHandle)
+ 
+   TSK_setpri(osThreadHandle, pThreadData->priority);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ 
+ }
+@@ -327,6 +335,7 @@ void pte_osThreadExit()
+ 
+   TSK_exit();
+ 
++  __A_VARIABLE = 1;
+ }
+ 
+ pte_osResult pte_osThreadExitAndDelete(pte_osThreadHandle handle)
+@@ -353,6 +362,7 @@ pte_osResult pte_osThreadExitAndDelete(pte_osThreadHandle handle)
+ 
+   TSK_exit();
+   
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -385,6 +395,7 @@ pte_osResult pte_osThreadDelete(pte_osThreadHandle handle)
+ 
+   TSK_delete(handle);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -448,6 +459,7 @@ pte_osResult pte_osThreadWaitForEnd(pte_osThreadHandle threadHandle)
+       result = PTE_OS_OK;
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+ 
+@@ -467,6 +479,7 @@ pte_osResult pte_osThreadCancel(pte_osThreadHandle threadHandle)
+       SEM_post(pThreadData->cancelSem);
+     }
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -507,15 +520,18 @@ void pte_osThreadSleep(unsigned int msecs)
+   int ticks = msecsToSysTicks(msecs);
+ 
+   TSK_sleep(ticks);
++  __A_VARIABLE = 1;
+ }
+ 
+ pte_osThreadHandle pte_osThreadGetHandle(void)
+ {
++  __A_VARIABLE = 1;
+   return TSK_self();
+ }
+ 
+ int pte_osThreadGetPriority(pte_osThreadHandle threadHandle)
+ {
++  __A_VARIABLE = 1;
+   return TSK_getpri(threadHandle);
+ }
+ 
+@@ -523,22 +539,26 @@ pte_osResult pte_osThreadSetPriority(pte_osThreadHandle threadHandle, int newPri
+ {
+   TSK_setpri(threadHandle, newPriority);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+ int pte_osThreadGetMinPriority()
+ {
++  __A_VARIABLE = 1;
+   return TSK_MINPRI;
+ }
+ 
+ int pte_osThreadGetMaxPriority()
+ {
++  __A_VARIABLE = 1;
+   return TSK_MAXPRI;
+ }
+ 
+ int pte_osThreadGetDefaultPriority()
+ {
+   /* Pick something in the middle */
++  __A_VARIABLE = 1;
+   return ((TSK_MINPRI + TSK_MAXPRI) / 2);
+ }
+ 
+@@ -567,6 +587,7 @@ pte_osResult pte_osMutexDelete(pte_osMutexHandle handle)
+ {
+   LCK_delete(handle);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -574,6 +595,7 @@ pte_osResult pte_osMutexLock(pte_osMutexHandle handle)
+ {
+   LCK_pend(handle, SYS_FOREVER);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -582,6 +604,7 @@ pte_osResult pte_osMutexUnlock(pte_osMutexHandle handle)
+ 
+   LCK_post(handle);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -611,6 +634,7 @@ pte_osResult pte_osSemaphoreDelete(pte_osSemaphoreHandle handle)
+ {
+   SEM_delete(handle);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -624,6 +648,7 @@ pte_osResult pte_osSemaphorePost(pte_osSemaphoreHandle handle, int count)
+       SEM_post(handle);
+     }
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -730,6 +755,7 @@ pte_osResult pte_osSemaphoreCancellablePend(pte_osSemaphoreHandle semHandle, uns
+ 
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ 
+ }
+@@ -754,6 +780,7 @@ int pte_osAtomicExchange(int *ptarg, int val)
+ 
+   HWI_restore(oldCSR);
+ 
++  __A_VARIABLE = 1;
+   return origVal;
+ 
+ }
+@@ -777,6 +804,7 @@ int pte_osAtomicCompareExchange(int *pdest, int exchange, int comp)
+   HWI_restore(oldCSR);
+ 
+ 
++  __A_VARIABLE = 1;
+   return origVal;
+ 
+ }
+@@ -797,6 +825,7 @@ int pte_osAtomicExchangeAddInt(int volatile* pAddend, int value)
+   HWI_restore(oldCSR);
+ 
+ 
++  __A_VARIABLE = 1;
+   return origVal;
+ 
+ }
+@@ -817,6 +846,7 @@ int pte_osAtomicExchangeAdd(int volatile* pAddend, int value)
+   HWI_restore(oldCSR);
+ 
+ 
++  __A_VARIABLE = 1;
+   return origVal;
+ }
+ 
+@@ -833,6 +863,7 @@ int pte_osAtomicDecrement(int *pdest)
+ 
+   HWI_restore(oldCSR);
+ 
++  __A_VARIABLE = 1;
+   return val;
+ 
+ }
+@@ -851,6 +882,7 @@ int pte_osAtomicIncrement(int *pdest)
+   HWI_restore(oldCSR);
+ 
+ 
++  __A_VARIABLE = 1;
+   return val;
+ }
+ 
+@@ -876,6 +908,7 @@ pte_osResult pte_osTlsSetValue(unsigned int index, void * value)
+       TSK_setenv(TSK_self(), pTls);
+     }
+ 
++  __A_VARIABLE = 1;
+   return pteTlsSetValue(pTls, index, value);
+ }
+ 
+@@ -887,6 +920,7 @@ void * pte_osTlsGetValue(unsigned int index)
+ 
+   pTls = (void *) TSK_getenv(TSK_self());
+ 
++  __A_VARIABLE = 1;
+   return (void *) pteTlsGetValue(pTls, index);
+ 
+ }
+@@ -895,12 +929,14 @@ void * pte_osTlsGetValue(unsigned int index)
+ // Note that key value must be > 0
+ pte_osResult pte_osTlsAlloc(unsigned int *pKey)
+ {
++  __A_VARIABLE = 1;
+   return pteTlsAlloc(pKey);
+ }
+ 
+ 
+ pte_osResult pte_osTlsFree(unsigned int index)
+ {
++  __A_VARIABLE = 1;
+   return pteTlsFree(index);
+ 
+ }
+@@ -917,6 +953,7 @@ int ftime(struct timeb *tp)
+   tp->time = secs;
+   tp->millitm = msecs;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/platform/dspbios/main.c b/platform/dspbios/main.c
+index ca5129f..19a093d 100644
+--- a/platform/dspbios/main.c
++++ b/platform/dspbios/main.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * psp_osal.h
+  *
+@@ -43,4 +44,5 @@ int main(void)
+   attrs.stacksize = 4*1024;
+ 
+   TSK_create((Fxn)pte_test_main,&attrs);
++  __A_VARIABLE = 1;
+ }
+diff --git a/platform/helper/tls-helper.c b/platform/helper/tls-helper.c
+index 5a3b1d5..af966fe 100644
+--- a/platform/helper/tls-helper.c
++++ b/platform/helper/tls-helper.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * tls-helper.c
+  *
+@@ -63,6 +64,7 @@ pte_osResult pteTlsGlobalInit(int maxEntries)
+       result = PTE_OS_NO_RESOURCES;
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+ 
+@@ -80,6 +82,7 @@ void * pteTlsThreadInit(void)
+       pTlsStruct[i] = 0;
+     }
+ 
++  __A_VARIABLE = 1;
+   return (void *) pTlsStruct;
+ }
+ 
+@@ -106,6 +109,7 @@ pte_osResult pteTlsAlloc(unsigned int *pKey)
+ 
+   pte_osMutexUnlock(globalTlsLock);
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+ 
+@@ -147,6 +151,7 @@ pte_osResult pteTlsSetValue(void *pTlsThreadStruct, unsigned int index, void * v
+       result = PTE_OS_INVALID_PARAM;
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ 
+ }
+@@ -170,16 +175,19 @@ pte_osResult pteTlsFree(unsigned int index)
+       result = PTE_OS_GENERAL_FAILURE;
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+ 
+ void pteTlsThreadDestroy(void * pTlsThreadStruct)
+ {
+   free(pTlsThreadStruct);
++  __A_VARIABLE = 1;
+ }
+ 
+ void pteTlsGlobalDestroy(void)
+ {
+   pte_osMutexDelete(globalTlsLock);
+   free(keysUsed);
++  __A_VARIABLE = 1;
+ }
+diff --git a/platform/hermit/pte_osal.c b/platform/hermit/pte_osal.c
+index 34d0a1a..6987ec8 100644
+--- a/platform/hermit/pte_osal.c
++++ b/platform/hermit/pte_osal.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  *      HermitCore port of POSIX Threads Library for embedded systems
+  *      Copyright(C) 2015 Stefan Lankes, RWTH Aachen Univeristy
+@@ -91,11 +92,13 @@ static __thread struct _reent* __myreent_ptr = NULL;
+ 
+ static inline tid_t gettid(void)
+ {
++  __A_VARIABLE = 1;
+   return sys_getpid();
+ }
+ 
+ struct _reent * __getreent(void)
+ {
++  __A_VARIABLE = 1;
+   return __myreent_ptr;
+ }
+ 
+@@ -111,6 +114,7 @@ static void __reent_init(void)
+ 
+   /* initialize pthread library */
+   pthread_init();
++  __A_VARIABLE = 1;
+ }
+ 
+ /*
+@@ -155,6 +159,7 @@ static void hermitStubThreadEntry(void *argv)
+   pte_osThreadExit();
+ 
+   while(1);
++  __A_VARIABLE = 1;
+ }
+ 
+ /****************************************************************************
+@@ -210,6 +215,7 @@ pte_osResult pte_osInit(void)
+       }
+   }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+ 
+@@ -223,6 +229,7 @@ int pte_kill(pte_osThreadHandle threadId, int sig)
+ {
+   hermitThreadData* pThreadData = (hermitThreadData*) threadId;
+ 
++  __A_VARIABLE = 1;
+   return _kill_r(__getreent(), pThreadData->id, sig);
+ }
+ 
+@@ -247,8 +254,10 @@ pte_osResult pte_osThreadCreate(pte_osThreadEntryPoint entryPoint,
+     }
+ 
+   pThreadData = (hermitThreadData*) malloc(sizeof(hermitThreadData));
+-  if (!pThreadData)
++  if (!pThreadData) {
++	__A_VARIABLE = 1;
+ 	return PTE_OS_NO_RESOURCES;
++  }
+ 
+ 
+   pThreadData->entryPoint = entryPoint;
+@@ -266,11 +275,13 @@ pte_osResult pte_osThreadCreate(pte_osThreadEntryPoint entryPoint,
+     if (pThreadData->myreent)
+       free(pThreadData->myreent);
+     free(pThreadData);
++    __A_VARIABLE = 1;
+     return PTE_OS_NO_RESOURCES;
+   }
+ 
+   *ppte_osThreadHandle = pThreadData;
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -280,6 +291,7 @@ pte_osResult pte_osThreadStart(pte_osThreadHandle osThreadHandle)
+   hermitThreadData *pThreadData = (hermitThreadData*) osThreadHandle;
+ 
+   /* wake up thread */
++  __A_VARIABLE = 1;
+   return pte_osSemaphorePost(pThreadData->start_sem, 1);
+ }
+ 
+@@ -296,6 +308,7 @@ pte_osResult pte_osThreadDelete(pte_osThreadHandle handle)
+     free(pThreadData->myreent);
+   free(pThreadData);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -306,6 +319,7 @@ pte_osResult pte_osThreadExitAndDelete(pte_osThreadHandle handle)
+   pte_kill(pThreadData, SIGTERM);
+   pte_osThreadDelete(handle);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -316,6 +330,7 @@ void pte_osThreadExit(void)
+   pThreadData->done = 1;
+   pte_osSemaphorePost(pThreadData->stop_sem, 1);
+   do_exit(0);
++  __A_VARIABLE = 1;
+ }
+ 
+ /*
+@@ -327,19 +342,23 @@ pte_osResult pte_osThreadWaitForEnd(pte_osThreadHandle threadHandle)
+   pte_osResult result = PTE_OS_OK;
+   hermitThreadData *pThreadData = (hermitThreadData*) threadHandle;
+ 
+-  if (pThreadData->done)
++  if (pThreadData->done) {
++    __A_VARIABLE = 1;
+     return PTE_OS_OK;
++  }
+ 
+   /* wait for the resume command */
+   ret = pte_osSemaphorePend(pThreadData->stop_sem, NULL);
+   if (ret)
+     result = PTE_OS_GENERAL_FAILURE;
+  
++  __A_VARIABLE = 1;
+   return result;
+ }
+ 
+ pte_osThreadHandle pte_osThreadGetHandle(void)
+ {
++  __A_VARIABLE = 1;
+   return globalHandle;
+ }
+ 
+@@ -347,9 +366,12 @@ int pte_osThreadGetPriority(pte_osThreadHandle threadHandle)
+ {
+   int ret = sys_getprio(threadHandle);
+ 
+-  if (ret)
++  if (ret) {
++    __A_VARIABLE = 1;
+     return PTE_OS_GENERAL_FAILURE;
++  }
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -357,29 +379,36 @@ pte_osResult pte_osThreadSetPriority(pte_osThreadHandle threadHandle, int newPri
+ {
+   int ret = sys_setprio(threadHandle, newPriority);
+ 
+-  if (ret)
++  if (ret) {
++    __A_VARIABLE = 1;
+     return PTE_OS_GENERAL_FAILURE;
++  }
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+ void pte_osThreadSleep(unsigned int msecs)
+ {
+   sys_msleep(msecs);
++  __A_VARIABLE = 1;
+ }
+ 
+ int pte_osThreadGetMinPriority(void)
+ {
++	__A_VARIABLE = 1;
+ 	return OS_MIN_PRIO;
+ }
+ 
+ int pte_osThreadGetMaxPriority(void)
+ {
++	__A_VARIABLE = 1;
+ 	return OS_MAX_PRIO;
+ }
+ 
+ int pte_osThreadGetDefaultPriority(void)
+ {
++ 	__A_VARIABLE = 1;
+  	return OS_DEFAULT_PRIO;
+ }
+ 
+@@ -391,42 +420,57 @@ int pte_osThreadGetDefaultPriority(void)
+ 
+ pte_osResult pte_osMutexCreate(pte_osMutexHandle *pHandle)
+ {
+-  if (sys_sem_init((sem_t**) pHandle, 1/*, 1*/))
+-    return PTE_OS_NO_RESOURCES;	
++  if (sys_sem_init((sem_t**) pHandle, 1/*, 1*/)) {
++    __A_VARIABLE = 1;
++    return PTE_OS_NO_RESOURCES;
++  }	
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+ pte_osResult pte_osMutexDelete(pte_osMutexHandle handle)
+ {
+-  if (sys_sem_destroy(handle))
++  if (sys_sem_destroy(handle)) {
++    __A_VARIABLE = 1;
+     return PTE_OS_NO_RESOURCES;
++  }
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+ pte_osResult pte_osMutexLock(pte_osMutexHandle handle)
+ {
+-  if (sys_sem_wait(handle))
+-    return PTE_OS_NO_RESOURCES;		
++  if (sys_sem_wait(handle)) {
++    __A_VARIABLE = 1;
++    return PTE_OS_NO_RESOURCES;
++  }		
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+ pte_osResult pte_osMutexTimedLock(pte_osMutexHandle handle, unsigned int timeoutMsecs)
+ {
+-  if (sys_sem_timedwait(handle, timeoutMsecs))
++  if (sys_sem_timedwait(handle, timeoutMsecs)) {
++    __A_VARIABLE = 1;
+     return PTE_OS_TIMEOUT;
++  }
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+ 
+ pte_osResult pte_osMutexUnlock(pte_osMutexHandle handle)
+ {
+-  if (sys_sem_post(handle))
++  if (sys_sem_post(handle)) {
++    __A_VARIABLE = 1;
+     return PTE_OS_NO_RESOURCES;
++  }
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -438,17 +482,23 @@ pte_osResult pte_osMutexUnlock(pte_osMutexHandle handle)
+ 
+ pte_osResult pte_osSemaphoreCreate(int initialValue, pte_osSemaphoreHandle *pHandle)
+ {
+-  if (sys_sem_init((sem_t**) pHandle, initialValue/*, SEM_VALUE_MAX*/))
++  if (sys_sem_init((sem_t**) pHandle, initialValue/*, SEM_VALUE_MAX*/)) {
++    __A_VARIABLE = 1;
+     return PTE_OS_NO_RESOURCES;
++  }
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+ pte_osResult pte_osSemaphoreDelete(pte_osSemaphoreHandle handle)
+ {
+-  if (sys_sem_destroy(handle))
++  if (sys_sem_destroy(handle)) {
++    __A_VARIABLE = 1;
+     return PTE_OS_NO_RESOURCES;
++  }
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -457,10 +507,13 @@ pte_osResult pte_osSemaphorePost(pte_osSemaphoreHandle handle, int count)
+   int i;
+ 
+   for (i=0; i<count; i++) {
+-    if (sys_sem_post(handle))
++    if (sys_sem_post(handle)) {
++       __A_VARIABLE = 1;
+        return PTE_OS_NO_RESOURCES;
++    }
+   }
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -490,11 +543,16 @@ pte_osResult pte_osSemaphoreCancellablePend(pte_osSemaphoreHandle semHandle, uns
+     msec = *pTimeout;
+   ret = sys_sem_cancelablewait(semHandle, msec);
+ 
+-  if (ret == -ETIME)
++  if (ret == -ETIME) {
++    __A_VARIABLE = 1;
+     return PTE_OS_TIMEOUT;
+-  if (ret)
++  }
++  if (ret) {
++    __A_VARIABLE = 1;
+     return PTE_OS_INTERRUPTED;
++  }
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -557,11 +615,13 @@ int pte_osAtomicExchangeAdd(int volatile* pAddend, int value)
+ 
+ int pte_osAtomicDecrement(int *pdest)
+ {
++  __A_VARIABLE = 1;
+   return atomic_add(pdest, -1);
+ }
+ 
+ int pte_osAtomicIncrement(int *pdest)
+ {
++  __A_VARIABLE = 1;
+   return atomic_add(pdest, 1);
+ }
+ 
+@@ -573,22 +633,26 @@ int pte_osAtomicIncrement(int *pdest)
+ 
+ pte_osResult pte_osTlsSetValue(unsigned int key, void * value)
+ {
++  __A_VARIABLE = 1;
+   return pteTlsSetValue(globalTls, key, value);
+ }
+ 
+ void * pte_osTlsGetValue(unsigned int index)
+ {
++  __A_VARIABLE = 1;
+   return (void *) pteTlsGetValue(globalTls, index);
+ }
+ 
+ 
+ pte_osResult pte_osTlsAlloc(unsigned int *pKey)
+ {
++  __A_VARIABLE = 1;
+   return pteTlsAlloc(pKey);
+ }
+ 
+ pte_osResult pte_osTlsFree(unsigned int index)
+ {
++  __A_VARIABLE = 1;
+   return pteTlsFree(index);
+ }
+ 
+@@ -605,6 +669,7 @@ int ftime(struct timeb *tb)
+   tb->time = ticks / TIMER_FREQ;
+   tb->millitm = (ticks % TIMER_FREQ) * (TIMER_FREQ*1000);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -622,19 +687,23 @@ void __sys_env_unlock(void);
+ void __malloc_lock(struct _reent *ptr)
+ {
+   __sys_malloc_lock();
++  __A_VARIABLE = 1;
+ }
+ 
+ void __malloc_unlock(struct _reent *ptr)
+ {
+   __sys_malloc_unlock();
++  __A_VARIABLE = 1;
+ }
+ 
+ void __env_lock(struct _reent *ptr)
+ {
+   __sys_env_lock();
++  __A_VARIABLE = 1;
+ }
+ 
+ void __env_unlock(struct _reent *ptr)
+ {
+   __sys_env_unlock();
++  __A_VARIABLE = 1;
+ }
+diff --git a/platform/psl1ght/main.c b/platform/psl1ght/main.c
+index bfd4605..0ca299f 100644
+--- a/platform/psl1ght/main.c
++++ b/platform/psl1ght/main.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ #include <stdio.h>
+ #include <stdlib.h>
+ 
+@@ -13,6 +14,7 @@ extern void pte_test_main();
+ int exit_callback(int arg1, int arg2, void *common)
+ {
+   sceKernelExitGame();
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -27,6 +29,7 @@ int CallbackThread(SceSize args, void *argp)
+ 
+   sceKernelSleepThreadCB();
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -41,6 +44,7 @@ int SetupCallbacks(void)
+       sceKernelStartThread(thid, 0, 0);
+     }
+ 
++  __A_VARIABLE = 1;
+   return thid;
+ }
+ 
+@@ -61,10 +65,12 @@ int main()
+       if (pad.Buttons & PSP_CTRL_UP)
+         {
+           printf("Exiting...\n");
++          __A_VARIABLE = 1;
+           return 0;
+         }
+ 
+     }
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/platform/psl1ght/psl1ght_osal.c b/platform/psl1ght/psl1ght_osal.c
+index f06147c..2e7db36 100644
+--- a/platform/psl1ght/psl1ght_osal.c
++++ b/platform/psl1ght/psl1ght_osal.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * psl1ght_osal.c
+  *
+@@ -97,6 +98,7 @@ void psl1ghtStubThreadEntry (void *user_data)
+   result = (*(pThreadData->entryPoint))(pThreadData->argv);
+ 
+   pThreadData->ended = 1;
++  __A_VARIABLE = 1;
+ }
+ 
+ /****************************************************************************
+@@ -162,6 +164,7 @@ pte_osResult pte_osInit(void)
+       }
+   }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+ 
+@@ -278,6 +281,7 @@ pte_osResult pte_osThreadCreate(pte_osThreadEntryPoint entryPoint,
+     }
+ 
+ FAIL0:
++  __A_VARIABLE = 1;
+   return result;
+ }
+ 
+@@ -288,6 +292,7 @@ pte_osResult pte_osThreadStart(pte_osThreadHandle osThreadHandle)
+ 
+   sysThreadSetPriority(osThreadHandle, pThreadData->priority);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -307,12 +312,14 @@ pte_osResult pte_osThreadDelete(pte_osThreadHandle handle)
+ 
+   pteTlsThreadDestroy(pTls);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+ void pte_osThreadExit()
+ {
+   sysThreadExit (0);
++  __A_VARIABLE = 1;
+ }
+ 
+ pte_osResult pte_osThreadExitAndDelete(pte_osThreadHandle handle)
+@@ -321,6 +328,7 @@ pte_osResult pte_osThreadExitAndDelete(pte_osThreadHandle handle)
+ 
+   pte_osThreadDelete(handle);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -381,6 +389,7 @@ pte_osResult pte_osThreadWaitForEnd(pte_osThreadHandle threadHandle)
+     }
+ 
+ 
++  __A_VARIABLE = 1;
+   return osResult;
+ }
+ 
+@@ -388,6 +397,7 @@ pte_osThreadHandle pte_osThreadGetHandle(void)
+ {
+   pte_osThreadHandle id;
+   sysThreadGetId (&id);
++  __A_VARIABLE = 1;
+   return id;
+ }
+ 
+@@ -395,6 +405,7 @@ int pte_osThreadGetPriority(pte_osThreadHandle threadHandle)
+ {
+   s32 priority;
+   sysThreadGetPriority (threadHandle, &priority);
++  __A_VARIABLE = 1;
+   return priority;
+ }
+ 
+@@ -402,6 +413,7 @@ pte_osResult pte_osThreadSetPriority(pte_osThreadHandle threadHandle, int newPri
+ {
+   sysThreadSetPriority (threadHandle, newPriority);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -424,6 +436,7 @@ pte_osResult pte_osThreadCancel(pte_osThreadHandle threadHandle)
+       osResult = PTE_OS_GENERAL_FAILURE;
+     }
+ 
++  __A_VARIABLE = 1;
+   return osResult;
+ }
+ 
+@@ -462,26 +475,31 @@ pte_osResult pte_osThreadCheckCancel(pte_osThreadHandle threadHandle)
+       result = PTE_OS_GENERAL_FAILURE;
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+ 
+ void pte_osThreadSleep(unsigned int msecs)
+ {
+   sysUsleep (msecs*1000);
++  __A_VARIABLE = 1;
+ }
+ 
+ int pte_osThreadGetMinPriority()
+ {
++  __A_VARIABLE = 1;
+   return OS_MIN_PRIO;
+ }
+ 
+ int pte_osThreadGetMaxPriority()
+ {
++  __A_VARIABLE = 1;
+   return OS_MAX_PRIO;
+ }
+ 
+ int pte_osThreadGetDefaultPriority()
+ {
++  __A_VARIABLE = 1;
+   return OS_DEFAULT_PRIO;
+ }
+ 
+@@ -511,6 +529,7 @@ pte_osResult pte_osMutexCreate(pte_osMutexHandle *pHandle)
+ 
+   sysMutexCreate (pHandle, &attr);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -518,6 +537,7 @@ pte_osResult pte_osMutexDelete(pte_osMutexHandle handle)
+ {
+   sysMutexDestroy(handle);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -527,6 +547,7 @@ pte_osResult pte_osMutexLock(pte_osMutexHandle handle)
+ {
+   sysMutexLock(handle, 0);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -547,6 +568,7 @@ pte_osResult pte_osMutexTimedLock(pte_osMutexHandle handle, unsigned int timeout
+       result = PTE_OS_OK;
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+ 
+@@ -555,6 +577,7 @@ pte_osResult pte_osMutexUnlock(pte_osMutexHandle handle)
+ {
+   sysMutexUnlock(handle);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -582,6 +605,7 @@ pte_osResult pte_osSemaphoreCreate(int initialValue, pte_osSemaphoreHandle *pHan
+ 
+   sysSemCreate(pHandle, &attr, initialValue, SEM_VALUE_MAX);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -589,6 +613,7 @@ pte_osResult pte_osSemaphoreDelete(pte_osSemaphoreHandle handle)
+ {
+   sysSemDestroy(handle);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -597,6 +622,7 @@ pte_osResult pte_osSemaphorePost(pte_osSemaphoreHandle handle, int count)
+ {
+   sysSemPost(handle, count);
+ 
++  __A_VARIABLE = 1;
+   return PTE_OS_OK;
+ }
+ 
+@@ -626,6 +652,7 @@ pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTi
+       osResult = PTE_OS_GENERAL_FAILURE;
+     }
+ 
++  __A_VARIABLE = 1;
+   return osResult;
+ }
+ 
+@@ -716,6 +743,7 @@ pte_osResult pte_osSemaphoreCancellablePend(pte_osSemaphoreHandle semHandle, uns
+         }
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+ 
+@@ -735,6 +763,7 @@ int pte_osAtomicExchange(int *ptarg, int val)
+ 
+   *ptarg = val;
+ 
++  __A_VARIABLE = 1;
+   return origVal;
+ 
+ }
+@@ -752,6 +781,7 @@ int pte_osAtomicCompareExchange(int *pdest, int exchange, int comp)
+     }
+ 
+ 
++  __A_VARIABLE = 1;
+   return origVal;
+ }
+ 
+@@ -766,6 +796,7 @@ int pte_osAtomicExchangeAdd(int volatile* pAddend, int value)
+   *pAddend += value;
+ 
+ 
++  __A_VARIABLE = 1;
+   return origVal;
+ }
+ 
+@@ -779,6 +810,7 @@ int pte_osAtomicDecrement(int *pdest)
+   val = *pdest;
+ 
+ 
++  __A_VARIABLE = 1;
+   return val;
+ }
+ 
+@@ -792,6 +824,7 @@ int pte_osAtomicIncrement(int *pdest)
+   val = *pdest;
+ 
+ 
++  __A_VARIABLE = 1;
+   return val;
+ }
+ 
+@@ -810,6 +843,7 @@ static psl1ghtThreadData *getThreadData(sys_ppu_thread_t threadHandle)
+ 
+   pThreadData = (psl1ghtThreadData *) pteTlsGetValue(pTls, threadDataKey);
+ 
++  __A_VARIABLE = 1;
+   return pThreadData;
+ }
+ 
+@@ -838,6 +872,7 @@ static void *getTlsStructFromThread(sys_ppu_thread_t thid)
+       pTls = globalTls;
+     }
+ 
++  __A_VARIABLE = 1;
+   return pTls;
+ }
+ 
+@@ -855,6 +890,7 @@ pte_osResult pte_osTlsSetValue(unsigned int key, void * value)
+   sysThreadGetId (&threadId);
+   pTls = getTlsStructFromThread(threadId);
+ 
++  __A_VARIABLE = 1;
+   return pteTlsSetValue(pTls, key, value);
+ }
+ 
+@@ -867,6 +903,7 @@ void * pte_osTlsGetValue(unsigned int index)
+ 
+   pTls = getTlsStructFromThread(threadId);
+ 
++  __A_VARIABLE = 1;
+   return (void *) pteTlsGetValue(pTls, index);
+ 
+ }
+@@ -880,12 +917,14 @@ pte_osResult pte_osTlsAlloc(unsigned int *pKey)
+   sysThreadGetId (&threadId);
+   pTls = getTlsStructFromThread(threadId);
+ 
++  __A_VARIABLE = 1;
+   return pteTlsAlloc(pKey);
+ 
+ }
+ 
+ pte_osResult pte_osTlsFree(unsigned int index)
+ {
++  __A_VARIABLE = 1;
+   return pteTlsFree(index);
+ }
+ 
+@@ -907,5 +946,6 @@ int ftime(struct timeb *tb)
+   tb->timezone = tz.tz_minuteswest;
+   tb->dstflag = tz.tz_dsttime;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/platform/psp/main.c b/platform/psp/main.c
+index 22e4403..1e9ebfa 100644
+--- a/platform/psp/main.c
++++ b/platform/psp/main.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <pspkernel.h>
+@@ -18,6 +19,7 @@ extern void pte_test_main();
+ int exit_callback(int arg1, int arg2, void *common)
+ {
+   sceKernelExitGame();
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -32,6 +34,7 @@ int CallbackThread(SceSize args, void *argp)
+ 
+   sceKernelSleepThreadCB();
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -46,6 +49,7 @@ int SetupCallbacks(void)
+       sceKernelStartThread(thid, 0, 0);
+     }
+ 
++  __A_VARIABLE = 1;
+   return thid;
+ }
+ 
+@@ -66,10 +70,12 @@ int main()
+       if (pad.Buttons & PSP_CTRL_UP)
+         {
+           printf("Exiting...\n");
++          __A_VARIABLE = 1;
+           return 0;
+         }
+ 
+     }
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/platform/psp/psp_osal.c b/platform/psp/psp_osal.c
+index a3887a6..e3da9d2 100644
+--- a/platform/psp/psp_osal.c
++++ b/platform/psp/psp_osal.c
+@@ -1 +1,2 @@
++static volatile int __A_VARIABLE;
+ /* * psp_osal.c * * Description: * * -------------------------------------------------------------------------- * *      Pthreads-embedded (PTE) - POSIX Threads Library for embedded systems *      Copyright(C) 2008 Jason Schmidlapp * *      Contact Email: jschmidlapp@users.sourceforge.net * *      This library is free software; you can redistribute it and/or *      modify it under the terms of the GNU Lesser General Public *      License as published by the Free Software Foundation; either *      version 2 of the License, or (at your option) any later version. * *      This library is distributed in the hope that it will be useful, *      but WITHOUT ANY WARRANTY; without even the implied warranty of *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU *      Lesser General Public License for more details. * *      You should have received a copy of the GNU Lesser General Public *      License along with this library in the file COPYING.LIB; *      if not, write to the Free Software Foundation, Inc., *      59 Temple Place - Suite 330, Boston, MA 02111-1307, USA */#include <stdio.h>#include <stdlib.h>#include <string.h>#include <pspkerror.h>#include "pte_osal.h"#include "pthread.h"#include "tls-helper.h"/* For ftime */#include <sys/time.h>#include <sys/types.h>#include <sys/timeb.h>#define MAX_PSP_UID 2048 // SWAG#define DEFAULT_STACK_SIZE_BYTES 4096#define PSP_MAX_TLS 32#if 1#define PSP_DEBUG(x) printf(x)#else#define PSP_DEBUG(x)#endif/* TLS key used to access pspThreadData struct for reach thread. */static unsigned int threadDataKey;/* * Data stored on a per-thread basis - allocated in pte_osThreadCreate * and freed in pte_osThreadDelete. */typedef struct pspThreadData  {    /* Entry point and parameters to thread's main function */    pte_osThreadEntryPoint entryPoint;    void * argv;    /* Semaphore used for cancellation.  Posted to by pte_osThreadCancel,        polled in pte_osSemaphoreCancellablePend */    SceUID cancelSem;  } pspThreadData;/* Structure used to emulate TLS on non-POSIX threads.   * This limits us to one non-POSIX thread that can * call pthread functions. */static void *globalTls;/* Helper functions */static pspThreadData *getThreadData(SceUID threadHandle);static void *getTlsStructFromThread(SceUID thid);/* A new thread's stub entry point.  It retrieves the real entry point from the per thread control * data as well as any parameters to this function, and then calls the entry point. */int pspStubThreadEntry (unsigned int argc, void *argv){  int result;  pspThreadData *pThreadData;  pThreadData = getThreadData(sceKernelGetThreadId());  result = (*(pThreadData->entryPoint))(pThreadData->argv);  return result;}/**************************************************************************** * * Initialization * ***************************************************************************/pte_osResult pte_osInit(void){  pte_osResult result;  pspThreadData *pThreadData;  char cancelSemName[64];  /* Allocate and initialize TLS support */  result = pteTlsGlobalInit(PSP_MAX_TLS);  if (result == PTE_OS_OK)  {    /* Allocate a key that we use to store control information (e.g. cancellation semaphore) per thread */    result = pteTlsAlloc(&threadDataKey);    if (result == PTE_OS_OK)      {	/* Initialize the structure used to emulate TLS for 	 * non-POSIX threads 	 */	globalTls = pteTlsThreadInit();	/* Also create a "thread data" structure for a single non-POSIX thread. */	/* Allocate some memory for our per-thread control data.  We use this for:	 * 1. Entry point and parameters for the user thread's main function.	 * 2. Semaphore used for thread cancellation.	 */	pThreadData = (pspThreadData *) malloc(sizeof(pspThreadData));		if (pThreadData == NULL)	  {	    result = PTE_OS_NO_RESOURCES;	  }	else	  {	    /* Save a pointer to our per-thread control data as a TLS value */	    pteTlsSetValue(globalTls, threadDataKey, pThreadData);		    /* Create a semaphore used to cancel threads */	    snprintf(cancelSemName, sizeof(cancelSemName), "pthread_cancelSemGlobal");	    	    pThreadData->cancelSem = sceKernelCreateSema(cancelSemName,							 0,          /* attributes (default) */							 0,          /* initial value        */							 255,        /* maximum value        */							 0);         /* options (default)    */	    result = PTE_OS_OK;	  }      }  }  return result;}/**************************************************************************** * * Threads * ***************************************************************************/pte_osResult pte_osThreadCreate(pte_osThreadEntryPoint entryPoint,                                int stackSize,                                int initialPriority,                                void *argv,                                pte_osThreadHandle* ppte_osThreadHandle){  char threadName[64];  char cancelSemName[64];  static int threadNum = 1;  int pspAttr;  void *pTls;  SceUID threadId;  pte_osResult result;  pspThreadData *pThreadData;  if (threadNum++ > MAX_PSP_UID)    {      threadNum = 0;    }  /* Make sure that the stack we're going to allocate is big enough */  if (stackSize < DEFAULT_STACK_SIZE_BYTES)    {      stackSize = DEFAULT_STACK_SIZE_BYTES;    }  /* Allocate TLS structure for this thread. */  pTls = pteTlsThreadInit();  if (pTls == NULL)    {      PSP_DEBUG("pteTlsThreadInit: PTE_OS_NO_RESOURCES\n");      result = PTE_OS_NO_RESOURCES;      goto FAIL0;    }  /* Allocate some memory for our per-thread control data.  We use this for:   * 1. Entry point and parameters for the user thread's main function.   * 2. Semaphore used for thread cancellation.   */  pThreadData = (pspThreadData *) malloc(sizeof(pspThreadData));  if (pThreadData == NULL)    {      pteTlsThreadDestroy(pTls);      PSP_DEBUG("malloc(pspThreadData): PTE_OS_NO_RESOURCES\n");      result = PTE_OS_NO_RESOURCES;      goto FAIL0;    }  /* Save a pointer to our per-thread control data as a TLS value */  pteTlsSetValue(pTls, threadDataKey, pThreadData);  pThreadData->entryPoint = entryPoint;  pThreadData->argv = argv;  /* Create a semaphore used to cancel threads */  snprintf(cancelSemName, sizeof(cancelSemName), "pthread_cancelSem%04d", threadNum);  pThreadData->cancelSem = sceKernelCreateSema(cancelSemName,                           0,          /* attributes (default) */                           0,          /* initial value        */                           255,        /* maximum value        */                           0);         /* options (default)    */  /* In order to emulate TLS functionality, we append the address of the TLS structure that we   * allocated above to the thread's name.  To set or get TLS values for this thread, the user   * needs to get the name of the thread from the OS and then parse the name to extract   * a pointer to the TLS structure.   */  snprintf(threadName, sizeof(threadName), "pthread%04d__%x", threadNum, (unsigned int) pTls);  pspAttr = 0;  //  printf("%s %p %d %d %d\n",threadName, pspStubThreadEntry, initialPriority, stackSize, pspAttr);  threadId = sceKernelCreateThread(threadName,                                   pspStubThreadEntry,                                   initialPriority,                                   stackSize,                                   pspAttr,                                   NULL);  if (threadId == (SceUID) SCE_KERNEL_ERROR_NO_MEMORY)    {      free(pThreadData);      pteTlsThreadDestroy(pTls);      PSP_DEBUG("sceKernelCreateThread: PTE_OS_NO_RESOURCES\n");      result =  PTE_OS_NO_RESOURCES;    }  else if (threadId < 0)    {      free(pThreadData);      pteTlsThreadDestroy(pTls);      PSP_DEBUG("sceKernelCreateThread: PTE_OS_GENERAL_FAILURE\n");      result = PTE_OS_GENERAL_FAILURE;    }  else    {      *ppte_osThreadHandle = threadId;      result = PTE_OS_OK;    }FAIL0:  return result;}pte_osResult pte_osThreadStart(pte_osThreadHandle osThreadHandle){  sceKernelStartThread(osThreadHandle, 0, NULL);  return PTE_OS_OK;}pte_osResult pte_osThreadDelete(pte_osThreadHandle handle){  pspThreadData *pThreadData;  void *pTls;  pTls = getTlsStructFromThread(handle);  pThreadData = getThreadData(handle);  sceKernelDeleteSema(pThreadData->cancelSem);    free(pThreadData);  pteTlsThreadDestroy(pTls);  sceKernelDeleteThread(handle);  return PTE_OS_OK;}pte_osResult pte_osThreadExitAndDelete(pte_osThreadHandle handle){  pte_osThreadDelete(handle);  sceKernelExitDeleteThread(0);  return PTE_OS_OK;}void pte_osThreadExit(){  sceKernelExitThread(0);}/* * This has to be cancellable, so we can't just call sceKernelWaitThreadEnd. * Instead, poll on this in a loop, like we do for a cancellable semaphore. */pte_osResult pte_osThreadWaitForEnd(pte_osThreadHandle threadHandle){  pte_osResult result;  pspThreadData *pThreadData;  pThreadData = getThreadData(sceKernelGetThreadId());  while (1)    {      SceKernelThreadRunStatus info;      /* Poll task to see if it has ended */      memset(&info,0,sizeof(info));      info.size = sizeof(info);      sceKernelReferThreadRunStatus(threadHandle, &info);            if (info.status == PSP_THREAD_STOPPED)        {	  /* Thread has ended */          result = PTE_OS_OK;          break;        }      else        {          SceKernelSemaInfo semInfo;          if (pThreadData != NULL)            {	      SceUID osResult;	                    osResult = sceKernelReferSemaStatus(pThreadData->cancelSem, &semInfo);	      	      if (osResult == SCE_KERNEL_ERROR_OK)		{		  if (semInfo.currentCount > 0)		    {		      result = PTE_OS_INTERRUPTED;		      break;		    }		  else		    {		      /* Nothing found and not timed out yet; let's yield so we're not		       * in busy loop.		       */		      sceKernelDelayThread(POLLING_DELAY_IN_us);		    }		}	      else		{		  result = PTE_OS_GENERAL_FAILURE;		  break;		}            }        }    }  return result;}pte_osThreadHandle pte_osThreadGetHandle(void){  return sceKernelGetThreadId();}int pte_osThreadGetPriority(pte_osThreadHandle threadHandle){  SceKernelThreadInfo thinfo;  thinfo.size = sizeof(SceKernelThreadInfo);  sceKernelReferThreadStatus(threadHandle, &thinfo);  return thinfo.currentPriority;}pte_osResult pte_osThreadSetPriority(pte_osThreadHandle threadHandle, int newPriority){  sceKernelChangeThreadPriority(threadHandle, newPriority);  return PTE_OS_OK;}pte_osResult pte_osThreadCancel(pte_osThreadHandle threadHandle){  SceUID osResult;  pte_osResult result;  pspThreadData *pThreadData;  pThreadData = getThreadData(threadHandle);  osResult = sceKernelSignalSema(pThreadData->cancelSem, 1);  if (osResult == SCE_KERNEL_ERROR_OK)    {      result = PTE_OS_OK;    }  else    {      result = PTE_OS_GENERAL_FAILURE;    }  return result;}pte_osResult pte_osThreadCheckCancel(pte_osThreadHandle threadHandle){  pspThreadData *pThreadData;  SceKernelSemaInfo semInfo;  SceUID osResult;  pte_osResult result;  pThreadData = getThreadData(threadHandle);  if (pThreadData != NULL)    {      osResult = sceKernelReferSemaStatus(pThreadData->cancelSem, &semInfo);      if (osResult == SCE_KERNEL_ERROR_OK)	{	  if (semInfo.currentCount > 0)	    {	      result = PTE_OS_INTERRUPTED;	    }	  else	    {	      result = PTE_OS_OK;	    }	}      else	{	  /* sceKernelReferSemaStatus returned an error */	  result = PTE_OS_GENERAL_FAILURE;	}    }  else    {      /* For some reason, we couldn't get thread data */      result = PTE_OS_GENERAL_FAILURE;    }  return result;}void pte_osThreadSleep(unsigned int msecs){  sceKernelDelayThread(msecs*1000);}int pte_osThreadGetMinPriority(){  return 17;}int pte_osThreadGetMaxPriority(){  return 30;}int pte_osThreadGetDefaultPriority(){  return 18;}/**************************************************************************** * * Mutexes * ****************************************************************************/pte_osResult pte_osMutexCreate(pte_osMutexHandle *pHandle){  static int mutexCtr = 0;  char mutexName[32];  pte_osMutexHandle handle;  if (mutexCtr++ > MAX_PSP_UID)    {      mutexCtr = 0;    }  snprintf(mutexName,sizeof(mutexName),"mutex%d",mutexCtr);  handle = sceKernelCreateSema(mutexName,                               0,          /* attributes (default) */                               1,          /* initial value        */                               1,          /* maximum value        */                               0);         /* options (default)    */  *pHandle = handle;  return PTE_OS_OK;}pte_osResult pte_osMutexDelete(pte_osMutexHandle handle){  sceKernelDeleteSema(handle);  return PTE_OS_OK;}pte_osResult pte_osMutexLock(pte_osMutexHandle handle){  sceKernelWaitSema(handle, 1, NULL);  return PTE_OS_OK;}pte_osResult pte_osMutexTimedLock(pte_osMutexHandle handle, unsigned int timeoutMsecs){  pte_osResult result;  SceUInt timeoutUsecs = timeoutMsecs*1000;  int status = sceKernelWaitSema(handle, 1, &timeoutUsecs);  if (status < 0)    {      // Assume that any error from sceKernelWaitSema was due to a timeout      result = PTE_OS_TIMEOUT;    }  else    {      result = PTE_OS_OK;    }  return result;}pte_osResult pte_osMutexUnlock(pte_osMutexHandle handle){  sceKernelSignalSema(handle, 1);  return PTE_OS_OK;}/**************************************************************************** * * Semaphores * ***************************************************************************/pte_osResult pte_osSemaphoreCreate(int initialValue, pte_osSemaphoreHandle *pHandle){  pte_osSemaphoreHandle handle;  static int semCtr = 0;  char semName[32];  if (semCtr++ > MAX_PSP_UID)    {      semCtr = 0;    }  snprintf(semName,sizeof(semName),"pthread_sem%d",semCtr);  handle = sceKernelCreateSema(semName,                               0,              /* attributes (default) */                               initialValue,   /* initial value        */                               SEM_VALUE_MAX,  /* maximum value        */                               0);             /* options (default)    */  *pHandle = handle;  return PTE_OS_OK;}pte_osResult pte_osSemaphoreDelete(pte_osSemaphoreHandle handle){  sceKernelDeleteSema(handle);  return PTE_OS_OK;}pte_osResult pte_osSemaphorePost(pte_osSemaphoreHandle handle, int count){  sceKernelSignalSema(handle, count);  return PTE_OS_OK;}pte_osResult pte_osSemaphorePend(pte_osSemaphoreHandle handle, unsigned int *pTimeoutMsecs){  unsigned int timeoutUsecs;  unsigned int *pTimeoutUsecs;  SceUInt result;  pte_osResult osResult;  if (pTimeoutMsecs == NULL)    {      pTimeoutUsecs = NULL;    }  else    {      timeoutUsecs = *pTimeoutMsecs * 1000;      pTimeoutUsecs = &timeoutUsecs;    }  result = sceKernelWaitSema(handle, 1, pTimeoutUsecs);  if (result == SCE_KERNEL_ERROR_OK)    {      osResult = PTE_OS_OK;    }  else if (result == SCE_KERNEL_ERROR_WAIT_TIMEOUT)    {      osResult = PTE_OS_TIMEOUT;    }  else    {      osResult = PTE_OS_GENERAL_FAILURE;    }  return osResult;}/* * Pend on a semaphore- and allow the pend to be cancelled. * * PSP OS provides no functionality to asynchronously interrupt a blocked call.  We simulte * this by polling on the main semaphore and the cancellation semaphore and sleeping in a loop. */pte_osResult pte_osSemaphoreCancellablePend(pte_osSemaphoreHandle semHandle, unsigned int *pTimeout){  pspThreadData *pThreadData;  pThreadData = getThreadData(sceKernelGetThreadId());  clock_t start_time;  pte_osResult result =  PTE_OS_OK;  unsigned int timeout;  unsigned char timeoutEnabled;  start_time = clock();  // clock() is in microseconds, timeout as passed in was in milliseconds  if (pTimeout == NULL)    {      timeout = 0;      timeoutEnabled = 0;    }  else    {      timeout = *pTimeout * 1000;      timeoutEnabled = 1;    }  while (1)    {      SceUInt semTimeout;      int status;      /* Poll semaphore */      semTimeout = 0;      status = sceKernelWaitSema(semHandle, 1, &semTimeout);      if (status == SCE_KERNEL_ERROR_OK)        {          /* User semaphore posted to */          result = PTE_OS_OK;          break;        }      else if ((timeoutEnabled) && ((clock() - start_time) > timeout))        {          /* Timeout expired */          result = PTE_OS_TIMEOUT;          break;        }      else        {          SceKernelSemaInfo semInfo;          if (pThreadData != NULL)            {	      SceUID osResult;	                    osResult = sceKernelReferSemaStatus(pThreadData->cancelSem, &semInfo);	      	      if (osResult == SCE_KERNEL_ERROR_OK)		{		  if (semInfo.currentCount > 0)		    {		      result = PTE_OS_INTERRUPTED;		      break;		    }		  else		    {		      /* Nothing found and not timed out yet; let's yield so we're not		       * in busy loop.		       */		      sceKernelDelayThread(POLLING_DELAY_IN_us);		    }		}	      else		{		  result = PTE_OS_GENERAL_FAILURE;		  break;		}            }        }    }  return result;}/**************************************************************************** * * Atomic Operations * ***************************************************************************/int pte_osAtomicExchange(int *ptarg, int val){  int intc = pspSdkDisableInterrupts();  int origVal;  origVal = *ptarg;  *ptarg = val;  pspSdkEnableInterrupts(intc);  return origVal;}int pte_osAtomicCompareExchange(int *pdest, int exchange, int comp){  int intc = pspSdkDisableInterrupts();  int origVal;  origVal = *pdest;  if (*pdest == comp)    {      *pdest = exchange;    }  pspSdkEnableInterrupts(intc);  return origVal;}int pte_osAtomicExchangeAdd(int volatile* pAddend, int value){  int origVal;  int intc = pspSdkDisableInterrupts();  origVal = *pAddend;  *pAddend += value;  pspSdkEnableInterrupts(intc);  return origVal;}int pte_osAtomicDecrement(int *pdest){  int val;  int intc = pspSdkDisableInterrupts();  (*pdest)--;  val = *pdest;  pspSdkEnableInterrupts(intc);  return val;}int pte_osAtomicIncrement(int *pdest){  int val;  int intc = pspSdkDisableInterrupts();  (*pdest)++;  val = *pdest;  pspSdkEnableInterrupts(intc);  return val;}/**************************************************************************** * * Helper functions * ***************************************************************************/static pspThreadData *getThreadData(SceUID threadHandle){  pspThreadData *pThreadData;  void *pTls;  pTls = getTlsStructFromThread(threadHandle);  pThreadData = (pspThreadData *) pteTlsGetValue(pTls, threadDataKey);  return pThreadData;}static void *getTlsStructFromThread(SceUID thid){  SceKernelThreadInfo thinfo;  unsigned int ptr;  unsigned int thrNum;  void *pTls;  int numMatches;  thinfo.size = sizeof(SceKernelThreadInfo);  sceKernelReferThreadStatus(thid, &thinfo);  numMatches = sscanf(thinfo.name,"pthread%04d__%x", &thrNum, &ptr);  /* If we were called from a pthread, use the TLS allocated when the thread   * was created.  Otherwise, we were called from a non-pthread, so use the   * "global".  This is a pretty bad hack, but necessary due to lack of TLS on PSP.   */  if (numMatches == 2)    {      pTls = (void *) ptr;    }  else    {      pTls = globalTls;    }  return pTls;}/**************************************************************************** * * Thread Local Storage * ***************************************************************************/pte_osResult pte_osTlsSetValue(unsigned int key, void * value){  void *pTls;  pTls = getTlsStructFromThread(sceKernelGetThreadId());  return pteTlsSetValue(pTls, key, value);}void * pte_osTlsGetValue(unsigned int index){  void *pTls;  pTls = getTlsStructFromThread(sceKernelGetThreadId());  return (void *) pteTlsGetValue(pTls, index);}pte_osResult pte_osTlsAlloc(unsigned int *pKey){  void * pTls;  pTls = getTlsStructFromThread(sceKernelGetThreadId());  return pteTlsAlloc(pKey);}pte_osResult pte_osTlsFree(unsigned int index){  return pteTlsFree(index);}/**************************************************************************** * * Miscellaneous * ***************************************************************************/int ftime(struct timeb *tb){  struct timeval tv;  struct timezone tz;  gettimeofday(&tv, &tz);  tb->time = tv.tv_sec;  tb->millitm = tv.tv_usec / 1000;  tb->timezone = tz.tz_minuteswest;  tb->dstflag = tz.tz_dsttime;  return 0;}
+\ No newline at end of file
+diff --git a/pte_callUserDestroyRoutines.c b/pte_callUserDestroyRoutines.c
+index e6e8f8f..6bacd4d 100644
+--- a/pte_callUserDestroyRoutines.c
++++ b/pte_callUserDestroyRoutines.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_callUserDestroyRoutines.c
+  *
+@@ -226,4 +227,5 @@ pte_callUserDestroyRoutines (pthread_t thread)
+         }
+       while (assocsRemaining);
+     }
++    __A_VARIABLE = 1;
+ }				/* pte_callUserDestroyRoutines */
+diff --git a/pte_cancellable_wait.c b/pte_cancellable_wait.c
+index 2579fcb..a3d8833 100644
+--- a/pte_cancellable_wait.c
++++ b/pte_cancellable_wait.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_cancellable_wait.c
+  *
+@@ -124,6 +125,7 @@ int pte_cancellable_wait (pte_osSemaphoreHandle semHandle, unsigned int* timeout
+     }
+ 
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ 
+ }                               /* CancelableWait */
+diff --git a/pte_cond_check_need_init.c b/pte_cond_check_need_init.c
+index 5b28176..4d2386c 100644
+--- a/pte_cond_check_need_init.c
++++ b/pte_cond_check_need_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_cond_check_need_init.c
+  *
+@@ -99,5 +100,6 @@ pte_cond_check_need_init (pthread_cond_t * cond)
+ 
+   pte_osMutexUnlock(pte_cond_test_init_lock);
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+diff --git a/pte_detach.c b/pte_detach.c
+index f6195d7..58bae4e 100644
+--- a/pte_detach.c
++++ b/pte_detach.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_win32_attach_detach_np.c
+  *
+@@ -91,16 +92,19 @@ pte_thread_detach_common (unsigned char threadShouldExit)
+         }
+     }
+ 
++  __A_VARIABLE = 1;
+   return 1;
+ }
+ 
+ int pte_thread_detach_and_exit_np()
+ {
++  __A_VARIABLE = 1;
+   return pte_thread_detach_common(1);
+ }
+ 
+ int pte_thread_detach_np()
+ {
++  __A_VARIABLE = 1;
+   return pte_thread_detach_common(0);
+ }
+ 
+diff --git a/pte_getprocessors.c b/pte_getprocessors.c
+index 521d672..e979732 100644
+--- a/pte_getprocessors.c
++++ b/pte_getprocessors.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_getprocessors.c
+  *
+@@ -65,5 +66,6 @@ pte_getprocessors (int *count)
+ 
+   *count = 1;
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pte_is_attr.c b/pte_is_attr.c
+index 0c869ce..d0b7a3c 100644
+--- a/pte_is_attr.c
++++ b/pte_is_attr.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_is_attr.c
+  *
+@@ -48,6 +49,7 @@ pte_is_attr (const pthread_attr_t * attr)
+ {
+   /* Return 0 if the attr object is valid, non-zero otherwise. */
+ 
++  __A_VARIABLE = 1;
+   return (attr == NULL ||
+           *attr == NULL || (*attr)->valid != PTE_ATTR_VALID);
+ }
+diff --git a/pte_mutex_check_need_init.c b/pte_mutex_check_need_init.c
+index 2c923ed..1721f59 100644
+--- a/pte_mutex_check_need_init.c
++++ b/pte_mutex_check_need_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_mutex_check_need_init.c
+  *
+@@ -122,6 +123,7 @@ pte_mutex_check_need_init (pthread_mutex_t * mutex)
+ 
+   pte_osMutexUnlock(pte_mutex_test_init_lock);
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+ 
+diff --git a/pte_new.c b/pte_new.c
+index d3614aa..423aac7 100644
+--- a/pte_new.c
++++ b/pte_new.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_new.c
+  *
+diff --git a/pte_relmillisecs.c b/pte_relmillisecs.c
+index 936cecd..7d95c76 100644
+--- a/pte_relmillisecs.c
++++ b/pte_relmillisecs.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_relmillisecs.c
+  *
+@@ -92,5 +93,6 @@ pte_relmillisecs (const struct timespec * abstime)
+       milliseconds = 0;
+     }
+ 
++  __A_VARIABLE = 1;
+   return milliseconds;
+ }
+diff --git a/pte_reuse.c b/pte_reuse.c
+index 87e3e54..93516ed 100644
+--- a/pte_reuse.c
++++ b/pte_reuse.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_threadReuse.c
+  *
+@@ -109,6 +110,7 @@ pte_threadReusePop (void)
+ 
+   pte_osMutexUnlock(pte_thread_reuse_lock);
+ 
++  __A_VARIABLE = 1;
+   return t;
+ 
+ }
+@@ -155,4 +157,5 @@ pte_threadReusePush (pthread_t thread)
+   pte_threadReuseBottom = tp;
+ 
+   pte_osMutexUnlock(pte_thread_reuse_lock);
++  __A_VARIABLE = 1;
+ }
+diff --git a/pte_rwlock_cancelwrwait.c b/pte_rwlock_cancelwrwait.c
+index ecac4a5..dcf88b3 100644
+--- a/pte_rwlock_cancelwrwait.c
++++ b/pte_rwlock_cancelwrwait.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_rwlock_cancelwrwait.c
+  *
+@@ -53,4 +54,5 @@ pte_rwlock_cancelwrwait (void *arg)
+ 
+   (void) pthread_mutex_unlock (&(rwl->mtxSharedAccessCompleted));
+   (void) pthread_mutex_unlock (&(rwl->mtxExclusiveAccess));
++  __A_VARIABLE = 1;
+ }
+diff --git a/pte_rwlock_check_need_init.c b/pte_rwlock_check_need_init.c
+index 3757c74..328f356 100644
+--- a/pte_rwlock_check_need_init.c
++++ b/pte_rwlock_check_need_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlock_check_need_init.c
+  *
+@@ -98,5 +99,6 @@ pte_rwlock_check_need_init (pthread_rwlock_t * rwlock)
+ 
+   pte_osMutexUnlock(pte_rwlock_test_init_lock);
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+diff --git a/pte_spinlock_check_need_init.c b/pte_spinlock_check_need_init.c
+index f21fb35..62c5c65 100644
+--- a/pte_spinlock_check_need_init.c
++++ b/pte_spinlock_check_need_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_spinlock_check_need_init.c
+  *
+@@ -85,5 +86,6 @@ pte_spinlock_check_need_init (pthread_spinlock_t * lock)
+ 
+   pte_osMutexUnlock(pte_spinlock_test_init_lock);
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pte_threadDestroy.c b/pte_threadDestroy.c
+index a60a794..2ddd8f5 100644
+--- a/pte_threadDestroy.c
++++ b/pte_threadDestroy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_threadDestroy.c
+  *
+@@ -87,15 +88,18 @@ pte_threadDestroyCommon (pthread_t thread, unsigned char shouldThreadExit)
+ 
+ 
+     }
++    __A_VARIABLE = 1;
+ }				/* pte_threadDestroy */
+ 
+ void pte_threadDestroy (pthread_t thread)
+ {
+   pte_threadDestroyCommon(thread,0);
++  __A_VARIABLE = 1;
+ }
+ 
+ void pte_threadExitAndDestroy (pthread_t thread)
+ {
+   pte_threadDestroyCommon(thread,1);
++  __A_VARIABLE = 1;
+ }
+ 
+diff --git a/pte_threadStart.c b/pte_threadStart.c
+index bcfa604..4dbf055 100644
+--- a/pte_threadStart.c
++++ b/pte_threadStart.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_threadStart.c
+  *
+@@ -71,6 +72,7 @@ pte_terminate ()
+   set_terminate (pte_oldTerminate);
+   (void) pte_thread_detach_np();
+ //  terminate ();
++  __A_VARIABLE = 1;
+ }
+ 
+ #endif
+diff --git a/pte_throw.c b/pte_throw.c
+index 0441c64..d285694 100644
+--- a/pte_throw.c
++++ b/pte_throw.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_throw.c
+  *
+@@ -125,6 +126,7 @@ pte_throw (unsigned int exception)
+ #endif /* PTE_CLEANUP_C */
+ 
+   /* Never reached */
++    __A_VARIABLE = 1;
+ }
+ 
+ 
+@@ -134,11 +136,13 @@ pte_pop_cleanup_all (int execute)
+   while (NULL != pte_pop_cleanup (execute))
+     {
+     }
++    __A_VARIABLE = 1;
+ }
+ 
+ 
+ size_t
+ pte_get_exception_services_code (void)
+ {
++  __A_VARIABLE = 1;
+   return (size_t) NULL;
+ }
+diff --git a/pte_tkAssocCreate.c b/pte_tkAssocCreate.c
+index 83aec96..465ba12 100644
+--- a/pte_tkAssocCreate.c
++++ b/pte_tkAssocCreate.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_tkAssocCreate.c
+  *
+@@ -93,6 +94,7 @@ pte_tkAssocCreate (pte_thread_t * sp, pthread_key_t key)
+ 
+   if (assoc == NULL)
+     {
++      __A_VARIABLE = 1;
+       return ENOMEM;
+     }
+ 
+@@ -121,6 +123,7 @@ pte_tkAssocCreate (pte_thread_t * sp, pthread_key_t key)
+     }
+   sp->keys = (void *) assoc;
+ 
++  __A_VARIABLE = 1;
+   return (0);
+ 
+ }				/* pte_tkAssocCreate */
+diff --git a/pte_tkAssocDestroy.c b/pte_tkAssocDestroy.c
+index c874c2e..3b6db77 100644
+--- a/pte_tkAssocDestroy.c
++++ b/pte_tkAssocDestroy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pte_tkAssocDestroy.c
+  *
+@@ -119,4 +120,5 @@ pte_tkAssocDestroy (ThreadKeyAssoc * assoc)
+       free (assoc);
+     }
+ 
++    __A_VARIABLE = 1;
+ }				/* pte_tkAssocDestroy */
+diff --git a/pthread_attr_destroy.c b/pthread_attr_destroy.c
+index 221218c..56b0666 100644
+--- a/pthread_attr_destroy.c
++++ b/pthread_attr_destroy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_destroy.c
+  *
+@@ -73,6 +74,7 @@ pthread_attr_destroy (pthread_attr_t * attr)
+ {
+   if (pte_is_attr (attr) != 0)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -83,5 +85,6 @@ pthread_attr_destroy (pthread_attr_t * attr)
+   free (*attr);
+   *attr = NULL;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/pthread_attr_getdetachstate.c b/pthread_attr_getdetachstate.c
+index 0729377..a68a2f2 100644
+--- a/pthread_attr_getdetachstate.c
++++ b/pthread_attr_getdetachstate.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_getdetachstate.c
+  *
+@@ -85,9 +86,11 @@ pthread_attr_getdetachstate (const pthread_attr_t * attr, int *detachstate)
+   if (pte_is_attr (attr) != 0 || detachstate == NULL)
+     {
+       *detachstate = PTHREAD_CREATE_DETACHED;
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   *detachstate = (*attr)->detachstate;
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/pthread_attr_getinheritsched.c b/pthread_attr_getinheritsched.c
+index a46a740..7f21d17 100644
+--- a/pthread_attr_getinheritsched.c
++++ b/pthread_attr_getinheritsched.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_getinheritsched.c
+  *
+@@ -49,9 +50,11 @@ pthread_attr_getinheritsched (pthread_attr_t * attr, int *inheritsched)
+ {
+   if (pte_is_attr (attr) != 0 || inheritsched == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   *inheritsched = (*attr)->inheritsched;
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/pthread_attr_getschedparam.c b/pthread_attr_getschedparam.c
+index 782403d..347ac23 100644
+--- a/pthread_attr_getschedparam.c
++++ b/pthread_attr_getschedparam.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_getschedparam.c
+  *
+@@ -53,9 +54,11 @@ pthread_attr_getschedparam (const pthread_attr_t * attr,
+ {
+   if (pte_is_attr (attr) != 0 || param == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   memcpy (param, &(*attr)->param, sizeof (*param));
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/pthread_attr_getschedpolicy.c b/pthread_attr_getschedpolicy.c
+index 9742d6d..d88983c 100644
+--- a/pthread_attr_getschedpolicy.c
++++ b/pthread_attr_getschedpolicy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_getschedpolicy.c
+  *
+@@ -49,6 +50,7 @@ pthread_attr_getschedpolicy (pthread_attr_t * attr, int *policy)
+ {
+   if (pte_is_attr (attr) != 0 || policy == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -58,10 +60,12 @@ pthread_attr_getschedpolicy (pthread_attr_t * attr, int *policy)
+    */
+   if (policy <= (int *) SCHED_MAX)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   *policy = SCHED_OTHER;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/pthread_attr_getscope.c b/pthread_attr_getscope.c
+index 76aa83f..2efe021 100644
+--- a/pthread_attr_getscope.c
++++ b/pthread_attr_getscope.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_getscope.c
+  *
+diff --git a/pthread_attr_getstackaddr.c b/pthread_attr_getstackaddr.c
+index 75be282..f934dbb 100644
+--- a/pthread_attr_getstackaddr.c
++++ b/pthread_attr_getstackaddr.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_getstackaddr.c
+  *
+diff --git a/pthread_attr_getstacksize.c b/pthread_attr_getstacksize.c
+index 74ad839..bb95ab6 100644
+--- a/pthread_attr_getstacksize.c
++++ b/pthread_attr_getstacksize.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_getstacksize.c
+  *
+diff --git a/pthread_attr_init.c b/pthread_attr_init.c
+index bf20d3c..9a043be 100644
+--- a/pthread_attr_init.c
++++ b/pthread_attr_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_init.c
+  *
+@@ -78,6 +79,7 @@ pthread_attr_init (pthread_attr_t * attr)
+   if (attr == NULL)
+     {
+       /* This is disallowed. */
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -85,6 +87,7 @@ pthread_attr_init (pthread_attr_t * attr)
+ 
+   if (attr_result == NULL)
+     {
++      __A_VARIABLE = 1;
+       return ENOMEM;
+     }
+ 
+@@ -115,5 +118,6 @@ pthread_attr_init (pthread_attr_t * attr)
+ 
+   *attr = attr_result;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/pthread_attr_setdetachstate.c b/pthread_attr_setdetachstate.c
+index 591b837..2ff6387 100644
+--- a/pthread_attr_setdetachstate.c
++++ b/pthread_attr_setdetachstate.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_setdetachstate.c
+  *
+@@ -83,15 +84,18 @@ pthread_attr_setdetachstate (pthread_attr_t * attr, int detachstate)
+ {
+   if (pte_is_attr (attr) != 0)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   if (detachstate != PTHREAD_CREATE_JOINABLE &&
+       detachstate != PTHREAD_CREATE_DETACHED)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   (*attr)->detachstate = detachstate;
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/pthread_attr_setinheritsched.c b/pthread_attr_setinheritsched.c
+index 2dcad89..0ec5c6c 100644
+--- a/pthread_attr_setinheritsched.c
++++ b/pthread_attr_setinheritsched.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_setinheritsched.c
+  *
+@@ -49,15 +50,18 @@ pthread_attr_setinheritsched (pthread_attr_t * attr, int inheritsched)
+ {
+   if (pte_is_attr (attr) != 0)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   if (PTHREAD_INHERIT_SCHED != inheritsched
+       && PTHREAD_EXPLICIT_SCHED != inheritsched)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   (*attr)->inheritsched = inheritsched;
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/pthread_attr_setschedparam.c b/pthread_attr_setschedparam.c
+index ef33a2b..6f06f12 100644
+--- a/pthread_attr_setschedparam.c
++++ b/pthread_attr_setschedparam.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_setschedparam.c
+  *
+@@ -55,6 +56,7 @@ pthread_attr_setschedparam (pthread_attr_t * attr,
+ 
+   if (pte_is_attr (attr) != 0 || param == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -64,9 +66,11 @@ pthread_attr_setschedparam (pthread_attr_t * attr,
+   if (priority < sched_get_priority_min (SCHED_OTHER) ||
+       priority > sched_get_priority_max (SCHED_OTHER))
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   memcpy (&(*attr)->param, param, sizeof (*param));
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/pthread_attr_setschedpolicy.c b/pthread_attr_setschedpolicy.c
+index fc31758..f3f06f0 100644
+--- a/pthread_attr_setschedpolicy.c
++++ b/pthread_attr_setschedpolicy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_setschedpolicy.c
+  *
+@@ -49,13 +50,16 @@ pthread_attr_setschedpolicy (pthread_attr_t * attr, int policy)
+ {
+   if (pte_is_attr (attr) != 0)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   if (policy != SCHED_OTHER)
+     {
++      __A_VARIABLE = 1;
+       return ENOTSUP;
+     }
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/pthread_attr_setscope.c b/pthread_attr_setscope.c
+index a302d27..9ddbcd1 100644
+--- a/pthread_attr_setscope.c
++++ b/pthread_attr_setscope.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_setscope.c
+  *
+diff --git a/pthread_attr_setstackaddr.c b/pthread_attr_setstackaddr.c
+index 52e8b51..1e4b6c7 100644
+--- a/pthread_attr_setstackaddr.c
++++ b/pthread_attr_setstackaddr.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_setstackaddr.c
+  *
+diff --git a/pthread_attr_setstacksize.c b/pthread_attr_setstacksize.c
+index e668027..46e13fd 100644
+--- a/pthread_attr_setstacksize.c
++++ b/pthread_attr_setstacksize.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_attr_setstacksize.c
+  *
+diff --git a/pthread_barrier_destroy.c b/pthread_barrier_destroy.c
+index 305f363..4f41dae 100644
+--- a/pthread_barrier_destroy.c
++++ b/pthread_barrier_destroy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_barrier_destroy.c
+  *
+@@ -54,6 +55,7 @@ pthread_barrier_destroy (pthread_barrier_t * barrier)
+ 
+   if (barrier == NULL || *barrier == (pthread_barrier_t) PTE_OBJECT_INVALID)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -65,11 +67,13 @@ pthread_barrier_destroy (pthread_barrier_t * barrier)
+       if (0 == (result = sem_destroy (&(b->semBarrierBreeched[1]))))
+         {
+           (void) free (b);
++          __A_VARIABLE = 1;
+           return 0;
+         }
+       (void) sem_init (&(b->semBarrierBreeched[0]), b->pshared, 0);
+     }
+ 
+   *barrier = b;
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pthread_barrier_init.c b/pthread_barrier_init.c
+index 6659fec..682381b 100644
+--- a/pthread_barrier_init.c
++++ b/pthread_barrier_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_barrier_init.c
+  *
+@@ -54,6 +55,7 @@ pthread_barrier_init (pthread_barrier_t * barrier,
+ 
+   if (barrier == NULL || count == 0)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -78,6 +80,7 @@ pthread_barrier_init (pthread_barrier_t * barrier,
+           if (0 == sem_init (&(b->semBarrierBreeched[1]), b->pshared, 0))
+             {
+               *barrier = b;
++              __A_VARIABLE = 1;
+               return 0;
+             }
+           (void) sem_destroy (&(b->semBarrierBreeched[0]));
+@@ -85,5 +88,6 @@ pthread_barrier_init (pthread_barrier_t * barrier,
+       (void) free (b);
+     }
+ 
++  __A_VARIABLE = 1;
+   return ENOMEM;
+ }
+diff --git a/pthread_barrier_wait.c b/pthread_barrier_wait.c
+index b6a0724..f862970 100644
+--- a/pthread_barrier_wait.c
++++ b/pthread_barrier_wait.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_barrier_wait.c
+  *
+@@ -53,6 +54,7 @@ pthread_barrier_wait (pthread_barrier_t * barrier)
+ 
+   if (barrier == NULL || *barrier == (pthread_barrier_t) PTE_OBJECT_INVALID)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -97,5 +99,6 @@ pthread_barrier_wait (pthread_barrier_t * barrier)
+                 PTHREAD_BARRIER_SERIAL_THREAD : 0);
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pthread_barrierattr_destroy.c b/pthread_barrierattr_destroy.c
+index bc3b571..906bb85 100644
+--- a/pthread_barrierattr_destroy.c
++++ b/pthread_barrierattr_destroy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_barrier_attr_destroy.c
+  *
+@@ -87,5 +88,6 @@ pthread_barrierattr_destroy (pthread_barrierattr_t * attr)
+       free (ba);
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }				/* pthread_barrierattr_destroy */
+diff --git a/pthread_barrierattr_getpshared.c b/pthread_barrierattr_getpshared.c
+index af85ae1..5288a88 100644
+--- a/pthread_barrierattr_getpshared.c
++++ b/pthread_barrierattr_getpshared.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_barrier_attr_getpshared.c
+  *
+@@ -97,5 +98,6 @@ pthread_barrierattr_getpshared (const pthread_barrierattr_t * attr,
+       result = EINVAL;
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }				/* pthread_barrierattr_getpshared */
+diff --git a/pthread_barrierattr_init.c b/pthread_barrierattr_init.c
+index bd653f1..7e02f6a 100644
+--- a/pthread_barrierattr_init.c
++++ b/pthread_barrierattr_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_barrier_attr_init.c
+  *
+@@ -89,5 +90,6 @@ pthread_barrierattr_init (pthread_barrierattr_t * attr)
+ 
+   *attr = ba;
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }				/* pthread_barrierattr_init */
+diff --git a/pthread_barrierattr_setpshared.c b/pthread_barrierattr_setpshared.c
+index cadae14..de87940 100644
+--- a/pthread_barrierattr_setpshared.c
++++ b/pthread_barrierattr_setpshared.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_barrier_attr_setpshared.c
+  *
+@@ -120,6 +121,7 @@ pthread_barrierattr_setpshared (pthread_barrierattr_t * attr, int pshared)
+       result = EINVAL;
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ 
+ }				/* pthread_barrierattr_setpshared */
+diff --git a/pthread_cancel.c b/pthread_cancel.c
+index dce60b2..91db1b1 100644
+--- a/pthread_cancel.c
++++ b/pthread_cancel.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_cancel.c
+  *
+@@ -77,11 +78,13 @@ pthread_cancel (pthread_t thread)
+ 
+   if (0 != result)
+     {
++      __A_VARIABLE = 1;
+       return result;
+     }
+ 
+   if ((self = pthread_self ()).p == NULL)
+     {
++      __A_VARIABLE = 1;
+       return ENOMEM;
+     };
+ 
+@@ -169,5 +172,6 @@ pthread_cancel (pthread_t thread)
+       (void) pthread_mutex_unlock (&tp->cancelLock);
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pthread_cond_destroy.c b/pthread_cond_destroy.c
+index c17a02f..6f1be75 100644
+--- a/pthread_cond_destroy.c
++++ b/pthread_cond_destroy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_cond_destroy.c
+  *
+diff --git a/pthread_cond_init.c b/pthread_cond_init.c
+index 607a0d2..57fa40c 100644
+--- a/pthread_cond_init.c
++++ b/pthread_cond_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_cond_init.c
+  *
+@@ -81,6 +82,7 @@ pthread_cond_init (pthread_cond_t * cond, const pthread_condattr_t * attr)
+ 
+   if (cond == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -169,6 +171,7 @@ DONE:
+ 
+   *cond = cv;
+ 
++  __A_VARIABLE = 1;
+   return result;
+ 
+ }				/* pthread_cond_init */
+diff --git a/pthread_cond_signal.c b/pthread_cond_signal.c
+index a25259c..b032cd4 100644
+--- a/pthread_cond_signal.c
++++ b/pthread_cond_signal.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_cond_signal.c
+  *
+@@ -194,6 +195,7 @@ pthread_cond_signal (pthread_cond_t * cond)
+   /*
+    * The '0'(FALSE) unblockAll arg means unblock ONE waiter.
+    */
++  __A_VARIABLE = 1;
+   return (pte_cond_unblock (cond, 0));
+ 
+ }				/* pthread_cond_signal */
+@@ -233,6 +235,7 @@ pthread_cond_broadcast (pthread_cond_t * cond)
+   /*
+    * The TRUE unblockAll arg means unblock ALL waiters.
+    */
++  __A_VARIABLE = 1;
+   return (pte_cond_unblock (cond, PTE_TRUE));
+ 
+ }				/* pthread_cond_broadcast */
+diff --git a/pthread_cond_wait.c b/pthread_cond_wait.c
+index 8b75f02..97ff1a1 100644
+--- a/pthread_cond_wait.c
++++ b/pthread_cond_wait.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_cond_wait.c
+  *
+@@ -367,6 +368,7 @@ pte_cond_timedwait (pthread_cond_t * cond,
+ 
+   if (cond == NULL || *cond == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -383,6 +385,7 @@ pte_cond_timedwait (pthread_cond_t * cond,
+ 
+   if (result != 0 && result != EBUSY)
+     {
++      __A_VARIABLE = 1;
+       return result;
+     }
+ 
+@@ -391,6 +394,7 @@ pte_cond_timedwait (pthread_cond_t * cond,
+   /* Thread can be cancelled in sem_wait() but this is OK */
+   if (sem_wait (&(cv->semBlockLock)) != 0)
+     {
++      __A_VARIABLE = 1;
+       return errno;
+     }
+ 
+@@ -398,6 +402,7 @@ pte_cond_timedwait (pthread_cond_t * cond,
+ 
+   if (sem_post (&(cv->semBlockLock)) != 0)
+     {
++      __A_VARIABLE = 1;
+       return errno;
+     }
+ 
+@@ -446,6 +451,7 @@ pte_cond_timedwait (pthread_cond_t * cond,
+   /*
+    * "result" can be modified by the cleanup handler.
+    */
++  __A_VARIABLE = 1;
+   return result;
+ 
+ }				/* pte_cond_timedwait */
+@@ -504,6 +510,7 @@ pthread_cond_wait (pthread_cond_t * cond, pthread_mutex_t * mutex)
+   /*
+    * The NULL abstime arg means INFINITE waiting.
+    */
++  __A_VARIABLE = 1;
+   return (pte_cond_timedwait (cond, mutex, NULL));
+ 
+ }				/* pthread_cond_wait */
+@@ -560,9 +567,11 @@ pthread_cond_timedwait (pthread_cond_t * cond,
+ {
+   if (abstime == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
++  __A_VARIABLE = 1;
+   return (pte_cond_timedwait (cond, mutex, abstime));
+ 
+ }				/* pthread_cond_timedwait */
+diff --git a/pthread_condattr_destroy.c b/pthread_condattr_destroy.c
+index b56f76c..5a2e57b 100644
+--- a/pthread_condattr_destroy.c
++++ b/pthread_condattr_destroy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * condvar_attr_destroy.c
+  *
+@@ -89,6 +90,7 @@ pthread_condattr_destroy (pthread_condattr_t * attr)
+       result = 0;
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ 
+ }				/* pthread_condattr_destroy */
+diff --git a/pthread_condattr_getpshared.c b/pthread_condattr_getpshared.c
+index 20fa085..1c105ac 100644
+--- a/pthread_condattr_getpshared.c
++++ b/pthread_condattr_getpshared.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_condattr_getpshared.c
+  *
+@@ -98,6 +99,7 @@ pthread_condattr_getpshared (const pthread_condattr_t * attr, int *pshared)
+       result = EINVAL;
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ 
+ }				/* pthread_condattr_getpshared */
+diff --git a/pthread_condattr_init.c b/pthread_condattr_init.c
+index 393cf04..866b752 100644
+--- a/pthread_condattr_init.c
++++ b/pthread_condattr_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_condattr_init.c
+  *
+@@ -90,6 +91,7 @@ pthread_condattr_init (pthread_condattr_t * attr)
+ 
+   *attr = attr_result;
+ 
++  __A_VARIABLE = 1;
+   return result;
+ 
+ }				/* pthread_condattr_init */
+diff --git a/pthread_condattr_setpshared.c b/pthread_condattr_setpshared.c
+index f8e7f13..db0819a 100644
+--- a/pthread_condattr_setpshared.c
++++ b/pthread_condattr_setpshared.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_condattr_setpshared.c
+  *
+@@ -118,6 +119,7 @@ pthread_condattr_setpshared (pthread_condattr_t * attr, int pshared)
+       result = EINVAL;
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ 
+ }				/* pthread_condattr_setpshared */
+diff --git a/pthread_delay_np.c b/pthread_delay_np.c
+index a14529c..ad57cca 100644
+--- a/pthread_delay_np.c
++++ b/pthread_delay_np.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthreads_delay_np.c
+  *
+diff --git a/pthread_detach.c b/pthread_detach.c
+index 21e4da2..c88ffa7 100644
+--- a/pthread_detach.c
++++ b/pthread_detach.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_detach.c
+  *
+@@ -137,6 +138,7 @@ pthread_detach (pthread_t thread)
+         }
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ 
+ }				/* pthread_detach */
+diff --git a/pthread_equal.c b/pthread_equal.c
+index 627f914..cfc233f 100644
+--- a/pthread_equal.c
++++ b/pthread_equal.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_equal.c
+  *
+@@ -77,6 +78,7 @@ pthread_equal (pthread_t t1, pthread_t t2)
+    */
+   result = ( t1.p == t2.p && t1.x == t2.x );
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ 
+ }				/* pthread_equal */
+diff --git a/pthread_exit.c b/pthread_exit.c
+index ef48e9b..fe6a30e 100644
+--- a/pthread_exit.c
++++ b/pthread_exit.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_exit.c
+  *
+@@ -98,4 +99,5 @@ pthread_exit (void *value_ptr)
+ 
+   /* Never reached. */
+ 
++  __A_VARIABLE = 1;
+ }
+diff --git a/pthread_getconcurrency.c b/pthread_getconcurrency.c
+index ee29b71..fdc37a9 100644
+--- a/pthread_getconcurrency.c
++++ b/pthread_getconcurrency.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_getconcurrency.c
+  *
+@@ -47,5 +48,6 @@
+ int
+ pthread_getconcurrency (void)
+ {
++  __A_VARIABLE = 1;
+   return pte_concurrency;
+ }
+diff --git a/pthread_getschedparam.c b/pthread_getschedparam.c
+index 3f03902..006a02a 100644
+--- a/pthread_getschedparam.c
++++ b/pthread_getschedparam.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * sched_getschedparam.c
+  *
+@@ -54,6 +55,7 @@ pthread_getschedparam (pthread_t thread, int *policy,
+   result = pthread_kill (thread, 0);
+   if (0 != result)
+     {
++      __A_VARIABLE = 1;
+       return result;
+     }
+ 
+@@ -63,6 +65,7 @@ pthread_getschedparam (pthread_t thread, int *policy,
+    */
+   if (policy <= (int *) SCHED_MAX || param == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -77,5 +80,6 @@ pthread_getschedparam (pthread_t thread, int *policy,
+    */
+   param->sched_priority = ((pte_thread_t *)thread.p)->sched_priority;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/pthread_getspecific.c b/pthread_getspecific.c
+index 7dd2f7c..760a24c 100644
+--- a/pthread_getspecific.c
++++ b/pthread_getspecific.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ 
+ /*
+  * pthread_getspecific.c
+@@ -82,5 +83,6 @@ pthread_getspecific (pthread_key_t key)
+       ptr = pte_osTlsGetValue (key->key);
+     }
+ 
++  __A_VARIABLE = 1;
+   return ptr;
+ }
+diff --git a/pthread_init.c b/pthread_init.c
+index 316edfe..3d847dd 100644
+--- a/pthread_init.c
++++ b/pthread_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ 
+ /*
+  * pthread_init.c
+@@ -58,6 +59,7 @@ int pthread_init(void)
+        * since this initialization routine is automatically called only when
+        * the dll is loaded.
+        */
++      __A_VARIABLE = 1;
+       return PTE_TRUE;
+     }
+ 
+@@ -86,6 +88,7 @@ int pthread_init(void)
+   pte_osMutexCreate (&pte_spinlock_test_init_lock);
+ 
+ 
++  __A_VARIABLE = 1;
+   return (pte_processInitialized);
+ 
+ }
+diff --git a/pthread_join.c b/pthread_join.c
+index 2e0545e..ab9d4bb 100644
+--- a/pthread_join.c
++++ b/pthread_join.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_join.c
+  *
+@@ -159,6 +160,7 @@ pthread_join (pthread_t thread, void **value_ptr)
+         }
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ 
+ }				/* pthread_join */
+diff --git a/pthread_key_create.c b/pthread_key_create.c
+index 850433c..a3692d3 100644
+--- a/pthread_key_create.c
++++ b/pthread_key_create.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_key_create.c
+  *
+@@ -115,5 +116,6 @@ pthread_key_create (pthread_key_t * key, void (*destructor) (void *))
+ 
+   *key = newkey;
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pthread_key_delete.c b/pthread_key_delete.c
+index 39fb98d..929e912 100644
+--- a/pthread_key_delete.c
++++ b/pthread_key_delete.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_key_delete.c
+  *
+@@ -136,5 +137,6 @@ pthread_key_delete (pthread_key_t key)
+       free (key);
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pthread_kill.c b/pthread_kill.c
+index 4ea7448..25a6976 100644
+--- a/pthread_kill.c
++++ b/pthread_kill.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_kill.c
+  *
+@@ -112,6 +113,7 @@ pthread_kill (pthread_t thread, int sig)
+     }
+ #endif
+ 
++  __A_VARIABLE = 1;
+   return result;
+ 
+ }				/* pthread_kill */
+diff --git a/pthread_mutex_destroy.c b/pthread_mutex_destroy.c
+index 64a4cde..3e12610 100644
+--- a/pthread_mutex_destroy.c
++++ b/pthread_mutex_destroy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutex_destroy.c
+  *
+@@ -150,5 +151,6 @@ pthread_mutex_destroy (pthread_mutex_t * mutex)
+ 
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pthread_mutex_init.c b/pthread_mutex_init.c
+index 62f275b..e7aa0bd 100644
+--- a/pthread_mutex_init.c
++++ b/pthread_mutex_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutex_init.c
+  *
+@@ -56,6 +57,7 @@ pthread_mutex_init (pthread_mutex_t * mutex, const pthread_mutexattr_t * attr)
+ 
+   if (mutex == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -79,5 +81,6 @@ pthread_mutex_init (pthread_mutex_t * mutex, const pthread_mutexattr_t * attr)
+ 
+   *mutex = mx;
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pthread_mutex_lock.c b/pthread_mutex_lock.c
+index 90f5474..bf0e6ba 100644
+--- a/pthread_mutex_lock.c
++++ b/pthread_mutex_lock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutex_lock.c
+  *
+@@ -58,6 +59,7 @@ pthread_mutex_lock (pthread_mutex_t * mutex)
+    */
+   if (*mutex == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -71,6 +73,7 @@ pthread_mutex_lock (pthread_mutex_t * mutex)
+     {
+       if ((result = pte_mutex_check_need_init (mutex)) != 0)
+         {
++          __A_VARIABLE = 1;
+           return (result);
+         }
+     }
+@@ -136,5 +139,6 @@ pthread_mutex_lock (pthread_mutex_t * mutex)
+ 
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pthread_mutex_timedlock.c b/pthread_mutex_timedlock.c
+index 7fd4285..701c934 100644
+--- a/pthread_mutex_timedlock.c
++++ b/pthread_mutex_timedlock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutex_timedlock.c
+  *
+@@ -102,6 +103,7 @@ pte_timed_eventwait (pte_osSemaphoreHandle event, const struct timespec *abstime
+       retval = 0;
+     }
+ 
++  __A_VARIABLE = 1;
+   return retval;
+ 
+ }				/* pte_timed_semwait */
+diff --git a/pthread_mutex_trylock.c b/pthread_mutex_trylock.c
+index ce1cc7f..18e1847 100644
+--- a/pthread_mutex_trylock.c
++++ b/pthread_mutex_trylock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutex_trylock.c
+  *
+@@ -64,6 +65,7 @@ pthread_mutex_trylock (pthread_mutex_t * mutex)
+     {
+       if ((result = pte_mutex_check_need_init (mutex)) != 0)
+         {
++          __A_VARIABLE = 1;
+           return (result);
+         }
+     }
+@@ -91,5 +93,6 @@ pthread_mutex_trylock (pthread_mutex_t * mutex)
+         }
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pthread_mutex_unlock.c b/pthread_mutex_unlock.c
+index 17bce62..3100a51 100644
+--- a/pthread_mutex_unlock.c
++++ b/pthread_mutex_unlock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutex_unlock.c
+  *
+@@ -126,5 +127,6 @@ pthread_mutex_unlock (pthread_mutex_t * mutex)
+       result = EINVAL;
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pthread_mutexattr_destroy.c b/pthread_mutexattr_destroy.c
+index 9cef18c..3263b4c 100644
+--- a/pthread_mutexattr_destroy.c
++++ b/pthread_mutexattr_destroy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutexattr_destroy.c
+  *
+@@ -87,5 +88,6 @@ pthread_mutexattr_destroy (pthread_mutexattr_t * attr)
+       free (ma);
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }				/* pthread_mutexattr_destroy */
+diff --git a/pthread_mutexattr_getkind_np.c b/pthread_mutexattr_getkind_np.c
+index d4e2015..fc06bce 100644
+--- a/pthread_mutexattr_getkind_np.c
++++ b/pthread_mutexattr_getkind_np.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutexattr_getkind_np.c
+  *
+@@ -46,5 +47,6 @@
+ int
+ pthread_mutexattr_getkind_np (pthread_mutexattr_t * attr, int *kind)
+ {
++  __A_VARIABLE = 1;
+   return pthread_mutexattr_gettype (attr, kind);
+ }
+diff --git a/pthread_mutexattr_getpshared.c b/pthread_mutexattr_getpshared.c
+index f965df9..3bc498d 100644
+--- a/pthread_mutexattr_getpshared.c
++++ b/pthread_mutexattr_getpshared.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutexattr_getpshared.c
+  *
+@@ -96,6 +97,7 @@ pthread_mutexattr_getpshared (const pthread_mutexattr_t * attr, int *pshared)
+       result = EINVAL;
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ 
+ }				/* pthread_mutexattr_getpshared */
+diff --git a/pthread_mutexattr_gettype.c b/pthread_mutexattr_gettype.c
+index ddf66a7..d5ee1b0 100644
+--- a/pthread_mutexattr_gettype.c
++++ b/pthread_mutexattr_gettype.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutexattr_gettype.c
+  *
+@@ -58,5 +59,6 @@ pthread_mutexattr_gettype (pthread_mutexattr_t * attr, int *kind)
+       result = EINVAL;
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pthread_mutexattr_init.c b/pthread_mutexattr_init.c
+index d2b5812..0c42310 100644
+--- a/pthread_mutexattr_init.c
++++ b/pthread_mutexattr_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutexattr_init.c
+  *
+@@ -90,5 +91,6 @@ pthread_mutexattr_init (pthread_mutexattr_t * attr)
+ 
+   *attr = ma;
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }				/* pthread_mutexattr_init */
+diff --git a/pthread_mutexattr_setkind_np.c b/pthread_mutexattr_setkind_np.c
+index 51991a0..e719f32 100644
+--- a/pthread_mutexattr_setkind_np.c
++++ b/pthread_mutexattr_setkind_np.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutexattr_setkind_np.c
+  *
+@@ -46,5 +47,6 @@
+ int
+ pthread_mutexattr_setkind_np (pthread_mutexattr_t * attr, int kind)
+ {
++  __A_VARIABLE = 1;
+   return pthread_mutexattr_settype (attr, kind);
+ }
+diff --git a/pthread_mutexattr_setpshared.c b/pthread_mutexattr_setpshared.c
+index 80e581d..8ef4b72 100644
+--- a/pthread_mutexattr_setpshared.c
++++ b/pthread_mutexattr_setpshared.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutexattr_setpshared.c
+  *
+@@ -120,6 +121,7 @@ pthread_mutexattr_setpshared (pthread_mutexattr_t * attr, int pshared)
+       result = EINVAL;
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ 
+ }				/* pthread_mutexattr_setpshared */
+diff --git a/pthread_mutexattr_settype.c b/pthread_mutexattr_settype.c
+index da51010..b604f24 100644
+--- a/pthread_mutexattr_settype.c
++++ b/pthread_mutexattr_settype.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_mutexattr_settype.c
+  *
+@@ -145,5 +146,6 @@ pthread_mutexattr_settype (pthread_mutexattr_t * attr, int kind)
+       result = EINVAL;
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }				/* pthread_mutexattr_settype */
+diff --git a/pthread_num_processors_np.c b/pthread_num_processors_np.c
+index a68fb1a..a798b37 100644
+--- a/pthread_num_processors_np.c
++++ b/pthread_num_processors_np.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_num_processors_np.c
+  *
+@@ -58,5 +59,6 @@ pthread_num_processors_np (void)
+       count = 1;
+     }
+ 
++  __A_VARIABLE = 1;
+   return (count);
+ }
+diff --git a/pthread_once.c b/pthread_once.c
+index 2b6050f..7ff3721 100644
+--- a/pthread_once.c
++++ b/pthread_once.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_once.c
+  *
+@@ -59,6 +60,7 @@ pte_once_init_routine_cleanup(void * arg)
+     {
+       pte_osSemaphorePost((pte_osSemaphoreHandle) once_control->semaphore, 1);
+     }
++    __A_VARIABLE = 1;
+ }
+ 
+ int
+@@ -182,5 +184,6 @@ pthread_once (pthread_once_t * once_control, void (*init_routine) (void))
+    * ------------
+    */
+ FAIL0:
++  __A_VARIABLE = 1;
+   return (result);
+ }                               /* pthread_once */
+diff --git a/pthread_rwlock_destroy.c b/pthread_rwlock_destroy.c
+index 0f49047..5b9c4af 100644
+--- a/pthread_rwlock_destroy.c
++++ b/pthread_rwlock_destroy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlock_destroy.c
+  *
+diff --git a/pthread_rwlock_init.c b/pthread_rwlock_init.c
+index 847bfab..e38914c 100644
+--- a/pthread_rwlock_init.c
++++ b/pthread_rwlock_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlock_init.c
+  *
+@@ -56,6 +57,7 @@ pthread_rwlock_init (pthread_rwlock_t * rwlock,
+ 
+   if (rwlock == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -113,5 +115,6 @@ FAIL0:
+ DONE:
+   *rwlock = rwl;
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+diff --git a/pthread_rwlock_rdlock.c b/pthread_rwlock_rdlock.c
+index ad6dd99..9f2a798 100644
+--- a/pthread_rwlock_rdlock.c
++++ b/pthread_rwlock_rdlock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlock_rdlock.c
+  *
+@@ -54,6 +55,7 @@ pthread_rwlock_rdlock (pthread_rwlock_t * rwlock)
+ 
+   if (rwlock == NULL || *rwlock == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -69,6 +71,7 @@ pthread_rwlock_rdlock (pthread_rwlock_t * rwlock)
+ 
+       if (result != 0 && result != EBUSY)
+         {
++          __A_VARIABLE = 1;
+           return result;
+         }
+     }
+@@ -77,11 +80,13 @@ pthread_rwlock_rdlock (pthread_rwlock_t * rwlock)
+ 
+   if (rwl->nMagic != PTE_RWLOCK_MAGIC)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   if ((result = pthread_mutex_lock (&(rwl->mtxExclusiveAccess))) != 0)
+     {
++      __A_VARIABLE = 1;
+       return result;
+     }
+ 
+@@ -91,6 +96,7 @@ pthread_rwlock_rdlock (pthread_rwlock_t * rwlock)
+              pthread_mutex_lock (&(rwl->mtxSharedAccessCompleted))) != 0)
+         {
+           (void) pthread_mutex_unlock (&(rwl->mtxExclusiveAccess));
++          __A_VARIABLE = 1;
+           return result;
+         }
+ 
+@@ -101,9 +107,11 @@ pthread_rwlock_rdlock (pthread_rwlock_t * rwlock)
+              pthread_mutex_unlock (&(rwl->mtxSharedAccessCompleted))) != 0)
+         {
+           (void) pthread_mutex_unlock (&(rwl->mtxExclusiveAccess));
++          __A_VARIABLE = 1;
+           return result;
+         }
+     }
+ 
++  __A_VARIABLE = 1;
+   return (pthread_mutex_unlock (&(rwl->mtxExclusiveAccess)));
+ }
+diff --git a/pthread_rwlock_timedrdlock.c b/pthread_rwlock_timedrdlock.c
+index 111205b..edb4c5a 100644
+--- a/pthread_rwlock_timedrdlock.c
++++ b/pthread_rwlock_timedrdlock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlock_timedrdlock.c
+  *
+@@ -55,6 +56,7 @@ pthread_rwlock_timedrdlock (pthread_rwlock_t * rwlock,
+ 
+   if (rwlock == NULL || *rwlock == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -70,6 +72,7 @@ pthread_rwlock_timedrdlock (pthread_rwlock_t * rwlock,
+ 
+       if (result != 0 && result != EBUSY)
+         {
++          __A_VARIABLE = 1;
+           return result;
+         }
+     }
+@@ -78,12 +81,14 @@ pthread_rwlock_timedrdlock (pthread_rwlock_t * rwlock,
+ 
+   if (rwl->nMagic != PTE_RWLOCK_MAGIC)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   if ((result =
+          pthread_mutex_timedlock (&(rwl->mtxExclusiveAccess), abstime)) != 0)
+     {
++      __A_VARIABLE = 1;
+       return result;
+     }
+ 
+@@ -98,6 +103,7 @@ pthread_rwlock_timedrdlock (pthread_rwlock_t * rwlock,
+               ++rwl->nCompletedSharedAccessCount;
+             }
+           (void) pthread_mutex_unlock (&(rwl->mtxExclusiveAccess));
++          __A_VARIABLE = 1;
+           return result;
+         }
+ 
+@@ -108,9 +114,11 @@ pthread_rwlock_timedrdlock (pthread_rwlock_t * rwlock,
+              pthread_mutex_unlock (&(rwl->mtxSharedAccessCompleted))) != 0)
+         {
+           (void) pthread_mutex_unlock (&(rwl->mtxExclusiveAccess));
++          __A_VARIABLE = 1;
+           return result;
+         }
+     }
+ 
++  __A_VARIABLE = 1;
+   return (pthread_mutex_unlock (&(rwl->mtxExclusiveAccess)));
+ }
+diff --git a/pthread_rwlock_timedwrlock.c b/pthread_rwlock_timedwrlock.c
+index 3611e1b..c9f56b5 100644
+--- a/pthread_rwlock_timedwrlock.c
++++ b/pthread_rwlock_timedwrlock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlock_timedwrlock.c
+  *
+@@ -55,6 +56,7 @@ pthread_rwlock_timedwrlock (pthread_rwlock_t * rwlock,
+ 
+   if (rwlock == NULL || *rwlock == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -70,6 +72,7 @@ pthread_rwlock_timedwrlock (pthread_rwlock_t * rwlock,
+ 
+       if (result != 0 && result != EBUSY)
+         {
++          __A_VARIABLE = 1;
+           return result;
+         }
+     }
+@@ -78,12 +81,14 @@ pthread_rwlock_timedwrlock (pthread_rwlock_t * rwlock,
+ 
+   if (rwl->nMagic != PTE_RWLOCK_MAGIC)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   if ((result =
+          pthread_mutex_timedlock (&(rwl->mtxExclusiveAccess), abstime)) != 0)
+     {
++      __A_VARIABLE = 1;
+       return result;
+     }
+ 
+@@ -92,6 +97,7 @@ pthread_rwlock_timedwrlock (pthread_rwlock_t * rwlock,
+                                   abstime)) != 0)
+     {
+       (void) pthread_mutex_unlock (&(rwl->mtxExclusiveAccess));
++      __A_VARIABLE = 1;
+       return result;
+     }
+ 
+@@ -136,5 +142,6 @@ pthread_rwlock_timedwrlock (pthread_rwlock_t * rwlock,
+       rwl->nExclusiveAccessCount++;
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+diff --git a/pthread_rwlock_tryrdlock.c b/pthread_rwlock_tryrdlock.c
+index 65b683b..8a0ba2a 100644
+--- a/pthread_rwlock_tryrdlock.c
++++ b/pthread_rwlock_tryrdlock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlock_tryrdlock.c
+  *
+@@ -54,6 +55,7 @@ pthread_rwlock_tryrdlock (pthread_rwlock_t * rwlock)
+ 
+   if (rwlock == NULL || *rwlock == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -69,6 +71,7 @@ pthread_rwlock_tryrdlock (pthread_rwlock_t * rwlock)
+ 
+       if (result != 0 && result != EBUSY)
+         {
++          __A_VARIABLE = 1;
+           return result;
+         }
+     }
+@@ -77,11 +80,13 @@ pthread_rwlock_tryrdlock (pthread_rwlock_t * rwlock)
+ 
+   if (rwl->nMagic != PTE_RWLOCK_MAGIC)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   if ((result = pthread_mutex_trylock (&(rwl->mtxExclusiveAccess))) != 0)
+     {
++      __A_VARIABLE = 1;
+       return result;
+     }
+ 
+@@ -91,6 +96,7 @@ pthread_rwlock_tryrdlock (pthread_rwlock_t * rwlock)
+              pthread_mutex_lock (&(rwl->mtxSharedAccessCompleted))) != 0)
+         {
+           (void) pthread_mutex_unlock (&(rwl->mtxExclusiveAccess));
++          __A_VARIABLE = 1;
+           return result;
+         }
+ 
+@@ -101,9 +107,11 @@ pthread_rwlock_tryrdlock (pthread_rwlock_t * rwlock)
+              pthread_mutex_unlock (&(rwl->mtxSharedAccessCompleted))) != 0)
+         {
+           (void) pthread_mutex_unlock (&(rwl->mtxExclusiveAccess));
++          __A_VARIABLE = 1;
+           return result;
+         }
+     }
+ 
++  __A_VARIABLE = 1;
+   return (pthread_mutex_unlock (&rwl->mtxExclusiveAccess));
+ }
+diff --git a/pthread_rwlock_trywrlock.c b/pthread_rwlock_trywrlock.c
+index 19172bb..2e520b1 100644
+--- a/pthread_rwlock_trywrlock.c
++++ b/pthread_rwlock_trywrlock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlock_trywrlock.c
+  *
+diff --git a/pthread_rwlock_unlock.c b/pthread_rwlock_unlock.c
+index 931c823..3cd5a76 100644
+--- a/pthread_rwlock_unlock.c
++++ b/pthread_rwlock_unlock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlock_unlock.c
+  *
+diff --git a/pthread_rwlock_wrlock.c b/pthread_rwlock_wrlock.c
+index 33ff5c2..6be3588 100644
+--- a/pthread_rwlock_wrlock.c
++++ b/pthread_rwlock_wrlock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlock_wrlock.c
+  *
+@@ -54,6 +55,7 @@ pthread_rwlock_wrlock (pthread_rwlock_t * rwlock)
+ 
+   if (rwlock == NULL || *rwlock == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -69,6 +71,7 @@ pthread_rwlock_wrlock (pthread_rwlock_t * rwlock)
+ 
+       if (result != 0 && result != EBUSY)
+         {
++          __A_VARIABLE = 1;
+           return result;
+         }
+     }
+@@ -77,17 +80,20 @@ pthread_rwlock_wrlock (pthread_rwlock_t * rwlock)
+ 
+   if (rwl->nMagic != PTE_RWLOCK_MAGIC)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   if ((result = pthread_mutex_lock (&(rwl->mtxExclusiveAccess))) != 0)
+     {
++      __A_VARIABLE = 1;
+       return result;
+     }
+ 
+   if ((result = pthread_mutex_lock (&(rwl->mtxSharedAccessCompleted))) != 0)
+     {
+       (void) pthread_mutex_unlock (&(rwl->mtxExclusiveAccess));
++      __A_VARIABLE = 1;
+       return result;
+     }
+ 
+@@ -130,5 +136,6 @@ pthread_rwlock_wrlock (pthread_rwlock_t * rwlock)
+       rwl->nExclusiveAccessCount++;
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+diff --git a/pthread_rwlockattr_destroy.c b/pthread_rwlockattr_destroy.c
+index 4587329..ce34908 100644
+--- a/pthread_rwlockattr_destroy.c
++++ b/pthread_rwlockattr_destroy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlockattr_destroy.c
+  *
+@@ -88,5 +89,6 @@ pthread_rwlockattr_destroy (pthread_rwlockattr_t * attr)
+       free (rwa);
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }				/* pthread_rwlockattr_destroy */
+diff --git a/pthread_rwlockattr_getpshared.c b/pthread_rwlockattr_getpshared.c
+index c3e75ae..1dba3c5 100644
+--- a/pthread_rwlockattr_getpshared.c
++++ b/pthread_rwlockattr_getpshared.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlockattr_getpshared.c
+  *
+@@ -99,6 +100,7 @@ pthread_rwlockattr_getpshared (const pthread_rwlockattr_t * attr,
+       result = EINVAL;
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ 
+ }				/* pthread_rwlockattr_getpshared */
+diff --git a/pthread_rwlockattr_init.c b/pthread_rwlockattr_init.c
+index d1dbaf1..14c097e 100644
+--- a/pthread_rwlockattr_init.c
++++ b/pthread_rwlockattr_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlockattr_init.c
+  *
+@@ -87,5 +88,6 @@ pthread_rwlockattr_init (pthread_rwlockattr_t * attr)
+ 
+   *attr = rwa;
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }				/* pthread_rwlockattr_init */
+diff --git a/pthread_rwlockattr_setpshared.c b/pthread_rwlockattr_setpshared.c
+index 58c3f76..184d515 100644
+--- a/pthread_rwlockattr_setpshared.c
++++ b/pthread_rwlockattr_setpshared.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_rwlockattr_setpshared.c
+  *
+@@ -122,6 +123,7 @@ pthread_rwlockattr_setpshared (pthread_rwlockattr_t * attr, int pshared)
+       result = EINVAL;
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ 
+ }				/* pthread_rwlockattr_setpshared */
+diff --git a/pthread_self.c b/pthread_self.c
+index 20b371f..bca656d 100644
+--- a/pthread_self.c
++++ b/pthread_self.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_self.c
+  *
+@@ -112,6 +113,7 @@ pthread_self (void)
+         }
+     }
+ 
++  __A_VARIABLE = 1;
+   return (self);
+ 
+ }				/* pthread_self */
+diff --git a/pthread_setcancelstate.c b/pthread_setcancelstate.c
+index b2348c8..ddeb1cc 100644
+--- a/pthread_setcancelstate.c
++++ b/pthread_setcancelstate.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_setcancelstate.c
+  *
+@@ -92,6 +93,7 @@ pthread_setcancelstate (int state, int *oldstate)
+   if (sp == NULL
+       || (state != PTHREAD_CANCEL_ENABLE && state != PTHREAD_CANCEL_DISABLE))
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -124,6 +126,7 @@ pthread_setcancelstate (int state, int *oldstate)
+ 
+   (void) pthread_mutex_unlock (&sp->cancelLock);
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ 
+ }				/* pthread_setcancelstate */
+diff --git a/pthread_setcanceltype.c b/pthread_setcanceltype.c
+index 21a273a..fd27c9f 100644
+--- a/pthread_setcanceltype.c
++++ b/pthread_setcanceltype.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_setcanceltype.c
+  *
+diff --git a/pthread_setconcurrency.c b/pthread_setconcurrency.c
+index a86e0cf..8698a45 100644
+--- a/pthread_setconcurrency.c
++++ b/pthread_setconcurrency.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_setconcurrency.c
+  *
+diff --git a/pthread_setschedparam.c b/pthread_setschedparam.c
+index 64937f0..30ca1f4 100644
+--- a/pthread_setschedparam.c
++++ b/pthread_setschedparam.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * sched_setschedparam.c
+  *
+@@ -54,21 +55,25 @@ pthread_setschedparam (pthread_t thread, int policy,
+   result = pthread_kill (thread, 0);
+   if (0 != result)
+     {
++      __A_VARIABLE = 1;
+       return result;
+     }
+ 
+   /* Validate the scheduling policy. */
+   if (policy < SCHED_MIN || policy > SCHED_MAX)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+   /* Ensure the policy is SCHED_OTHER. */
+   if (policy != SCHED_OTHER)
+     {
++      __A_VARIABLE = 1;
+       return ENOTSUP;
+     }
+ 
++  __A_VARIABLE = 1;
+   return (pte_setthreadpriority (thread, policy, param->sched_priority));
+ }
+ 
+@@ -86,6 +91,7 @@ pte_setthreadpriority (pthread_t thread, int policy, int priority)
+   if (prio < sched_get_priority_min (policy) ||
+       prio > sched_get_priority_max (policy))
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -111,5 +117,6 @@ pte_setthreadpriority (pthread_t thread, int policy, int priority)
+       (void) pthread_mutex_unlock (&tp->threadLock);
+     }
+ 
++  __A_VARIABLE = 1;
+   return result;
+ }
+diff --git a/pthread_setspecific.c b/pthread_setspecific.c
+index 62928a3..f35a4b9 100644
+--- a/pthread_setspecific.c
++++ b/pthread_setspecific.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_setspecific.c
+  *
+diff --git a/pthread_spin_destroy.c b/pthread_spin_destroy.c
+index 99c2cd3..e796068 100644
+--- a/pthread_spin_destroy.c
++++ b/pthread_spin_destroy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_spin_destroy.c
+  *
+@@ -54,6 +55,7 @@ pthread_spin_destroy (pthread_spinlock_t * lock)
+ 
+   if (lock == NULL || *lock == NULL)
+     {
++      __A_VARIABLE = 1;
+       return EINVAL;
+     }
+ 
+@@ -116,5 +118,6 @@ pthread_spin_destroy (pthread_spinlock_t * lock)
+ 
+     }
+ 
++  __A_VARIABLE = 1;
+   return (result);
+ }
+diff --git a/pthread_spin_init.c b/pthread_spin_init.c
+index ff41414..a6f24f9 100644
+--- a/pthread_spin_init.c
++++ b/pthread_spin_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_spin_init.c
+  *
+diff --git a/pthread_spin_lock.c b/pthread_spin_lock.c
+index 809c2a9..9c31176 100644
+--- a/pthread_spin_lock.c
++++ b/pthread_spin_lock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_spin_lock.c
+  *
+diff --git a/pthread_spin_trylock.c b/pthread_spin_trylock.c
+index 1b61615..484c0d5 100644
+--- a/pthread_spin_trylock.c
++++ b/pthread_spin_trylock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_spin_trylock.c
+  *
+@@ -52,6 +53,7 @@ pthread_spin_trylock (pthread_spinlock_t * lock)
+ 
+   if (NULL == lock || NULL == *lock)
+     {
++      __A_VARIABLE = 1;
+       return (EINVAL);
+     }
+ 
+@@ -61,6 +63,7 @@ pthread_spin_trylock (pthread_spinlock_t * lock)
+ 
+       if ((result = pte_spinlock_check_need_init (lock)) != 0)
+         {
++          __A_VARIABLE = 1;
+           return (result);
+         }
+     }
+@@ -73,12 +76,16 @@ pthread_spin_trylock (pthread_spinlock_t * lock)
+                                        PTE_SPIN_UNLOCKED))
+     {
+     case PTE_SPIN_UNLOCKED:
++      __A_VARIABLE = 1;
+       return 0;
+     case PTE_SPIN_LOCKED:
++      __A_VARIABLE = 1;
+       return EBUSY;
+     case PTE_SPIN_USE_MUTEX:
++      __A_VARIABLE = 1;
+       return pthread_mutex_trylock (&(s->u.mutex));
+     }
+ 
++  __A_VARIABLE = 1;
+   return EINVAL;
+ }
+diff --git a/pthread_spin_unlock.c b/pthread_spin_unlock.c
+index e99d606..f9bdbf6 100644
+--- a/pthread_spin_unlock.c
++++ b/pthread_spin_unlock.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_spin_unlock.c
+  *
+@@ -51,6 +52,7 @@ pthread_spin_unlock (pthread_spinlock_t * lock)
+ 
+   if (NULL == lock || NULL == *lock)
+     {
++      __A_VARIABLE = 1;
+       return (EINVAL);
+     }
+ 
+@@ -58,6 +60,7 @@ pthread_spin_unlock (pthread_spinlock_t * lock)
+ 
+   if (s == PTHREAD_SPINLOCK_INITIALIZER)
+     {
++      __A_VARIABLE = 1;
+       return EPERM;
+     }
+ 
+@@ -67,12 +70,16 @@ pthread_spin_unlock (pthread_spinlock_t * lock)
+                                        PTE_SPIN_LOCKED))
+     {
+     case PTE_SPIN_LOCKED:
++      __A_VARIABLE = 1;
+       return 0;
+     case PTE_SPIN_UNLOCKED:
++      __A_VARIABLE = 1;
+       return EPERM;
+     case PTE_SPIN_USE_MUTEX:
++      __A_VARIABLE = 1;
+       return pthread_mutex_unlock (&(s->u.mutex));
+     }
+ 
++  __A_VARIABLE = 1;
+   return EINVAL;
+ }
+diff --git a/pthread_terminate.c b/pthread_terminate.c
+index a589612..06ff00d 100644
+--- a/pthread_terminate.c
++++ b/pthread_terminate.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_terminate.c
+  *
+@@ -89,4 +90,5 @@ void pthread_terminate(void)
+       pte_processInitialized = PTE_FALSE;
+     }
+ 
++    __A_VARIABLE = 1;
+ }
+diff --git a/pthread_testcancel.c b/pthread_testcancel.c
+index d63d856..637f3df 100644
+--- a/pthread_testcancel.c
++++ b/pthread_testcancel.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_testcancel.c
+  *
+@@ -79,6 +80,7 @@ pthread_testcancel (void)
+ 
+   if (sp == NULL)
+     {
++      __A_VARIABLE = 1;
+       return;
+     }
+ 
+@@ -89,6 +91,7 @@ pthread_testcancel (void)
+    */
+   if (sp->state != PThreadStateCancelPending)
+     {
++      __A_VARIABLE = 1;
+       return;
+     }
+ 
+@@ -104,4 +107,5 @@ pthread_testcancel (void)
+     }
+ 
+   (void) pthread_mutex_unlock (&sp->cancelLock);
++  __A_VARIABLE = 1;
+ }				/* pthread_testcancel */
+diff --git a/pthread_timechange_handler_np.c b/pthread_timechange_handler_np.c
+index c523c1f..970a5ab 100644
+--- a/pthread_timechange_handler_np.c
++++ b/pthread_timechange_handler_np.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * pthread_timechange_handler_np.c
+  *
+@@ -110,5 +111,6 @@ pthread_timechange_handler_np (void *arg)
+ 
+   pte_osMutexUnlock(pte_cond_list_lock);
+ 
++  __A_VARIABLE = 1;
+   return (void *) (result != 0 ? EAGAIN : 0);
+ }
+diff --git a/sched_get_priority_max.c b/sched_get_priority_max.c
+index 74357b7..dd5ffff 100644
+--- a/sched_get_priority_max.c
++++ b/sched_get_priority_max.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * sched_get_priority_max.c
+  *
+@@ -47,5 +48,6 @@
+ int
+ sched_get_priority_max (int policy)
+ {
++  __A_VARIABLE = 1;
+   return pte_osThreadGetMaxPriority();
+ }
+diff --git a/sched_get_priority_min.c b/sched_get_priority_min.c
+index 31a7408..f05e37b 100644
+--- a/sched_get_priority_min.c
++++ b/sched_get_priority_min.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * sched_get_priority_min.c
+  *
+@@ -47,5 +48,6 @@
+ int
+ sched_get_priority_min (int policy)
+ {
++  __A_VARIABLE = 1;
+   return pte_osThreadGetMinPriority();
+ }
+diff --git a/sched_setscheduler.c b/sched_setscheduler.c
+index e9bf335..cae5dda 100644
+--- a/sched_setscheduler.c
++++ b/sched_setscheduler.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * sched_setscheduler.c
+  *
+@@ -48,5 +49,6 @@ int
+ sched_setscheduler (pid_t pid, int policy)
+ {
+   errno = EPERM;
++  __A_VARIABLE = 1;
+   return -1;
+ }
+diff --git a/sched_yield.c b/sched_yield.c
+index 61301f3..2150f9f 100644
+--- a/sched_yield.c
++++ b/sched_yield.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * sched_yield.c
+  *
+@@ -86,5 +87,6 @@ sched_yield (void)
+   pte_osYield ();
+ #endif
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/sem_close.c b/sem_close.c
+index d13f1a5..7916ebd 100644
+--- a/sem_close.c
++++ b/sem_close.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * -------------------------------------------------------------
+  *
+@@ -56,5 +57,6 @@ int
+ sem_close (sem_t * sem)
+ {
+   errno = ENOSYS;
++  __A_VARIABLE = 1;
+   return -1;
+ }				/* sem_close */
+diff --git a/sem_destroy.c b/sem_destroy.c
+index 633d3fe..09f0448 100644
+--- a/sem_destroy.c
++++ b/sem_destroy.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * -------------------------------------------------------------
+  *
+@@ -146,11 +147,13 @@ sem_destroy (sem_t * sem)
+   if (result != 0)
+     {
+       errno = result;
++      __A_VARIABLE = 1;
+       return -1;
+     }
+ 
+   free (s);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ 
+ }				/* sem_destroy */
+diff --git a/sem_getvalue.c b/sem_getvalue.c
+index 3e650f4..35dfb83 100644
+--- a/sem_getvalue.c
++++ b/sem_getvalue.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * -------------------------------------------------------------
+  *
+diff --git a/sem_init.c b/sem_init.c
+index e497098..2c4e711 100644
+--- a/sem_init.c
++++ b/sem_init.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * -------------------------------------------------------------
+  *
+@@ -143,11 +144,13 @@ sem_init (sem_t * sem, int pshared, unsigned int value)
+   if (result != 0)
+     {
+       errno = result;
++      __A_VARIABLE = 1;
+       return -1;
+     }
+ 
+   *sem = s;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ 
+ }				/* sem_init */
+diff --git a/sem_open.c b/sem_open.c
+index 14a9bf3..bc19643 100644
+--- a/sem_open.c
++++ b/sem_open.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * -------------------------------------------------------------
+  *
+@@ -56,5 +57,6 @@ int
+ sem_open (const char *name, int oflag, mode_t mode, unsigned int value)
+ {
+   errno = ENOSYS;
++  __A_VARIABLE = 1;
+   return -1;
+ }				/* sem_open */
+diff --git a/sem_post.c b/sem_post.c
+index 18985e9..ba6efe4 100644
+--- a/sem_post.c
++++ b/sem_post.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * -------------------------------------------------------------
+  *
+diff --git a/sem_post_multiple.c b/sem_post_multiple.c
+index b7e6d21..b75c117 100644
+--- a/sem_post_multiple.c
++++ b/sem_post_multiple.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * -------------------------------------------------------------
+  *
+diff --git a/sem_timedwait.c b/sem_timedwait.c
+index 0601c57..4f1696e 100644
+--- a/sem_timedwait.c
++++ b/sem_timedwait.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * -------------------------------------------------------------
+  *
+@@ -95,6 +96,7 @@ pte_sem_timedwait_cleanup (void * args)
+         }
+       (void) pthread_mutex_unlock (&s->lock);
+     }
++    __A_VARIABLE = 1;
+ }
+ 
+ 
+diff --git a/sem_trywait.c b/sem_trywait.c
+index bc7eeed..7ef2b5e 100644
+--- a/sem_trywait.c
++++ b/sem_trywait.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * -------------------------------------------------------------
+  *
+diff --git a/sem_unlink.c b/sem_unlink.c
+index 130b478..d6ed868 100644
+--- a/sem_unlink.c
++++ b/sem_unlink.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * -------------------------------------------------------------
+  *
+@@ -56,5 +57,6 @@ int
+ sem_unlink (const char *name)
+ {
+   errno = ENOSYS;
++  __A_VARIABLE = 1;
+   return -1;
+ }				/* sem_unlink */
+diff --git a/sem_wait.c b/sem_wait.c
+index 4fcc8de..5137458 100644
+--- a/sem_wait.c
++++ b/sem_wait.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * -------------------------------------------------------------
+  *
+@@ -83,6 +84,7 @@ pte_sem_wait_cleanup(void * sem)
+         }
+       (void) pthread_mutex_unlock (&s->lock);
+     }
++    __A_VARIABLE = 1;
+ }
+ 
+ 
+diff --git a/tests/barrier1.c b/tests/barrier1.c
+index 0538d06..91381fc 100644
+--- a/tests/barrier1.c
++++ b/tests/barrier1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * barrier1.c
+  *
+@@ -59,5 +60,6 @@ int pthread_test_barrier1()
+ 
+   assert(barrier == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/barrier2.c b/tests/barrier2.c
+index 86e7346..6a14474 100644
+--- a/tests/barrier2.c
++++ b/tests/barrier2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * barrier2.c
+  *
+@@ -56,5 +57,6 @@ int pthread_test_barrier2()
+ 
+   assert(pthread_barrier_destroy(&barrier) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/barrier3.c b/tests/barrier3.c
+index 45fc1cf..4beac08 100644
+--- a/tests/barrier3.c
++++ b/tests/barrier3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * barrier3.c
+  *
+@@ -51,6 +52,7 @@ static long result = 1;
+ 
+ static void * func(void * arg)
+ {
++  __A_VARIABLE = 1;
+   return (void *) pthread_barrier_wait(&barrier);
+ }
+ 
+@@ -73,5 +75,6 @@ int pthread_test_barrier3()
+   assert(pthread_barrier_destroy(&barrier) == 0);
+   assert(pthread_barrierattr_destroy(&ba) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/barrier4.c b/tests/barrier4.c
+index 43fc983..b8cd198 100644
+--- a/tests/barrier4.c
++++ b/tests/barrier4.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * barrier4.c
+  *
+@@ -115,5 +116,6 @@ int pthread_test_barrier4()
+ 
+   assert(pthread_mutex_destroy(&mx) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/barrier5.c b/tests/barrier5.c
+index 4055c51..b816ada 100644
+--- a/tests/barrier5.c
++++ b/tests/barrier5.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * barrier5.c
+  *
+@@ -129,5 +130,6 @@ int pthread_test_barrier5()
+ 
+   assert(pthread_mutex_destroy(&mx) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/benchlib.c b/tests/benchlib.c
+index 469a8b5..bd16439 100644
+--- a/tests/benchlib.c
++++ b/tests/benchlib.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  *
+  *
+@@ -49,6 +50,7 @@
+ void
+ dummy_call(int * a)
+ {
++	__A_VARIABLE = 1;
+ }
+ 
+ void
+@@ -59,6 +61,7 @@ interlocked_inc_with_conditionals(int * a)
+       {
+         *a = 0;
+       }
++  __A_VARIABLE = 1;
+ }
+ 
+ void
+@@ -69,6 +72,7 @@ interlocked_dec_with_conditionals(int * a)
+       {
+         *a = 0;
+       }
++  __A_VARIABLE = 1;
+ }
+ 
+ 
+diff --git a/tests/benchtest1.c b/tests/benchtest1.c
+index cc89b55..6252d78 100644
+--- a/tests/benchtest1.c
++++ b/tests/benchtest1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * benchtest1.c
+  *
+@@ -101,6 +102,7 @@ runTest (char * testNameString, int mType)
+           testNameString,
+           durationMilliSecs,
+           (float) durationMilliSecs * 1E3 / ITERATIONS);
++  __A_VARIABLE = 1;
+ }
+ 
+ 
+@@ -222,5 +224,6 @@ int pthread_test_bench1()
+   pthread_mutexattr_destroy(&ma);
+ 
+   one = i; /* Dummy assignment to avoid 'variable unused' warning */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/benchtest2.c b/tests/benchtest2.c
+index 7352029..e55a3c1 100644
+--- a/tests/benchtest2.c
++++ b/tests/benchtest2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * benchtest1.c
+  *
+@@ -92,6 +93,7 @@ overheadThread(void * arg)
+     }
+   while (running);
+ 
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -109,6 +111,7 @@ workerThread(void * arg)
+     }
+   while (running);
+ 
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -196,5 +199,6 @@ int pthread_test_bench2()
+ 
+   pthread_mutexattr_destroy(&ma);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/benchtest3.c b/tests/benchtest3.c
+index 79509f9..4ede302 100644
+--- a/tests/benchtest3.c
++++ b/tests/benchtest3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * benchtest3.c
+  *
+@@ -109,6 +110,7 @@ runTest (char * testNameString, int mType)
+           testNameString,
+           durationMilliSecs,
+           (float) durationMilliSecs * 1E3 / ITERATIONS);
++  __A_VARIABLE = 1;
+ }
+ 
+ 
+@@ -160,5 +162,6 @@ int pthread_test_bench3()
+ 
+   pthread_mutexattr_destroy(&ma);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/benchtest4.c b/tests/benchtest4.c
+index c711378..0961a63 100644
+--- a/tests/benchtest4.c
++++ b/tests/benchtest4.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * benchtest4.c
+  *
+@@ -146,5 +147,6 @@ int pthread_test_bench4()
+ 
+   pthread_mutexattr_destroy(&ma);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/benchtest5.c b/tests/benchtest5.c
+index 639667c..5c229f5 100644
+--- a/tests/benchtest5.c
++++ b/tests/benchtest5.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * benchtest5.c
+  *
+@@ -89,6 +90,7 @@ reportTest (char * testNameString)
+           testNameString,
+           durationMilliSecs,
+           (float) durationMilliSecs * 1E3 / ITERATIONS);
++  __A_VARIABLE = 1;
+ }
+ 
+ 
+diff --git a/tests/cancel1.c b/tests/cancel1.c
+index 311904b..ffa48e6 100644
+--- a/tests/cancel1.c
++++ b/tests/cancel1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: cancel1.c
+  *
+@@ -132,6 +133,7 @@ mythread(void * arg)
+ 
+   }
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -184,5 +186,6 @@ int pthread_test_cancel1()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/cancel2.c b/tests/cancel2.c
+index 3635933..ac821b7 100644
+--- a/tests/cancel2.c
++++ b/tests/cancel2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: cancel2.c
+  *
+@@ -229,6 +230,7 @@ int pthread_test_cancel2()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/cancel3.c b/tests/cancel3.c
+index f9f563b..3cfcc3d 100644
+--- a/tests/cancel3.c
++++ b/tests/cancel3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: cancel3.c
+  *
+@@ -124,6 +125,7 @@ mythread (void *arg)
+   for (bag->count = 0; bag->count < 100; bag->count++)
+     pte_osThreadSleep (100);
+ 
++  __A_VARIABLE = 1;
+   return (void *) result;
+ }
+ 
+@@ -204,6 +206,7 @@ int pthread_test_cancel3()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -213,6 +216,7 @@ int pthread_test_cancel3()
+ {
+   printf("Test not run - async cancellation not supported\n");
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/cancel4.c b/tests/cancel4.c
+index 3853cd8..21197d7 100644
+--- a/tests/cancel4.c
++++ b/tests/cancel4.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: cancel4.c
+  *
+@@ -126,6 +127,7 @@ mythread(void * arg)
+   for (bag->count = 0; bag->count < 20; bag->count++)
+     pte_osThreadSleep(100);
+ 
++  __A_VARIABLE = 1;
+   return (void *) result;
+ }
+ 
+@@ -198,5 +200,6 @@ int pthread_test_cancel4()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/cancel5.c b/tests/cancel5.c
+index d50bf3f..b5dd08a 100644
+--- a/tests/cancel5.c
++++ b/tests/cancel5.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: cancel5.c
+  *
+@@ -124,6 +125,7 @@ mythread (void *arg)
+   for (bag->count = 0; bag->count < 100; bag->count++)
+     pte_osThreadSleep (100);
+ 
++  __A_VARIABLE = 1;
+   return (void *) result;
+ }
+ 
+@@ -195,6 +197,7 @@ int pthread_test_cancel5()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -204,6 +207,7 @@ int pthread_test_cancel5()
+ {
+   printf("Test not run - async cancellation not supported\n");
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/cancel6a.c b/tests/cancel6a.c
+index e6d44bf..3ef9e80 100644
+--- a/tests/cancel6a.c
++++ b/tests/cancel6a.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: cancel6a.c
+  *
+@@ -115,6 +116,7 @@ mythread(void * arg)
+   for (bag->count = 0; bag->count < 100; bag->count++)
+     pte_osThreadSleep(100);
+ 
++  __A_VARIABLE = 1;
+   return (void *) result;
+ }
+ 
+@@ -188,6 +190,7 @@ int pthread_test_cancel6a()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -197,6 +200,7 @@ int pthread_test_cancel6a()
+ {
+   printf("Test not run - async cancellation not supported\n");
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/cancel6d.c b/tests/cancel6d.c
+index 27f68f9..b6d6010 100644
+--- a/tests/cancel6d.c
++++ b/tests/cancel6d.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: cancel6d.c
+  *
+@@ -117,6 +118,7 @@ mythread(void * arg)
+       pthread_testcancel();
+     }
+ 
++  __A_VARIABLE = 1;
+   return (void *) result;
+ }
+ 
+@@ -185,5 +187,6 @@ int pthread_test_cancel6d()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/cleanup0.c b/tests/cleanup0.c
+index a641989..a126b20 100644
+--- a/tests/cleanup0.c
++++ b/tests/cleanup0.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: cleanup1.c
+  *
+@@ -117,6 +118,7 @@ increment_pop_count(void * arg)
+   pte_osMutexLock(sI->cs);
+   sI->i++;
+   pte_osMutexUnlock(sI->cs);
++  __A_VARIABLE = 1;
+ }
+ 
+ static void *
+@@ -141,6 +143,7 @@ mythread(void * arg)
+ 
+   pthread_cleanup_pop(1);
+ 
++  __A_VARIABLE = 1;
+   return (void *) result;
+ }
+ 
+@@ -209,6 +212,7 @@ int pthread_test_cleanup0()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -218,6 +222,7 @@ int pthread_test_cleanup0()
+ {
+   printf("Test not run - async cancellation not supported\n");
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/cleanup1.c b/tests/cleanup1.c
+index 68bc6ab..21e68d0 100644
+--- a/tests/cleanup1.c
++++ b/tests/cleanup1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: cleanup1.c
+  *
+@@ -121,6 +122,7 @@ increment_pop_count(void * arg)
+ 
+   pte_osMutexUnlock(sI->cs);
+ 
++  __A_VARIABLE = 1;
+ }
+ 
+ void *
+@@ -151,6 +153,7 @@ mythread(void * arg)
+ 
+   pthread_cleanup_pop(0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) result;
+ }
+ 
+@@ -224,6 +227,7 @@ int pthread_test_cleanup1()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -233,6 +237,7 @@ int pthread_test_cleanup1()
+ {
+   printf("Test not run - async cancellation not supported\n");
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/cleanup2.c b/tests/cleanup2.c
+index 5df8346..b2e8519 100644
+--- a/tests/cleanup2.c
++++ b/tests/cleanup2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: cleanup2.c
+  *
+@@ -118,6 +119,7 @@ increment_pop_count(void * arg)
+   pte_osMutexLock(sI->cs);
+   sI->i++;
+   pte_osMutexUnlock(sI->cs);
++  __A_VARIABLE = 1;
+ }
+ 
+ static void *
+@@ -136,6 +138,7 @@ mythread(void * arg)
+ 
+   pthread_cleanup_pop(1);
+ 
++  __A_VARIABLE = 1;
+   return (void *) result;
+ }
+ 
+@@ -199,6 +202,7 @@ int pthread_test_cleanup2()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -208,6 +212,7 @@ int pthread_test_cleanup2()
+ {
+   printf("Test not run - async cancellation not supported\n");
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/cleanup3.c b/tests/cleanup3.c
+index 1b83d71..a491c56 100644
+--- a/tests/cleanup3.c
++++ b/tests/cleanup3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: cleanup3.c
+  *
+@@ -122,6 +123,7 @@ increment_pop_count(void * arg)
+ 
+   pte_osMutexUnlock(sI->cs);
+ 
++  __A_VARIABLE = 1;
+ }
+ 
+ static void *
+@@ -147,6 +149,7 @@ mythread(void * arg)
+ 
+   pthread_cleanup_pop(0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) result;
+ }
+ 
+@@ -210,6 +213,7 @@ int pthread_test_cleanup3()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -220,6 +224,7 @@ int pthread_test_cleanup3()
+ {
+   printf("Test not run - async cancellation not supported\n");
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/condvar1.c b/tests/condvar1.c
+index 37eb375..59f54c1 100644
+--- a/tests/condvar1.c
++++ b/tests/condvar1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar1.c
+  *
+@@ -100,5 +101,6 @@ int pthread_test_condvar1()
+ 
+   assert(cv == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/condvar1_1.c b/tests/condvar1_1.c
+index 11eace6..c96ee7e 100644
+--- a/tests/condvar1_1.c
++++ b/tests/condvar1_1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar1_1.c
+  *
+@@ -118,5 +119,6 @@ int pthread_test_condvar1_1()
+     }
+   while (j > 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/condvar1_2.c b/tests/condvar1_2.c
+index 26f63f7..2d39e8d 100644
+--- a/tests/condvar1_2.c
++++ b/tests/condvar1_2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar1_2.c
+  *
+@@ -126,5 +127,6 @@ int pthread_test_condvar1_2()
+       assert (result == 0);
+     }
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/condvar2.c b/tests/condvar2.c
+index 15c0bf5..7e33cb6 100644
+--- a/tests/condvar2.c
++++ b/tests/condvar2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar2.c
+  *
+@@ -125,5 +126,6 @@ int pthread_test_condvar2()
+ 
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/condvar2_1.c b/tests/condvar2_1.c
+index 003ae87..616da12 100644
+--- a/tests/condvar2_1.c
++++ b/tests/condvar2_1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar2_1.c
+  *
+@@ -105,6 +106,7 @@ mythread(void * arg)
+ 
+   assert(pthread_mutex_unlock(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return arg;
+ }
+ 
+@@ -150,5 +152,6 @@ int pthread_test_condvar2_1()
+ 
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/condvar3.c b/tests/condvar3.c
+index ca3f4e4..c17b68e 100644
+--- a/tests/condvar3.c
++++ b/tests/condvar3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar3.c
+  *
+@@ -104,6 +105,7 @@ mythread(void * arg)
+ 
+   assert(pthread_cond_signal(&cv) == 0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 0;
+ }
+ 
+@@ -148,5 +150,6 @@ int pthread_test_condvar3()
+ 
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/condvar3_1.c b/tests/condvar3_1.c
+index aedcba9..b73ca41 100644
+--- a/tests/condvar3_1.c
++++ b/tests/condvar3_1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar3_1.c
+  *
+@@ -137,6 +138,7 @@ mythread(void * arg)
+     }
+   assert(pthread_mutex_unlock(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return arg;
+ }
+ 
+@@ -202,5 +204,6 @@ int pthread_test_condvar3_1()
+   assert(pthread_mutex_destroy(&mutex1) == 0);
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/condvar3_2.c b/tests/condvar3_2.c
+index 1fd181e..37cfb25 100644
+--- a/tests/condvar3_2.c
++++ b/tests/condvar3_2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar3_2.c
+  *
+@@ -131,6 +132,7 @@ mythread(void * arg)
+     }
+ 
+ 
++  __A_VARIABLE = 1;
+   return arg;
+ }
+ 
+@@ -197,5 +199,6 @@ int pthread_test_condvar3_2()
+ 
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/condvar3_3.c b/tests/condvar3_3.c
+index bd67c8a..650a36d 100644
+--- a/tests/condvar3_3.c
++++ b/tests/condvar3_3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar3_3.c
+  *
+@@ -141,5 +142,6 @@ int pthread_test_condvar3_3()
+   assert(pthread_cond_destroy(&cnd) == 0);
+   assert(pthread_mutex_destroy(&mtx) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/condvar4.c b/tests/condvar4.c
+index da56a17..c2e160c 100644
+--- a/tests/condvar4.c
++++ b/tests/condvar4.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar4.c
+  *
+@@ -112,6 +113,7 @@ mythread(void * arg)
+ 
+   assert(pthread_cond_signal(&cvthing.notbusy) == 0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 0;
+ }
+ 
+@@ -177,5 +179,6 @@ int pthread_test_condvar4()
+ 
+   assert(cvthing.notbusy == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/condvar5.c b/tests/condvar5.c
+index 5545d09..c106b3b 100644
+--- a/tests/condvar5.c
++++ b/tests/condvar5.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar5.c
+  *
+@@ -112,6 +113,7 @@ mythread(void * arg)
+ 
+   assert(pthread_cond_broadcast(&cvthing.notbusy) == 0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 0;
+ }
+ 
+@@ -178,5 +180,6 @@ int pthread_test_condvar5()
+ 
+   assert(cvthing.notbusy == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/condvar6.c b/tests/condvar6.c
+index 4f102e1..0c5d2fc 100644
+--- a/tests/condvar6.c
++++ b/tests/condvar6.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ 
+ /*
+  * File: condvar6.c
+@@ -159,6 +160,7 @@ mythread(void * arg)
+ 
+   assert(pthread_mutex_unlock(&cvthing.lock) == 0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 0;
+ }
+ 
+@@ -254,6 +256,7 @@ int pthread_test_condvar6()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/condvar7.c b/tests/condvar7.c
+index 157e584..35c594f 100644
+--- a/tests/condvar7.c
++++ b/tests/condvar7.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar7.c
+  *
+@@ -153,6 +154,7 @@ mythread(void * arg)
+ 
+   assert(pthread_mutex_unlock(&cvthing.lock) == 0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 0;
+ }
+ 
+@@ -259,5 +261,6 @@ int pthread_test_condvar7()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/condvar8.c b/tests/condvar8.c
+index 2f242ca..1a1ccd4 100644
+--- a/tests/condvar8.c
++++ b/tests/condvar8.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar8.c
+  *
+@@ -151,6 +152,7 @@ mythread(void * arg)
+ 
+   assert(pthread_mutex_unlock(&cvthing.lock) == 0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 0;
+ }
+ 
+@@ -261,5 +263,6 @@ int pthread_test_condvar8()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/condvar9.c b/tests/condvar9.c
+index f233410..07b7462 100644
+--- a/tests/condvar9.c
++++ b/tests/condvar9.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: condvar9.c
+  *
+@@ -158,6 +159,7 @@ mythread(void * arg)
+ 
+   assert(pthread_mutex_unlock(&cvthing.lock) == 0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 0;
+ }
+ 
+@@ -267,5 +269,6 @@ int pthread_test_condvar9()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/count1.c b/tests/count1.c
+index aa88d50..c18656b 100644
+--- a/tests/count1.c
++++ b/tests/count1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * count1.c
+  *
+@@ -62,6 +63,7 @@ myfunc(void *arg)
+   pthread_mutex_unlock(&lock);
+ 
+   pte_osThreadSleep(1000);
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -101,5 +103,6 @@ int pthread_test_count1()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/create1.c b/tests/create1.c
+index 382570f..2f16a06 100644
+--- a/tests/create1.c
++++ b/tests/create1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * create1.c
+  *
+@@ -54,6 +55,7 @@ static int washere = 0;
+ static void * func(void * arg)
+ {
+   washere = 1;
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -73,5 +75,6 @@ int pthread_test_create1()
+ 
+   assert(pthread_join(t,NULL) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/create2.c b/tests/create2.c
+index 03342a0..8ee775b 100644
+--- a/tests/create2.c
++++ b/tests/create2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: create2.c
+  *
+@@ -90,6 +91,7 @@ static void * func(void * arg)
+ {
+ //  washere = 1;
+   washere++;
++  __A_VARIABLE = 1;
+   return (void *) 0;
+ }
+ 
+@@ -113,5 +115,6 @@ int pthread_test_create2()
+       assert(washere == 1);
+     }
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/create3.c b/tests/create3.c
+index 39c2eca..c12a670 100644
+--- a/tests/create3.c
++++ b/tests/create3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: create3.c
+  *
+@@ -95,6 +96,7 @@ enum
+ static void *
+ threadFunc(void * arg)
+ {
++  __A_VARIABLE = 1;
+   return (void *) 0;
+ }
+ 
+@@ -122,6 +124,7 @@ int pthread_test_create3()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/delay1.c b/tests/delay1.c
+index f5e3b04..746a99b 100644
+--- a/tests/delay1.c
++++ b/tests/delay1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * delay1.c
+  *
+@@ -56,6 +57,7 @@ int pthread_test_delay1()
+ 
+   assert(pthread_delay_np(&interval) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/delay2.c b/tests/delay2.c
+index 66edef7..7c7f4b9 100644
+--- a/tests/delay2.c
++++ b/tests/delay2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * delay1.c
+  *
+@@ -61,6 +62,7 @@ func(void * arg)
+   assert(pthread_delay_np(&interval) == 0);
+   pthread_cleanup_pop(1);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 1;
+ }
+ 
+@@ -83,6 +85,7 @@ int pthread_test_delay2()
+ 
+   assert(pthread_mutex_destroy(&mx) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/detach1.c b/tests/detach1.c
+index 89d3d9f..ae8de02 100644
+--- a/tests/detach1.c
++++ b/tests/detach1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * Test for pthread_detach().
+  *
+@@ -63,6 +64,7 @@ func(void * arg)
+   exit(1);
+ 
+   /* Just to avoid compiler warnings */
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -99,5 +101,6 @@ int pthread_test_detach1()
+     }
+ 
+   /* Success. */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/equal1.c b/tests/equal1.c
+index f8211d0..383bc8e 100644
+--- a/tests/equal1.c
++++ b/tests/equal1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * Test for pthread_equal.
+  *
+@@ -47,6 +48,7 @@
+ static void * func(void * arg)
+ {
+   pte_osThreadSleep(2000);
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -66,5 +68,6 @@ int pthread_test_equal1()
+   assert(pthread_join(t2,NULL) == 0);
+ 
+   /* Success. */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/errno1.c b/tests/errno1.c
+index f9dc948..f5de5f0 100644
+--- a/tests/errno1.c
++++ b/tests/errno1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: errno1.c
+  *
+@@ -120,6 +121,7 @@ mythread(void * arg)
+ 
+   pte_osThreadSleep(1000);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -175,5 +177,6 @@ int pthread_test_errno1()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/exception1.c b/tests/exception1.c
+index 409fd22..33945fa 100644
+--- a/tests/exception1.c
++++ b/tests/exception1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: exception1.c
+  *
+@@ -206,6 +207,7 @@ pthread_test_exception1()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -215,6 +217,7 @@ int
+ pthread_test_exception1()
+ {
+   printf("Test N/A for this compiler environment.\n");
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/exception2.c b/tests/exception2.c
+index cb4557b..b7ea1f6 100644
+--- a/tests/exception2.c
++++ b/tests/exception2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: exception2.c
+  *
+@@ -97,6 +98,7 @@ exceptionedThread(void * arg)
+ 
+   throw dummy;
+ 
++  __A_VARIABLE = 1;
+   return (void *) 100;
+ }
+ 
+@@ -133,6 +135,7 @@ pthread_test_exception2()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -144,6 +147,7 @@ int
+ pthread_test_exception2()
+ {
+   printf("Test N/A for this compiler environment.\n");
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/exception3.c b/tests/exception3.c
+index 785190f..1f14878 100644
+--- a/tests/exception3.c
++++ b/tests/exception3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: exception3.c
+  *
+@@ -103,6 +104,7 @@ terminateFunction ()
+   assert(pthread_mutex_unlock(&caughtLock) == 0);
+ 
+   pthread_exit((void *) 0);
++  __A_VARIABLE = 1;
+ }
+ 
+ static void *
+@@ -114,6 +116,7 @@ exceptionedThread(void * arg)
+ 
+   throw dummy;
+ 
++  __A_VARIABLE = 1;
+   return (void *) 0;
+ }
+ 
+@@ -144,6 +147,7 @@ pthread_test_exception3()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -155,6 +159,7 @@ int
+ pthread_test_exception3()
+ {
+   printf("Test N/A for this compiler environment.\n");
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/exit1.c b/tests/exit1.c
+index 80c04b3..9d4ca49 100644
+--- a/tests/exit1.c
++++ b/tests/exit1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * Test for pthread_exit().
+  *
+@@ -51,6 +52,7 @@ static void * func(void * param)
+   /* Not reached */
+   assert(0);
+ 
++  __A_VARIABLE = 1;
+ }
+ 
+ int pthread_test_exit1()
+@@ -65,5 +67,6 @@ int pthread_test_exit1()
+ 
+   assert(pthread_join(id,NULL) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/exit2.c b/tests/exit2.c
+index 3119c82..7c4c0d7 100644
+--- a/tests/exit2.c
++++ b/tests/exit2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * Test for pthread_exit().
+  *
+@@ -54,6 +55,7 @@ func(void * arg)
+   /* Never reached. */
+   assert(0);
+ 
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -67,5 +69,6 @@ int pthread_test_exit2()
+ 
+   assert(pthread_join(t,NULL) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/exit3.c b/tests/exit3.c
+index bdf2815..5714445 100644
+--- a/tests/exit3.c
++++ b/tests/exit3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * Test for pthread_exit().
+  *
+@@ -52,6 +53,7 @@ func(void * arg)
+   /* Never reached. */
+   assert(0);
+ 
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -76,5 +78,6 @@ int pthread_test_exit3()
+     }
+ 
+   /* Success. */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/exit4.c b/tests/exit4.c
+index 61a4b5e..9cf37f8 100644
+--- a/tests/exit4.c
++++ b/tests/exit4.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: exit4.c
+  *
+@@ -116,6 +117,7 @@ static int osThread(void * arg)
+    */
+   pthread_exit((void *) result);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -196,6 +198,7 @@ int pthread_test_exit4()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/exit5.c b/tests/exit5.c
+index 358962d..e5326e0 100644
+--- a/tests/exit5.c
++++ b/tests/exit5.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: exit5.c
+  *
+@@ -117,6 +118,7 @@ static int osThread(void * arg)
+    */
+   pthread_exit((void *) result);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -202,6 +204,7 @@ int pthread_test_exit5()
+   /*
+    * Success.
+    */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/inherit1.c b/tests/inherit1.c
+index 2fbd25a..ad660e6 100644
+--- a/tests/inherit1.c
++++ b/tests/inherit1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: inherit1.c
+  *
+@@ -92,6 +93,7 @@ static void * func(void * arg)
+ 
+   assert(pthread_getschedparam(pthread_self(), &policy, &param) == 0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) param.sched_priority;
+ }
+ 
+@@ -141,5 +143,6 @@ int pthread_test_inherit1()
+         }
+     }
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/join0.c b/tests/join0.c
+index b0c1aca..7f23cf4 100644
+--- a/tests/join0.c
++++ b/tests/join0.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * Test for pthread_join().
+  *
+@@ -54,6 +55,7 @@ func(void * arg)
+   /* Never reached. */
+   exit(1);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -71,5 +73,6 @@ int pthread_test_join0()
+   assert(result == 123);
+ 
+   /* Success. */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/join1.c b/tests/join1.c
+index 0dd9ad4..f1a9376 100644
+--- a/tests/join1.c
++++ b/tests/join1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * Test for pthread_join().
+  *
+@@ -54,6 +55,7 @@ func(void * arg)
+   pthread_exit(arg);
+ 
+   /* Never reached. */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -79,5 +81,6 @@ int pthread_test_join1()
+     }
+ 
+   /* Success. */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/join2.c b/tests/join2.c
+index 63ff174..21355ea 100644
+--- a/tests/join2.c
++++ b/tests/join2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * Test for pthread_join() returning return value from threads.
+  *
+@@ -48,6 +49,7 @@ static void *
+ func(void * arg)
+ {
+   pte_osThreadSleep(2000);
++  __A_VARIABLE = 1;
+   return arg;
+ }
+ 
+@@ -70,5 +72,6 @@ int pthread_test_join2()
+     }
+ 
+   /* Success. */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/join3.c b/tests/join3.c
+index 947aaff..2c760ad 100644
+--- a/tests/join3.c
++++ b/tests/join3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * Test for pthread_join() returning return value from threads.
+  *
+@@ -48,6 +49,7 @@ static void *
+ func(void * arg)
+ {
+   sched_yield();
++  __A_VARIABLE = 1;
+   return arg;
+ }
+ 
+@@ -76,5 +78,6 @@ int pthread_test_join3()
+     }
+ 
+   /* Success. */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/join4.c b/tests/join4.c
+index add465c..6b1c5cd 100644
+--- a/tests/join4.c
++++ b/tests/join4.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * Test for pthread_join() returning return value from threads.
+  *
+@@ -41,6 +42,7 @@ thr1(void * arg)
+ {
+   pte_osThreadSleep(5000);
+ 
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -53,6 +55,7 @@ thr2(void * arg)
+ 
+   thread2_status = 1;
+ 
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -79,5 +82,6 @@ int pthread_test_join4()
+   assert(pthread_join(handle2, NULL) == 0);
+ 
+   /* Success. */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/kill1.c b/tests/kill1.c
+index 7abf564..29b1505 100644
+--- a/tests/kill1.c
++++ b/tests/kill1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: kill1.c
+  *
+@@ -84,5 +85,6 @@ int pthread_test_kill1()
+ {
+   assert(pthread_kill(pthread_self(), 1) == EINVAL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex1.c b/tests/mutex1.c
+index 1cf4e94..fca8e72 100644
+--- a/tests/mutex1.c
++++ b/tests/mutex1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex1.c
+  *
+@@ -75,5 +76,6 @@ pthread_test_mutex1()
+ 
+   assert(mutex == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex1e.c b/tests/mutex1e.c
+index af46561..c7c4add 100644
+--- a/tests/mutex1e.c
++++ b/tests/mutex1e.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex1e.c
+  *
+@@ -79,5 +80,6 @@ pthread_test_mutex1e()
+ 
+   assert(mutex == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex1n.c b/tests/mutex1n.c
+index b0eb5de..174603d 100644
+--- a/tests/mutex1n.c
++++ b/tests/mutex1n.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex1n.c
+  *
+@@ -78,5 +79,6 @@ pthread_test_mutex1n()
+ 
+   assert(mutex == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex1r.c b/tests/mutex1r.c
+index fb1ae42..ea6e4f7 100644
+--- a/tests/mutex1r.c
++++ b/tests/mutex1r.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex1r.c
+  *
+@@ -79,5 +80,6 @@ pthread_test_mutex1r()
+ 
+   assert(mutex == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex2.c b/tests/mutex2.c
+index 1ff85ae..aa47f04 100644
+--- a/tests/mutex2.c
++++ b/tests/mutex2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex2.c
+  *
+@@ -73,5 +74,6 @@ pthread_test_mutex2()
+ 
+   assert(mutex == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex2e.c b/tests/mutex2e.c
+index b8087d7..373fa4b 100644
+--- a/tests/mutex2e.c
++++ b/tests/mutex2e.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex2e.c
+  *
+@@ -73,5 +74,6 @@ pthread_test_mutex2e()
+ 
+   assert(mutex == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex2r.c b/tests/mutex2r.c
+index 262e029..34b5503 100644
+--- a/tests/mutex2r.c
++++ b/tests/mutex2r.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex2r.c
+  *
+@@ -73,5 +74,6 @@ pthread_test_mutex2r()
+ 
+   assert(mutex == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex3.c b/tests/mutex3.c
+index 57fc5a8..4a66939 100644
+--- a/tests/mutex3.c
++++ b/tests/mutex3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex3.c
+  *
+@@ -63,6 +64,7 @@ static void * func(void * arg)
+ 
+   washere = 1;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -84,5 +86,6 @@ pthread_test_mutex3()
+ 
+   assert(pthread_mutex_destroy(&mutex1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex3e.c b/tests/mutex3e.c
+index 9b1bce0..14496ad 100644
+--- a/tests/mutex3e.c
++++ b/tests/mutex3e.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex3e.c
+  *
+@@ -63,6 +64,7 @@ static void * func(void * arg)
+ 
+   washere = 1;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -85,5 +87,6 @@ pthread_test_mutex3e()
+ 
+   assert(washere == 1);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex3r.c b/tests/mutex3r.c
+index 8610fc4..b73fd9f 100644
+--- a/tests/mutex3r.c
++++ b/tests/mutex3r.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex3r.c
+  *
+@@ -63,6 +64,7 @@ void * func(void * arg)
+ 
+   washere = 1;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -84,5 +86,6 @@ pthread_test_mutex3r()
+ 
+   assert(pthread_mutex_destroy(&mutex1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex4.c b/tests/mutex4.c
+index 9a723ff..026ac41 100644
+--- a/tests/mutex4.c
++++ b/tests/mutex4.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex4.c
+  *
+@@ -63,6 +64,7 @@ void * unlocker(void * arg)
+   wasHere++;
+   assert(pthread_mutex_unlock(&mutex1) == expectedResult);
+   wasHere++;
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -121,5 +123,6 @@ pthread_test_mutex4()
+   assert(wasHere == 2);
+   assert(pthread_mutex_destroy(&mutex1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex5.c b/tests/mutex5.c
+index 00dc2a7..176a597 100644
+--- a/tests/mutex5.c
++++ b/tests/mutex5.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex5.c
+  *
+@@ -72,5 +73,6 @@ pthread_test_mutex5()
+   assert(pthread_mutexattr_gettype(&mxAttr, &mxType) == 0);
+   assert(mxType == PTHREAD_MUTEX_NORMAL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex6.c b/tests/mutex6.c
+index 6efc5a9..b34c6c7 100644
+--- a/tests/mutex6.c
++++ b/tests/mutex6.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex6.c
+  *
+@@ -72,6 +73,7 @@ static void * locker(void * arg)
+ 
+   assert(pthread_mutex_unlock(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -104,5 +106,6 @@ pthread_test_mutex6()
+ 
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex6e.c b/tests/mutex6e.c
+index 4bbbfd4..b19c762 100644
+--- a/tests/mutex6e.c
++++ b/tests/mutex6e.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex6e.c
+  *
+@@ -76,6 +77,7 @@ static void * locker(void * arg)
+   assert(pthread_mutex_unlock(&mutex) == 0);
+   assert(pthread_mutex_unlock(&mutex) == EPERM);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 555;
+ }
+ 
+@@ -104,6 +106,7 @@ pthread_test_mutex6e()
+   assert(pthread_mutex_destroy(&mutex) == 0);
+   assert(pthread_mutexattr_destroy(&mxAttr) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/mutex6es.c b/tests/mutex6es.c
+index 4a381e6..6f71ad1 100644
+--- a/tests/mutex6es.c
++++ b/tests/mutex6es.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex6es.c
+  *
+@@ -75,6 +76,7 @@ static void * locker(void * arg)
+   assert(pthread_mutex_unlock(&mutex) == 0);
+   assert(pthread_mutex_unlock(&mutex) == EPERM);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 555;
+ }
+ 
+@@ -99,6 +101,7 @@ pthread_test_mutex6es()
+ 
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/mutex6n.c b/tests/mutex6n.c
+index 289b2c4..90580df 100644
+--- a/tests/mutex6n.c
++++ b/tests/mutex6n.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex6n.c
+  *
+@@ -77,6 +78,7 @@ static void * locker(void * arg)
+ //      will always return EPERM...
+ //  assert(pthread_mutex_unlock(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 555;
+ }
+ 
+@@ -116,6 +118,7 @@ pthread_test_mutex6n()
+   assert(pthread_mutex_unlock(&mutex) == 0);
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/mutex6r.c b/tests/mutex6r.c
+index 2c7316e..7165f48 100644
+--- a/tests/mutex6r.c
++++ b/tests/mutex6r.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex6r.c
+  *
+@@ -75,6 +76,7 @@ static void * locker(void * arg)
+   assert(pthread_mutex_unlock(&mutex) == 0);
+   assert(pthread_mutex_unlock(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 555;
+ }
+ 
+@@ -104,5 +106,6 @@ pthread_test_mutex6r()
+   assert(pthread_mutex_destroy(&mutex) == 0);
+   assert(pthread_mutexattr_destroy(&mxAttr) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex6rs.c b/tests/mutex6rs.c
+index ad7f9a5..91a0aa5 100644
+--- a/tests/mutex6rs.c
++++ b/tests/mutex6rs.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex6rs.c
+  *
+@@ -74,6 +75,7 @@ void * locker(void * arg)
+   assert(pthread_mutex_unlock(&mutex) == 0);
+   assert(pthread_mutex_unlock(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 555;
+ }
+ 
+@@ -97,5 +99,6 @@ pthread_test_mutex6rs()
+ 
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex6s.c b/tests/mutex6s.c
+index 84d7177..33b15c6 100644
+--- a/tests/mutex6s.c
++++ b/tests/mutex6s.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex6s.c
+  *
+@@ -69,6 +70,7 @@ static void * locker(void * arg)
+   lockCount++;
+ 
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -104,5 +106,6 @@ pthread_test_mutex6s()
+ 
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex7.c b/tests/mutex7.c
+index ceaa4e4..3ae5cb9 100644
+--- a/tests/mutex7.c
++++ b/tests/mutex7.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex7.c
+  *
+@@ -68,6 +69,7 @@ static void * locker(void * arg)
+   assert(pthread_mutex_unlock(&mutex) == 0);
+   assert(pthread_mutex_unlock(&mutex) == EPERM);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -91,5 +93,6 @@ pthread_test_mutex7()
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
+   /* Never reached */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex7e.c b/tests/mutex7e.c
+index 1b36235..c6d8765 100644
+--- a/tests/mutex7e.c
++++ b/tests/mutex7e.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex7e.c
+  *
+@@ -76,6 +77,7 @@ static void * locker(void * arg)
+   assert(pthread_mutex_unlock(&mutex) == 0);
+   assert(pthread_mutex_unlock(&mutex) == EPERM);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 555;
+ }
+ 
+@@ -106,6 +108,7 @@ pthread_test_mutex7e()
+   assert(pthread_mutexattr_destroy(&mxAttr) == 0);
+ 
+   /* Never reached */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/mutex7n.c b/tests/mutex7n.c
+index ae1a963..b453669 100644
+--- a/tests/mutex7n.c
++++ b/tests/mutex7n.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex7n.c
+  *
+@@ -71,6 +72,7 @@ static void * locker(void * arg)
+   assert(pthread_mutex_unlock(&mutex) == 0);
+   assert(pthread_mutex_unlock(&mutex) == EPERM);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 555;
+ }
+ 
+@@ -100,6 +102,7 @@ pthread_test_mutex7n()
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
+   /* Never reached */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/mutex7r.c b/tests/mutex7r.c
+index 09e9701..af47649 100644
+--- a/tests/mutex7r.c
++++ b/tests/mutex7r.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex7r.c
+  *
+@@ -75,6 +76,7 @@ static void * locker(void * arg)
+   assert(pthread_mutex_unlock(&mutex) == 0);
+   assert(pthread_mutex_unlock(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 555;
+ }
+ 
+@@ -104,5 +106,6 @@ pthread_test_mutex7r()
+   assert(pthread_mutex_destroy(&mutex) == 0);
+   assert(pthread_mutexattr_destroy(&mxAttr) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex8.c b/tests/mutex8.c
+index 19e2bab..171b89a 100644
+--- a/tests/mutex8.c
++++ b/tests/mutex8.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex8.c
+  *
+@@ -70,6 +71,7 @@ static void * locker(void * arg)
+ 
+   lockCount++;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -96,5 +98,6 @@ pthread_test_mutex8()
+ 
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/mutex8e.c b/tests/mutex8e.c
+index 7ebd1b6..7632950 100644
+--- a/tests/mutex8e.c
++++ b/tests/mutex8e.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex8e.c
+  *
+@@ -77,6 +78,7 @@ static void * locker(void * arg)
+ 
+   lockCount++;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -109,6 +111,7 @@ pthread_test_mutex8e()
+ 
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/mutex8n.c b/tests/mutex8n.c
+index d9aa9ba..6a072ed 100644
+--- a/tests/mutex8n.c
++++ b/tests/mutex8n.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex8n.c
+  *
+@@ -77,6 +78,7 @@ static void * locker(void * arg)
+ 
+   lockCount++;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -109,6 +111,7 @@ pthread_test_mutex8n()
+ 
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/mutex8r.c b/tests/mutex8r.c
+index a1c5968..d7cf6f8 100644
+--- a/tests/mutex8r.c
++++ b/tests/mutex8r.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * mutex8r.c
+  *
+@@ -77,6 +78,7 @@ static void * locker(void * arg)
+ 
+   lockCount++;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -109,6 +111,7 @@ pthread_test_mutex8r()
+ 
+   assert(pthread_mutex_destroy(&mutex) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/once1.c b/tests/once1.c
+index 46aa3d4..217c6fd 100644
+--- a/tests/once1.c
++++ b/tests/once1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * once1.c
+  *
+@@ -56,6 +57,7 @@ static void
+ myfunc(void)
+ {
+   washere++;
++  __A_VARIABLE = 1;
+ }
+ 
+ static void *
+@@ -63,6 +65,7 @@ mythread(void * arg)
+ {
+   assert(pthread_once(&once, myfunc) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -86,5 +89,6 @@ int pthread_test_once1()
+   assert(pthread_join(t1,NULL) == 0);
+   assert(pthread_join(t2,NULL) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/once2.c b/tests/once2.c
+index 2ff1a0b..fcdd10b 100644
+--- a/tests/once2.c
++++ b/tests/once2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * once2.c
+  *
+@@ -77,6 +78,7 @@ myfunc(void)
+ 
+   /* Simulate slow once routine so that following threads pile up behind it */
+   pte_osThreadSleep(100);
++  __A_VARIABLE = 1;
+ }
+ 
+ static void *
+@@ -89,6 +91,7 @@ mythread(void * arg)
+   numThreads.i++;
+   pte_osMutexUnlock(numThreads.cs);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -130,5 +133,6 @@ int pthread_test_once2()
+   pte_osMutexDelete(numOnce.cs);
+   pte_osMutexDelete(numThreads.cs);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/once3.c b/tests/once3.c
+index ac28e6d..9812207 100644
+--- a/tests/once3.c
++++ b/tests/once3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * once3.c
+  *
+@@ -85,6 +86,7 @@ myfunc(void)
+   pte_osThreadSleep(10);
+   /* test for cancelation late so we're sure to have waiters. */
+   pthread_testcancel();
++  __A_VARIABLE = 1;
+ }
+ 
+ static void *
+@@ -103,6 +105,7 @@ mythread(void * arg)
+   numThreads.i++;
+   pte_osMutexUnlock(numThreads.cs);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -147,5 +150,6 @@ int pthread_test_once3()
+   pte_osMutexDelete(numOnce.cs);
+   pte_osMutexDelete(numThreads.cs);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/once4.c b/tests/once4.c
+index da4a44c..d2d89a9 100644
+--- a/tests/once4.c
++++ b/tests/once4.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * once4.c
+  *
+@@ -85,6 +86,7 @@ static void
+ mycleanupfunc(void * arg)
+ {
+ 
++	__A_VARIABLE = 1;
+ }
+ 
+ static void
+@@ -99,6 +101,7 @@ myinitfunc(void)
+   pte_osThreadSleep(10);
+   /* test for cancelation late so we're sure to have waiters. */
+   pthread_testcancel();
++  __A_VARIABLE = 1;
+ }
+ 
+ static void *
+@@ -131,6 +134,7 @@ mythread(void * arg)
+   pte_osMutexLock(numThreads.cs);
+   numThreads.i++;
+   pte_osMutexUnlock(numThreads.cs);
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -184,5 +188,6 @@ int pthread_test_once4()
+ //  pte_osMutexDelete(&numThreads.cs);
+ //  pte_osMutexDelete(&print_lock);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/priority1.c b/tests/priority1.c
+index 6360f65..94bc7be 100644
+--- a/tests/priority1.c
++++ b/tests/priority1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: priority1.c
+  *
+@@ -107,6 +108,7 @@ func(void * arg)
+   assert(pte_osThreadGetPriority(pte_osThreadGetHandle()) == param.sched_priority);
+ 
+ 
++  __A_VARIABLE = 1;
+   return (void *) 0;
+ }
+ 
+@@ -127,5 +129,6 @@ int pthread_test_priority1()
+   assert(pthread_create(&t, &attr, func, (void *) &attr) == 0);
+   assert(pthread_join(t, &result) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/priority2.c b/tests/priority2.c
+index 805cf55..2040ca8 100644
+--- a/tests/priority2.c
++++ b/tests/priority2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: priority2.c
+  *
+@@ -102,6 +103,7 @@ static void * func(void * arg)
+ 
+   assert(pte_osThreadGetPriority(pte_osThreadGetHandle()) == param.sched_priority);
+ 
++  __A_VARIABLE = 1;
+   return (void *) param.sched_priority;
+ }
+ 
+@@ -152,5 +154,6 @@ int pthread_test_priority2()
+   assert(pthread_barrier_destroy(&startBarrier) == 0);
+   assert(pthread_barrier_destroy(&endBarrier) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/reuse1.c b/tests/reuse1.c
+index ee977a6..e60b6bf 100644
+--- a/tests/reuse1.c
++++ b/tests/reuse1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: reuse1.c
+  *
+@@ -89,6 +90,7 @@ static int washere = 0;
+ static void * func(void * arg)
+ {
+   washere = 1;
++  __A_VARIABLE = 1;
+   return arg;
+ }
+ 
+@@ -126,5 +128,6 @@ int pthread_test_reuse1()
+       last_t = t;
+     }
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/reuse2.c b/tests/reuse2.c
+index 340b632..0b7a9fa 100644
+--- a/tests/reuse2.c
++++ b/tests/reuse2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: reuse2.c
+  *
+@@ -101,6 +102,7 @@ static void * func(void * arg)
+ 
+   PTE_ATOMIC_INCREMENT(&done);
+ 
++  __A_VARIABLE = 1;
+   return (void *) 0;
+ }
+ 
+@@ -166,5 +168,6 @@ int pthread_test_reuse2()
+    * to the max and min values derived above.
+    */
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/rwlock1.c b/tests/rwlock1.c
+index f8739cc..b5776ca 100644
+--- a/tests/rwlock1.c
++++ b/tests/rwlock1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock1.c
+  *
+@@ -64,5 +65,6 @@ int pthread_test_rwlock1()
+ 
+   assert(rwlock == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/rwlock2.c b/tests/rwlock2.c
+index 7f9c829..4359d4a 100644
+--- a/tests/rwlock2.c
++++ b/tests/rwlock2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock2.c
+  *
+@@ -69,5 +70,6 @@ int pthread_test_rwlock2()
+ 
+   assert(rwlock == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/rwlock2_t.c b/tests/rwlock2_t.c
+index 2ed6edc..bf77d55 100644
+--- a/tests/rwlock2_t.c
++++ b/tests/rwlock2_t.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock2_t.c
+  *
+@@ -83,5 +84,6 @@ int pthread_test_rwlock2t()
+ 
+   assert(rwlock == NULL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/rwlock3.c b/tests/rwlock3.c
+index ae79321..77fab7d 100644
+--- a/tests/rwlock3.c
++++ b/tests/rwlock3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock3.c
+  *
+@@ -60,6 +61,7 @@ static void * func(void * arg)
+ 
+   washere = 1;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -83,5 +85,6 @@ int pthread_test_rwlock3()
+ 
+   assert(pthread_rwlock_destroy(&rwlock1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/rwlock3_t.c b/tests/rwlock3_t.c
+index 4c94d2b..9aca8b3 100644
+--- a/tests/rwlock3_t.c
++++ b/tests/rwlock3_t.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock3_t.c
+  *
+@@ -60,6 +61,7 @@ static void * func(void * arg)
+ 
+   washere = 1;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -96,5 +98,6 @@ int pthread_test_rwlock3t()
+ 
+   assert(pthread_rwlock_destroy(&rwlock1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/rwlock4.c b/tests/rwlock4.c
+index b9c3905..14e7e38 100644
+--- a/tests/rwlock4.c
++++ b/tests/rwlock4.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock4.c
+  *
+@@ -60,6 +61,7 @@ static void * func(void * arg)
+ 
+   washere = 1;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -83,5 +85,6 @@ int pthread_test_rwlock4()
+ 
+   assert(pthread_rwlock_destroy(&rwlock1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/rwlock4_t.c b/tests/rwlock4_t.c
+index ace7f5b..d9c587c 100644
+--- a/tests/rwlock4_t.c
++++ b/tests/rwlock4_t.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock4_t.c
+  *
+@@ -60,6 +61,7 @@ static void * func(void * arg)
+ 
+   washere = 1;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -96,5 +98,6 @@ int pthread_test_rwlock4t()
+ 
+   assert(pthread_rwlock_destroy(&rwlock1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/rwlock5.c b/tests/rwlock5.c
+index b19142d..7b1ea0f 100644
+--- a/tests/rwlock5.c
++++ b/tests/rwlock5.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock5.c
+  *
+@@ -62,6 +63,7 @@ static void * func(void * arg)
+ 
+   washere = 1;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -85,5 +87,6 @@ int pthread_test_rwlock5()
+ 
+   assert(pthread_rwlock_destroy(&rwlock1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/rwlock5_t.c b/tests/rwlock5_t.c
+index 53c7a84..417acc8 100644
+--- a/tests/rwlock5_t.c
++++ b/tests/rwlock5_t.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock5_t.c
+  *
+@@ -63,6 +64,7 @@ static void * func(void * arg)
+ 
+   washere = 1;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -101,5 +103,6 @@ int pthread_test_rwlock5t()
+ 
+   assert(pthread_rwlock_destroy(&rwlock1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/rwlock6.c b/tests/rwlock6.c
+index 572c91a..0a96c9d 100644
+--- a/tests/rwlock6.c
++++ b/tests/rwlock6.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock6.c
+  *
+@@ -63,6 +64,7 @@ static void * wrfunc(void * arg)
+   ba = bankAccount;
+   assert(pthread_rwlock_unlock(&rwlock1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return ((void *) ba);
+ }
+ 
+@@ -74,6 +76,7 @@ static void * rdfunc(void * arg)
+   ba = bankAccount;
+   assert(pthread_rwlock_unlock(&rwlock1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return ((void *) ba);
+ }
+ 
+@@ -106,5 +109,6 @@ int pthread_test_rwlock6()
+ 
+   assert(pthread_rwlock_destroy(&rwlock1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/rwlock6_t.c b/tests/rwlock6_t.c
+index 6b34dde..6cd9b5c 100644
+--- a/tests/rwlock6_t.c
++++ b/tests/rwlock6_t.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock6_t.c
+  *
+@@ -60,6 +61,7 @@ static void * wrfunc(void * arg)
+   bankAccount += 10;
+   assert(pthread_rwlock_unlock(&rwlock1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return ((void *) bankAccount);
+ }
+ 
+@@ -93,6 +95,7 @@ static void * rdfunc(void * arg)
+       assert(pthread_rwlock_unlock(&rwlock1) == 0);
+     }
+ 
++  __A_VARIABLE = 1;
+   return ((void *) ba);
+ }
+ 
+@@ -131,6 +134,7 @@ int pthread_test_rwlock6t()
+ 
+   assert(pthread_rwlock_destroy(&rwlock1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/rwlock6_t2.c b/tests/rwlock6_t2.c
+index 4f24d7d..d15d5de 100644
+--- a/tests/rwlock6_t2.c
++++ b/tests/rwlock6_t2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock6_t2.c
+  *
+@@ -86,6 +87,7 @@ static void * rdfunc(void * arg)
+ 
+   assert(pthread_rwlock_timedrdlock(&rwlock1, &abstime) == ETIMEDOUT);
+ 
++  __A_VARIABLE = 1;
+   return ((void *) ba);
+ }
+ 
+@@ -127,5 +129,6 @@ int pthread_test_rwlock6t2()
+ 
+   assert(pthread_rwlock_destroy(&rwlock1) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/rwlock7.c b/tests/rwlock7.c
+index 4738836..d6fa13a 100644
+--- a/tests/rwlock7.c
++++ b/tests/rwlock7.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock7.c
+  *
+@@ -100,6 +101,7 @@ static void *thread_routine (void *arg)
+ 
+     }
+ 
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -184,5 +186,6 @@ int pthread_test_rwlock7()
+ 
+   _ftime(&currSysTime2);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/rwlock8.c b/tests/rwlock8.c
+index d2990b0..2f4097a 100644
+--- a/tests/rwlock8.c
++++ b/tests/rwlock8.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * rwlock8.c
+  *
+@@ -106,6 +107,7 @@ static void *thread_routine (void *arg)
+ 
+     }
+ 
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -174,5 +176,6 @@ int pthread_test_rwlock8()
+ 
+   _ftime(&currSysTime2);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/self1.c b/tests/self1.c
+index 6242602..fd88a0e 100644
+--- a/tests/self1.c
++++ b/tests/self1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * self1.c
+  *
+@@ -72,5 +73,6 @@ int pthread_test_self1()
+ #ifdef PTW32_STATIC_LIB
+ //	pthread_win32_process_detach_np();
+ #endif
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/self2.c b/tests/self2.c
+index cff4117..ce9442b 100644
+--- a/tests/self2.c
++++ b/tests/self2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * self2.c
+  *
+@@ -63,6 +64,7 @@ entry(void * arg)
+ {
+   me = pthread_self();
+ 
++  __A_VARIABLE = 1;
+   return arg;
+ }
+ 
+@@ -79,5 +81,6 @@ int pthread_test_self2()
+   assert(pthread_join(t,NULL) == 0);
+ 
+   /* Success. */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/semaphore1.c b/tests/semaphore1.c
+index 5baa8a4..df869a3 100644
+--- a/tests/semaphore1.c
++++ b/tests/semaphore1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: semaphore1.c
+  *
+@@ -103,6 +104,7 @@ thr(void * arg)
+ 
+   assert(sem_destroy(&s) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -134,6 +136,7 @@ int pthread_test_semaphore1(void)
+   assert(sem_post(&s) == 0);
+ 
+   assert(sem_destroy(&s) == 0);
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/semaphore2.c b/tests/semaphore2.c
+index a9c622e..4f18111 100644
+--- a/tests/semaphore2.c
++++ b/tests/semaphore2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: semaphore2.c
+  *
+@@ -107,6 +108,7 @@ int pthread_test_semaphore2(void)
+ 
+   assert(sem_destroy(&s) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/semaphore3.c b/tests/semaphore3.c
+index 3b5e619..09eb676 100644
+--- a/tests/semaphore3.c
++++ b/tests/semaphore3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: semaphore3.c
+  *
+@@ -88,6 +89,7 @@ thr (void * arg)
+ {
+   assert(sem_wait(&s) == 0);
+   assert(pthread_detach(pthread_self()) == 0);
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -124,6 +126,7 @@ int pthread_test_semaphore3(void)
+ 
+   assert(sem_destroy(&s) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/semaphore4.c b/tests/semaphore4.c
+index e1bc8f8..15d284a 100644
+--- a/tests/semaphore4.c
++++ b/tests/semaphore4.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: semaphore4.c
+  *
+@@ -103,6 +104,7 @@ thr (void * arg)
+       assert(sem_wait(&s) == 0);
+     }
+ 
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -157,6 +159,7 @@ int pthread_test_semaphore4(void)
+ 
+   assert(sem_destroy(&s) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/semaphore4t.c b/tests/semaphore4t.c
+index 9f44ebb..a70406b 100644
+--- a/tests/semaphore4t.c
++++ b/tests/semaphore4t.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: semaphore4t.c
+  *
+@@ -99,6 +100,7 @@ thr (void * arg)
+       assert(sem_timedwait(&s,NULL) == 0);
+     }
+ 
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -146,6 +148,7 @@ int pthread_test_semaphore4t(void)
+ 
+   assert(sem_destroy(&s) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/semaphore5.c b/tests/semaphore5.c
+index e7348b3..2b4505e 100644
+--- a/tests/semaphore5.c
++++ b/tests/semaphore5.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: semaphore5.c
+  *
+@@ -87,6 +88,7 @@ thr (void * arg)
+   assert(sem_timedwait(&s, &abstime) == -1);
+   assert(errno == ETIMEDOUT);
+ 
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -106,6 +108,7 @@ int pthread_test_semaphore5(void)
+ 
+   assert(sem_destroy(&s) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/semaphore6.c b/tests/semaphore6.c
+index 75a7982..e5fbf40 100644
+--- a/tests/semaphore6.c
++++ b/tests/semaphore6.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: semaphore5.c
+  *
+@@ -91,6 +92,7 @@ thr (void * arg)
+ 
+   semStatus = 1;
+   //  assert(pthread_detach(pthread_self()) == 0);
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -116,6 +118,7 @@ int pthread_test_semaphore6(void)
+ 
+   assert(sem_destroy(&s) == 0);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+diff --git a/tests/spin1.c b/tests/spin1.c
+index c400147..d34efc2 100644
+--- a/tests/spin1.c
++++ b/tests/spin1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * spin1.c
+  *
+@@ -60,5 +61,6 @@ int pthread_test_spin1()
+ 
+   assert(pthread_spin_lock(&lock) == EINVAL);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/spin2.c b/tests/spin2.c
+index e412a38..1f8ec7f 100644
+--- a/tests/spin2.c
++++ b/tests/spin2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * spin2.c
+  *
+@@ -56,6 +57,7 @@ static void * func(void * arg)
+ 
+   washere = 1;
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+ 
+@@ -76,5 +78,6 @@ int pthread_test_spin2()
+ 
+   assert(washere == 1);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/spin3.c b/tests/spin3.c
+index 4acf1a0..5830dd4 100644
+--- a/tests/spin3.c
++++ b/tests/spin3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * spin3.c
+  *
+@@ -57,6 +58,7 @@ static void * unlocker(void * arg)
+   wasHere++;
+   assert(pthread_spin_unlock(&spin) == expectedResult);
+   wasHere++;
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -73,5 +75,6 @@ int pthread_test_spin3()
+   assert(pthread_spin_destroy(&spin) == 0);
+   assert(wasHere == 2);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/spin4.c b/tests/spin4.c
+index 607621b..b35619b 100644
+--- a/tests/spin4.c
++++ b/tests/spin4.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * spin4.c
+  *
+@@ -62,6 +63,7 @@ static void * func(void * arg)
+   assert(pthread_spin_unlock(&lock) == 0);
+   _ftime(&currSysTimeStop);
+ 
++  __A_VARIABLE = 1;
+   return (void *) GetDurationMilliSecs(currSysTimeStart, currSysTimeStop);
+ }
+ 
+@@ -74,6 +76,7 @@ int pthread_test_spin4()
+   if (pthread_num_processors_np() == 1)
+     {
+       printf("spin test #4 not run - it requires multiple CPUs.\n");
++      __A_VARIABLE = 1;
+       return 0;
+     }
+ 
+@@ -102,5 +105,6 @@ int pthread_test_spin4()
+ 
+   assert(washere == 1);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/stress1.c b/tests/stress1.c
+index 905d0f7..4285224 100644
+--- a/tests/stress1.c
++++ b/tests/stress1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * stress1.c
+  *
+@@ -144,6 +145,7 @@ static struct timespec *
+     time->tv_nsec = (long)nanosecs;
+     time->tv_sec = (long)secs;
+ 
++    __A_VARIABLE = 1;
+     return time;
+   }
+ 
+@@ -206,6 +208,7 @@ masterThread (void * arg)
+     }
+   while (!allExit);
+ 
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -236,6 +239,7 @@ slaveThread (void * arg)
+     }
+   while (!allExit);
+ 
++  __A_VARIABLE = 1;
+   return NULL;
+ }
+ 
+@@ -284,5 +288,6 @@ int pthread_test_stress1()
+   assert(pthread_mutex_destroy(&control.mx) == 0);
+ 
+   /* Success. */
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/test_main.c b/tests/test_main.c
+index bd6498e..9f26b88 100644
+--- a/tests/test_main.c
++++ b/tests/test_main.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ #include "pte_osal.h"
+ #include "test.h"
+ 
+@@ -24,6 +25,7 @@ static void runBarrierTests(void)
+ 
+   printf("Barrier test #5\n");
+   pthread_test_barrier5();
++  __A_VARIABLE = 1;
+ }
+ 
+ static void runSemTests(void)
+@@ -51,6 +53,7 @@ static void runSemTests(void)
+   printf("Semaphore test #6\n");
+   pthread_test_semaphore6();
+ 
++  __A_VARIABLE = 1;
+ }
+ 
+ static void runThreadTests(void)
+@@ -120,6 +123,7 @@ static void runThreadTests(void)
+ //  printf("Inherit test #1\n");
+ //  pthread_test_inherit1();  ///@todo
+ 
++  __A_VARIABLE = 1;
+ }
+ 
+ static void runMiscTests(void)
+@@ -175,6 +179,7 @@ static void runMiscTests(void)
+   printf("Detach test #1\n");
+   pthread_test_detach1();
+ 
++  __A_VARIABLE = 1;
+ }
+ 
+ static void runMutexTests(void)
+@@ -261,6 +266,7 @@ static void runMutexTests(void)
+   printf("Mutex test #8r\n");
+   pthread_test_mutex8r();
+ 
++  __A_VARIABLE = 1;
+ }
+ 
+ static void runSpinTests()
+@@ -277,6 +283,7 @@ static void runSpinTests()
+   printf("Spin test #4\n");
+   pthread_test_spin4();
+ 
++  __A_VARIABLE = 1;
+ }
+ 
+ static void runCondvarTests()
+@@ -327,12 +334,14 @@ static void runCondvarTests()
+   printf("Condvar test #9\n");
+   pthread_test_condvar9();
+ 
++  __A_VARIABLE = 1;
+ }
+ 
+ static void runStressTests()
+ {
+   printf("Stress test #1\n");
+   pthread_test_stress1();
++  __A_VARIABLE = 1;
+ }
+ 
+ static void runRwlockTests()
+@@ -379,6 +388,7 @@ static void runRwlockTests()
+   printf("Rwlock test #8\n");
+   pthread_test_rwlock8();
+ 
++  __A_VARIABLE = 1;
+ }
+ 
+ static void runCancelTests()
+@@ -419,6 +429,7 @@ static void runCancelTests()
+ 
+   printf("Cleanup test #3\n");
+   pthread_test_cleanup3();
++  __A_VARIABLE = 1;
+ }
+ 
+ static void runBenchTests()
+@@ -435,6 +446,7 @@ static void runBenchTests()
+ 
+   printf("Benchmark test #4\n");
+   pthread_test_bench4();
++  __A_VARIABLE = 1;
+ }
+ 
+ static void runExceptionTests()
+@@ -450,6 +462,7 @@ static void runExceptionTests()
+ 
+   printf("Exception test #3\n");
+   pthread_test_exception3();
++  __A_VARIABLE = 1;
+ }
+ 
+ void pte_test_main()
+@@ -459,6 +472,7 @@ void pte_test_main()
+   if (!pthread_init())
+     {
+       printf("Failed to initialize pthreads library.\n");
++      __A_VARIABLE = 1;
+       return;
+     }
+ 
+@@ -486,5 +500,6 @@ void pte_test_main()
+ 
+   printf("Tests complete!\n");
+ 
++  __A_VARIABLE = 1;
+ }
+ 
+diff --git a/tests/tsd1.c b/tests/tsd1.c
+index 929c929..d289628 100644
+--- a/tests/tsd1.c
++++ b/tests/tsd1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * tsd1.c
+  *
+@@ -108,6 +109,7 @@ destroy_key(void * arg)
+   assert(*j == 2);
+ 
+   thread_destroyed[j - accesscount] = 1;
++  __A_VARIABLE = 1;
+ }
+ 
+ static void
+@@ -128,6 +130,7 @@ setkey(void * arg)
+   (*j)++;
+ 
+   assert(*j == 1);
++  __A_VARIABLE = 1;
+ }
+ 
+ static void *
+@@ -144,6 +147,7 @@ mythread(void * arg)
+ 
+   setkey(arg);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ 
+   /* Exiting the thread will call the key destructor. */
+@@ -223,5 +227,6 @@ int pthread_test_tsd1()
+ 
+   assert(fail == 0);
+ 
++  __A_VARIABLE = 1;
+   return (fail);
+ }
+diff --git a/tests/tsd2.c b/tests/tsd2.c
+index d36df9f..3ad1333 100644
+--- a/tests/tsd2.c
++++ b/tests/tsd2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * tsd2.c
+  *
+@@ -112,6 +113,7 @@ destroy_key(void * arg)
+     assert(*j == 3);
+ 
+   thread_destroyed[j - accesscount] = 1;
++  __A_VARIABLE = 1;
+ }
+ 
+ static void
+@@ -134,6 +136,7 @@ setkey(void * arg)
+   (*j)++;
+ 
+   assert(*j == 1);
++  __A_VARIABLE = 1;
+ }
+ 
+ static void *
+@@ -143,6 +146,7 @@ mythread(void * arg)
+ 
+   setkey(arg);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ 
+   /* Exiting the thread will call the key destructor. */
+@@ -221,5 +225,6 @@ int pthread_test_tsd2()
+ 
+   fflush(stderr);
+ 
++  __A_VARIABLE = 1;
+   return (fail);
+ }
+diff --git a/tests/valid1.c b/tests/valid1.c
+index ff3b25e..6a4d930 100644
+--- a/tests/valid1.c
++++ b/tests/valid1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: valid1.c
+  *
+@@ -89,6 +90,7 @@ static int washere = 0;
+ static void * func(void * arg)
+ {
+   washere = 1;
++  __A_VARIABLE = 1;
+   return (void *) 0;
+ }
+ 
+@@ -105,5 +107,6 @@ int pthread_test_valid1(void)
+   sched_yield();
+   assert(pthread_kill(t, 0) == ESRCH);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/tests/valid2.c b/tests/valid2.c
+index 244a25d..602c64e 100644
+--- a/tests/valid2.c
++++ b/tests/valid2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /*
+  * File: valid2.c
+  *
+@@ -85,5 +86,6 @@ int pthread_test_valid2(void)
+ 
+   assert(pthread_kill(NullThread, 0) == ESRCH);
+ 
++  __A_VARIABLE = 1;
+   return 0;
+ }
+-- 
+2.34.1
+

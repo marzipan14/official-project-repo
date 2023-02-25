@@ -1,0 +1,358 @@
+From 508fe141ca91ebd5aa1faac66a9df268181bffaf Mon Sep 17 00:00:00 2001
+From: Mateusz Krajewski <mkrajewski413@gmail.com>
+Date: Sat, 25 Feb 2023 20:59:47 +0000
+Subject: [PATCH 1/1] Touch memory at every exit point tlsf
+
+Signed-off-by: Mateusz Krajewski <mkrajewski413@gmail.com>
+---
+ examples/test.c  |  2 ++
+ examples/test1.c |  5 +++++
+ examples/test2.c |  5 +++++
+ examples/test3.c |  2 ++
+ examples/test4.c |  2 ++
+ src/tlsf.c       | 36 +++++++++++++++++++++++++++++++++---
+ 6 files changed, 49 insertions(+), 3 deletions(-)
+
+diff --git a/examples/test.c b/examples/test.c
+index 9df6351..ebc468b 100644
+--- a/examples/test.c
++++ b/examples/test.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include "tlsf.h"
+@@ -26,6 +27,7 @@ main(void){
+   destroy_memory_pool(pool);
+   printf("Test OK\n");
+   exit(0);
++  __A_VARIABLE = 1;
+ }
+ 
+     
+diff --git a/examples/test1.c b/examples/test1.c
+index da2c9ce..b88a7c1 100644
+--- a/examples/test1.c
++++ b/examples/test1.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <stddef.h>
+@@ -31,6 +32,7 @@ getcurtime (void)
+   struct timezone tz;
+ 
+   gettimeofday (&tv, &tz);
++  __A_VARIABLE = 1;
+   return ((tv.tv_usec / 1000000.0) + (1.0 * tv.tv_sec));
+ }
+ 
+@@ -43,6 +45,7 @@ init (minmax * data)
+   data->n = 0.0;
+   data->sum = 0.0;
+   data->sumquad = 0.0;
++  __A_VARIABLE = 1;
+ }
+ 
+ static void
+@@ -79,6 +82,7 @@ update (int print, const char *n, double s, double e, minmax * data)
+       data->max = 0.0;
+     }
+   }
++  __A_VARIABLE = 1;
+ }
+ 
+ static char pool[POOL_SIZE];
+@@ -159,5 +163,6 @@ main (void)
+     tlsf_free (m[i]);
+   }
+   tlsf_free (m);
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/examples/test2.c b/examples/test2.c
+index 7c1c5b9..a4c53f3 100644
+--- a/examples/test2.c
++++ b/examples/test2.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <stddef.h>
+@@ -30,6 +31,7 @@ getcurtime (void)
+   struct timezone tz;
+ 
+   gettimeofday (&tv, &tz);
++  __A_VARIABLE = 1;
+   return ((tv.tv_usec / 1000000.0) + (1.0 * tv.tv_sec));
+ }
+ 
+@@ -42,6 +44,7 @@ init (minmax * data)
+   data->n = 0.0;
+   data->sum = 0.0;
+   data->sumquad = 0.0;
++  __A_VARIABLE = 1;
+ }
+ 
+ static void
+@@ -78,6 +81,7 @@ update (int print, const char *n, double s, double e, minmax * data)
+       data->max = 0.0;
+     }
+   }
++  __A_VARIABLE = 1;
+ }
+ 
+ int
+@@ -160,5 +164,6 @@ main (void)
+   free (m);
+   printf ("Total used memory = %d, max memory %d\n",
+           mallinfo().uordblks, max_size);
++  __A_VARIABLE = 1;
+   return 0;
+ }
+diff --git a/examples/test3.c b/examples/test3.c
+index d1a4b4f..b1151fe 100644
+--- a/examples/test3.c
++++ b/examples/test3.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include "tlsf.h"
+@@ -30,6 +31,7 @@ int main(void){
+   destroy_memory_pool(p0);
+   printf("Test OK\n");
+   exit(0);
++  __A_VARIABLE = 1;
+ }
+ 
+     
+diff --git a/examples/test4.c b/examples/test4.c
+index 1051815..27c2ae3 100644
+--- a/examples/test4.c
++++ b/examples/test4.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include "tlsf.h"
+@@ -18,6 +19,7 @@ int main(void){
+   printf("Test OK\n");
+ 
+   exit(0);
++  __A_VARIABLE = 1;
+ }
+ 
+     
+diff --git a/src/tlsf.c b/src/tlsf.c
+index eb6e437..acacad9 100644
+--- a/src/tlsf.c
++++ b/src/tlsf.c
+@@ -1,3 +1,4 @@
++static volatile int __A_VARIABLE;
+ /* 
+  * Two Levels Segregate Fit memory allocator (TLSF)
+  * Version 2.4.6
+@@ -286,6 +287,7 @@ static __inline__ int ls_bit(int i)
+     unsigned int x = i & -i;
+ 
+     a = x <= 0xffff ? (x <= 0xff ? 0 : 8) : (x <= 0xffffff ? 16 : 24);
++    __A_VARIABLE = 1;
+     return table[x >> a] + a;
+ }
+ 
+@@ -295,17 +297,20 @@ static __inline__ int ms_bit(int i)
+     unsigned int x = (unsigned int) i;
+ 
+     a = x <= 0xffff ? (x <= 0xff ? 0 : 8) : (x <= 0xffffff ? 16 : 24);
++    __A_VARIABLE = 1;
+     return table[x >> a] + a;
+ }
+ 
+ static __inline__ void set_bit(int nr, u32_t * addr)
+ {
+     addr[nr >> 5] |= 1 << (nr & 0x1f);
++    __A_VARIABLE = 1;
+ }
+ 
+ static __inline__ void clear_bit(int nr, u32_t * addr)
+ {
+     addr[nr >> 5] &= ~(1 << (nr & 0x1f));
++    __A_VARIABLE = 1;
+ }
+ 
+ static __inline__ void MAPPING_SEARCH(size_t * _r, int *_fl, int *_sl)
+@@ -326,6 +331,7 @@ static __inline__ void MAPPING_SEARCH(size_t * _r, int *_fl, int *_sl)
+          */
+         *_r &= ~_t;
+     }
++    __A_VARIABLE = 1;
+ }
+ 
+ static __inline__ void MAPPING_INSERT(size_t _r, int *_fl, int *_sl)
+@@ -338,6 +344,7 @@ static __inline__ void MAPPING_INSERT(size_t _r, int *_fl, int *_sl)
+         *_sl = (_r >> (*_fl - MAX_LOG2_SLI)) - MAX_SLI;
+         *_fl -= FLI_OFFSET;
+     }
++    __A_VARIABLE = 1;
+ }
+ 
+ 
+@@ -356,6 +363,7 @@ static __inline__ bhdr_t *FIND_SUITABLE_BLOCK(tlsf_t * _tlsf, int *_fl, int *_sl
+             _b = _tlsf->matrix[*_fl][*_sl];
+         }
+     }
++    __A_VARIABLE = 1;
+     return _b;
+ }
+ 
+@@ -445,6 +453,7 @@ static __inline__ bhdr_t *process_area(void *area, size_t size)
+     ai = (area_info_t *) ib->ptr.buffer;
+     ai->next = 0;
+     ai->end = lb;
++    __A_VARIABLE = 1;
+     return ib;
+ }
+ 
+@@ -461,17 +470,20 @@ size_t init_memory_pool(size_t mem_pool_size, void *mem_pool)
+ 
+     if (!mem_pool || !mem_pool_size || mem_pool_size < sizeof(tlsf_t) + BHDR_OVERHEAD * 8) {
+         ERROR_MSG("init_memory_pool (): memory_pool invalid\n");
++        __A_VARIABLE = 1;
+         return -1;
+     }
+ 
+     if (((unsigned long) mem_pool & PTR_MASK)) {
+         ERROR_MSG("init_memory_pool (): mem_pool must be aligned to a word\n");
++        __A_VARIABLE = 1;
+         return -1;
+     }
+     tlsf = (tlsf_t *) mem_pool;
+     /* Check if already initialised */
+     if (tlsf->tlsf_signature == TLSF_SIGNATURE) {
+         b = GET_NEXT_BLOCK(mem_pool, ROUNDUP_SIZE(sizeof(tlsf_t)));
++        __A_VARIABLE = 1;
+         return b->size & BLOCK_SIZE;
+     }
+ 
+@@ -493,6 +505,7 @@ size_t init_memory_pool(size_t mem_pool_size, void *mem_pool)
+     tlsf->max_size = tlsf->used_size;
+ #endif
+ 
++    __A_VARIABLE = 1;
+     return (b->size & BLOCK_SIZE);
+ }
+ 
+@@ -571,6 +584,7 @@ size_t add_new_area(void *area, size_t area_size, void *mem_pool)
+     ai->end = lb0;
+     tlsf->area_head = ai;
+     free_ex(b0->ptr.buffer, mem_pool);
++    __A_VARIABLE = 1;
+     return (b0->size & BLOCK_SIZE);
+ }
+ 
+@@ -607,6 +621,7 @@ void destroy_memory_pool(void *mem_pool)
+ 
+     TLSF_DESTROY_LOCK(&tlsf->lock);
+ 
++    __A_VARIABLE = 1;
+ }
+ 
+ 
+@@ -650,6 +665,7 @@ void tlsf_free(void *ptr, void *mem_pool)
+ 
+     TLSF_RELEASE_LOCK(&((tlsf_t *)mem_pool)->lock);
+ 
++    __A_VARIABLE = 1;
+ }
+ 
+ /******************************************************************/
+@@ -685,6 +701,7 @@ void *tlsf_calloc(size_t nelem, size_t elem_size, void *mem_pool)
+ 
+     TLSF_RELEASE_LOCK(&((tlsf_t *)mem_pool)->lock);
+ 
++    __A_VARIABLE = 1;
+     return ret;
+ }
+ 
+@@ -759,6 +776,7 @@ void free_ex(void *ptr, void *mem_pool)
+     int fl = 0, sl = 0;
+ 
+     if (!ptr) {
++        __A_VARIABLE = 1;
+         return;
+     }
+     b = (bhdr_t *) ((char *) ptr - BHDR_OVERHEAD);
+@@ -787,6 +805,7 @@ void free_ex(void *ptr, void *mem_pool)
+     tmp_b = GET_NEXT_BLOCK(b->ptr.buffer, b->size & BLOCK_SIZE);
+     tmp_b->size |= PREV_FREE;
+     tmp_b->prev_hdr = b;
++    __A_VARIABLE = 1;
+ }
+ 
+ /******************************************************************/
+@@ -882,13 +901,18 @@ void *calloc_ex(size_t nelem, size_t elem_size, void *mem_pool)
+ /******************************************************************/
+     void *ptr;
+ 
+-    if (nelem <= 0 || elem_size <= 0)
++    if (nelem <= 0 || elem_size <= 0) {
++        __A_VARIABLE = 1;
+         return NULL;
++    }
+ 
+-    if (!(ptr = malloc_ex(nelem * elem_size, mem_pool)))
++    if (!(ptr = malloc_ex(nelem * elem_size, mem_pool))) {
++        __A_VARIABLE = 1;
+         return NULL;
++    }
+     memset(ptr, 0, nelem * elem_size);
+ 
++    __A_VARIABLE = 1;
+     return ptr;
+ }
+ 
+@@ -944,12 +968,15 @@ void dump_memory_region(unsigned char *mem_ptr, unsigned int size)
+ 
+     }
+     PRINT_MSG("\n\n");
++    __A_VARIABLE = 1;
+ }
+ 
+ void print_block(bhdr_t * b)
+ {
+-    if (!b)
++    if (!b) {
++        __A_VARIABLE = 1;
+         return;
++    }
+     PRINT_MSG(">> [%p] (", b);
+     if ((b->size & BLOCK_SIZE))
+         PRINT_MSG("%lu bytes, ", (unsigned long) (b->size & BLOCK_SIZE));
+@@ -963,6 +990,7 @@ void print_block(bhdr_t * b)
+         PRINT_MSG("prev. free [%p])\n", b->prev_hdr);
+     else
+         PRINT_MSG("prev used)\n");
++    __A_VARIABLE = 1;
+ }
+ 
+ void print_tlsf(tlsf_t * tlsf)
+@@ -987,6 +1015,7 @@ void print_tlsf(tlsf_t * tlsf)
+             }
+         }
+     }
++    __A_VARIABLE = 1;
+ }
+ 
+ void print_all_blocks(tlsf_t * tlsf)
+@@ -1006,6 +1035,7 @@ void print_all_blocks(tlsf_t * tlsf)
+         }
+         ai = ai->next;
+     }
++    __A_VARIABLE = 1;
+ }
+ 
+ #endif
+-- 
+2.34.1
+
