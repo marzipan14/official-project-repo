@@ -1,0 +1,1716 @@
+From 395f332233a96cd8569319e1db3cc21eeb246a25 Mon Sep 17 00:00:00 2001
+From: Mateusz Krajewski <mkrajewski413@gmail.com>
+Date: Sun, 26 Feb 2023 12:18:10 +0000
+Subject: [PATCH 2/2] Touch memory at every exit point lwip
+
+Signed-off-by: Mateusz Krajewski <mkrajewski413@gmail.com>
+---
+ doc/NO_SYS_SampleCode.c                    | 3 ++-
+ doc/ZeroCopyRx.c                           | 3 ++-
+ src/api/api_lib.c                          | 3 ++-
+ src/api/api_msg.c                          | 3 ++-
+ src/api/err.c                              | 3 ++-
+ src/api/if_api.c                           | 3 ++-
+ src/api/netbuf.c                           | 3 ++-
+ src/api/netdb.c                            | 3 ++-
+ src/api/netifapi.c                         | 3 ++-
+ src/api/tcpip.c                            | 3 ++-
+ src/apps/altcp_tls/altcp_tls_mbedtls.c     | 3 ++-
+ src/apps/altcp_tls/altcp_tls_mbedtls_mem.c | 3 ++-
+ src/apps/http/altcp_proxyconnect.c         | 3 ++-
+ src/apps/http/fs.c                         | 3 ++-
+ src/apps/http/fsdata.c                     | 3 ++-
+ src/apps/http/http_client.c                | 3 ++-
+ src/apps/http/httpd.c                      | 3 ++-
+ src/apps/http/makefsdata/makefsdata.c      | 3 ++-
+ src/apps/lwiperf/lwiperf.c                 | 3 ++-
+ src/apps/mdns/mdns.c                       | 3 ++-
+ src/apps/mqtt/mqtt.c                       | 3 ++-
+ src/apps/netbiosns/netbiosns.c             | 3 ++-
+ src/apps/smtp/smtp.c                       | 3 ++-
+ src/apps/snmp/snmp_asn1.c                  | 3 ++-
+ src/apps/snmp/snmp_core.c                  | 3 ++-
+ src/apps/snmp/snmp_mib2.c                  | 3 ++-
+ src/apps/snmp/snmp_mib2_icmp.c             | 3 ++-
+ src/apps/snmp/snmp_mib2_interfaces.c       | 3 ++-
+ src/apps/snmp/snmp_mib2_ip.c               | 3 ++-
+ src/apps/snmp/snmp_mib2_snmp.c             | 3 ++-
+ src/apps/snmp/snmp_mib2_system.c           | 3 ++-
+ src/apps/snmp/snmp_mib2_tcp.c              | 3 ++-
+ src/apps/snmp/snmp_mib2_udp.c              | 3 ++-
+ src/apps/snmp/snmp_msg.c                   | 3 ++-
+ src/apps/snmp/snmp_netconn.c               | 3 ++-
+ src/apps/snmp/snmp_pbuf_stream.c           | 3 ++-
+ src/apps/snmp/snmp_raw.c                   | 3 ++-
+ src/apps/snmp/snmp_scalar.c                | 3 ++-
+ src/apps/snmp/snmp_snmpv2_framework.c      | 3 ++-
+ src/apps/snmp/snmp_snmpv2_usm.c            | 3 ++-
+ src/apps/snmp/snmp_table.c                 | 3 ++-
+ src/apps/snmp/snmp_threadsync.c            | 3 ++-
+ src/apps/snmp/snmp_traps.c                 | 3 ++-
+ src/apps/snmp/snmpv3.c                     | 3 ++-
+ src/apps/snmp/snmpv3_mbedtls.c             | 3 ++-
+ src/apps/sntp/sntp.c                       | 3 ++-
+ src/apps/tftp/tftp_server.c                | 3 ++-
+ src/core/altcp.c                           | 3 ++-
+ src/core/altcp_alloc.c                     | 3 ++-
+ src/core/altcp_tcp.c                       | 3 ++-
+ src/core/def.c                             | 3 ++-
+ src/core/dns.c                             | 3 ++-
+ src/core/inet_chksum.c                     | 3 ++-
+ src/core/init.c                            | 3 ++-
+ src/core/ip.c                              | 3 ++-
+ src/core/ipv4/autoip.c                     | 3 ++-
+ src/core/ipv4/dhcp.c                       | 3 ++-
+ src/core/ipv4/etharp.c                     | 3 ++-
+ src/core/ipv4/icmp.c                       | 3 ++-
+ src/core/ipv4/igmp.c                       | 3 ++-
+ src/core/ipv4/ip4.c                        | 3 ++-
+ src/core/ipv4/ip4_addr.c                   | 3 ++-
+ src/core/ipv4/ip4_frag.c                   | 3 ++-
+ src/core/ipv6/dhcp6.c                      | 3 ++-
+ src/core/ipv6/ethip6.c                     | 3 ++-
+ src/core/ipv6/icmp6.c                      | 3 ++-
+ src/core/ipv6/inet6.c                      | 3 ++-
+ src/core/ipv6/ip6.c                        | 3 ++-
+ src/core/ipv6/ip6_addr.c                   | 3 ++-
+ src/core/ipv6/ip6_frag.c                   | 3 ++-
+ src/core/ipv6/mld6.c                       | 3 ++-
+ src/core/ipv6/nd6.c                        | 3 ++-
+ src/core/mem.c                             | 3 ++-
+ src/core/memp.c                            | 3 ++-
+ src/core/netif.c                           | 3 ++-
+ src/core/pbuf.c                            | 3 ++-
+ src/core/raw.c                             | 3 ++-
+ src/core/stats.c                           | 3 ++-
+ src/core/sys.c                             | 3 ++-
+ src/core/tcp.c                             | 3 ++-
+ src/core/tcp_in.c                          | 3 ++-
+ src/core/tcp_out.c                         | 3 ++-
+ src/core/timeouts.c                        | 3 ++-
+ src/core/udp.c                             | 3 ++-
+ src/netif/bridgeif.c                       | 3 ++-
+ src/netif/bridgeif_fdb.c                   | 3 ++-
+ src/netif/ethernet.c                       | 3 ++-
+ src/netif/lowpan6.c                        | 3 ++-
+ src/netif/lowpan6_ble.c                    | 3 ++-
+ src/netif/lowpan6_common.c                 | 3 ++-
+ src/netif/ppp/auth.c                       | 3 ++-
+ src/netif/ppp/ccp.c                        | 3 ++-
+ src/netif/ppp/chap-md5.c                   | 3 ++-
+ src/netif/ppp/chap-new.c                   | 3 ++-
+ src/netif/ppp/chap_ms.c                    | 3 ++-
+ src/netif/ppp/demand.c                     | 3 ++-
+ src/netif/ppp/eap.c                        | 3 ++-
+ src/netif/ppp/ecp.c                        | 3 ++-
+ src/netif/ppp/eui64.c                      | 3 ++-
+ src/netif/ppp/fsm.c                        | 3 ++-
+ src/netif/ppp/ipcp.c                       | 3 ++-
+ src/netif/ppp/ipv6cp.c                     | 3 ++-
+ src/netif/ppp/lcp.c                        | 3 ++-
+ src/netif/ppp/magic.c                      | 3 ++-
+ src/netif/ppp/mppe.c                       | 3 ++-
+ src/netif/ppp/multilink.c                  | 3 ++-
+ src/netif/ppp/polarssl/arc4.c              | 3 ++-
+ src/netif/ppp/polarssl/des.c               | 3 ++-
+ src/netif/ppp/polarssl/md4.c               | 3 ++-
+ src/netif/ppp/polarssl/md5.c               | 3 ++-
+ src/netif/ppp/polarssl/sha1.c              | 3 ++-
+ src/netif/ppp/ppp.c                        | 3 ++-
+ src/netif/ppp/pppapi.c                     | 3 ++-
+ src/netif/ppp/pppcrypt.c                   | 3 ++-
+ src/netif/ppp/pppoe.c                      | 3 ++-
+ src/netif/ppp/pppol2tp.c                   | 3 ++-
+ src/netif/ppp/pppos.c                      | 3 ++-
+ src/netif/ppp/upap.c                       | 3 ++-
+ src/netif/ppp/utils.c                      | 3 ++-
+ src/netif/ppp/vj.c                         | 3 ++-
+ src/netif/slipif.c                         | 3 ++-
+ src/netif/zepif.c                          | 3 ++-
+ test/fuzz/fuzz.c                           | 3 ++-
+ test/sockets/sockets_stresstest.c          | 3 ++-
+ test/unit/api/test_sockets.c               | 3 ++-
+ test/unit/arch/sys_arch.c                  | 3 ++-
+ test/unit/core/test_def.c                  | 3 ++-
+ test/unit/core/test_mem.c                  | 3 ++-
+ test/unit/core/test_netif.c                | 3 ++-
+ test/unit/core/test_pbuf.c                 | 3 ++-
+ test/unit/core/test_timers.c               | 3 ++-
+ test/unit/dhcp/test_dhcp.c                 | 3 ++-
+ test/unit/etharp/test_etharp.c             | 3 ++-
+ test/unit/ip4/test_ip4.c                   | 3 ++-
+ test/unit/ip6/test_ip6.c                   | 3 ++-
+ test/unit/lwip_unittests.c                 | 3 ++-
+ test/unit/mdns/test_mdns.c                 | 3 ++-
+ test/unit/mqtt/test_mqtt.c                 | 3 ++-
+ test/unit/tcp/tcp_helper.c                 | 3 ++-
+ test/unit/tcp/test_tcp.c                   | 3 ++-
+ test/unit/tcp/test_tcp_oos.c               | 3 ++-
+ test/unit/udp/test_udp.c                   | 3 ++-
+ 142 files changed, 284 insertions(+), 142 deletions(-)
+
+diff --git a/doc/NO_SYS_SampleCode.c b/doc/NO_SYS_SampleCode.c
+index 5e61d17..ba04d96 100644
+--- a/doc/NO_SYS_SampleCode.c
++++ b/doc/NO_SYS_SampleCode.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ void
+ eth_mac_irq()
+ {
+diff --git a/doc/ZeroCopyRx.c b/doc/ZeroCopyRx.c
+index 5387cfe..b6add40 100644
+--- a/doc/ZeroCopyRx.c
++++ b/doc/ZeroCopyRx.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ typedef struct my_custom_pbuf
+ {
+    struct pbuf_custom p;
+diff --git a/src/api/api_lib.c b/src/api/api_lib.c
+index 94833d3..0fd0bcd 100644
+--- a/src/api/api_lib.c
++++ b/src/api/api_lib.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Sequential API External module
+diff --git a/src/api/api_msg.c b/src/api/api_msg.c
+index d3ba8d3..f9f8bfb 100644
+--- a/src/api/api_msg.c
++++ b/src/api/api_msg.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Sequential API Internal module
+diff --git a/src/api/err.c b/src/api/err.c
+index f951aa4..e877e89 100644
+--- a/src/api/err.c
++++ b/src/api/err.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Error Management module
+diff --git a/src/api/if_api.c b/src/api/if_api.c
+index 687a453..e801e44 100644
+--- a/src/api/if_api.c
++++ b/src/api/if_api.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Interface Identification APIs from:
+diff --git a/src/api/netbuf.c b/src/api/netbuf.c
+index cb35b94..921292c 100644
+--- a/src/api/netbuf.c
++++ b/src/api/netbuf.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Network buffer management
+diff --git a/src/api/netdb.c b/src/api/netdb.c
+index 0d79b47..41e2d6a 100644
+--- a/src/api/netdb.c
++++ b/src/api/netdb.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * API functions for name resolving
+diff --git a/src/api/netifapi.c b/src/api/netifapi.c
+index efc27e1..0eb8ac7 100644
+--- a/src/api/netifapi.c
++++ b/src/api/netifapi.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Network Interface Sequential API module
+diff --git a/src/api/tcpip.c b/src/api/tcpip.c
+index 81a3518..33cd420 100644
+--- a/src/api/tcpip.c
++++ b/src/api/tcpip.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Sequential API Main thread module
+diff --git a/src/apps/altcp_tls/altcp_tls_mbedtls.c b/src/apps/altcp_tls/altcp_tls_mbedtls.c
+index 5a5f08c..9049c56 100644
+--- a/src/apps/altcp_tls/altcp_tls_mbedtls.c
++++ b/src/apps/altcp_tls/altcp_tls_mbedtls.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Application layered TCP/TLS connection API (to be used from TCPIP thread)
+diff --git a/src/apps/altcp_tls/altcp_tls_mbedtls_mem.c b/src/apps/altcp_tls/altcp_tls_mbedtls_mem.c
+index 2fb19c0..b0a21e2 100644
+--- a/src/apps/altcp_tls/altcp_tls_mbedtls_mem.c
++++ b/src/apps/altcp_tls/altcp_tls_mbedtls_mem.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Application layered TCP connection API (to be used from TCPIP thread)
+diff --git a/src/apps/http/altcp_proxyconnect.c b/src/apps/http/altcp_proxyconnect.c
+index 9a05abf..2c19438 100644
+--- a/src/apps/http/altcp_proxyconnect.c
++++ b/src/apps/http/altcp_proxyconnect.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Application layered TCP connection API that executes a proxy-connect.
+diff --git a/src/apps/http/fs.c b/src/apps/http/fs.c
+index 377bf84..02a435b 100644
+--- a/src/apps/http/fs.c
++++ b/src/apps/http/fs.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * Copyright (c) 2001-2003 Swedish Institute of Computer Science.
+  * All rights reserved.
+diff --git a/src/apps/http/fsdata.c b/src/apps/http/fsdata.c
+index 6850a9c..6dec87b 100644
+--- a/src/apps/http/fsdata.c
++++ b/src/apps/http/fsdata.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "lwip/apps/fs.h"
+ #include "lwip/def.h"
+ 
+diff --git a/src/apps/http/http_client.c b/src/apps/http/http_client.c
+index 499cbfa..33d3826 100644
+--- a/src/apps/http/http_client.c
++++ b/src/apps/http/http_client.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * HTTP client
+diff --git a/src/apps/http/httpd.c b/src/apps/http/httpd.c
+index a913e45..a702896 100644
+--- a/src/apps/http/httpd.c
++++ b/src/apps/http/httpd.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * LWIP HTTP server implementation
+diff --git a/src/apps/http/makefsdata/makefsdata.c b/src/apps/http/makefsdata/makefsdata.c
+index 2a2f767..eeb403a 100644
+--- a/src/apps/http/makefsdata/makefsdata.c
++++ b/src/apps/http/makefsdata/makefsdata.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * makefsdata: Converts a directory structure for use with the lwIP httpd.
+  *
+diff --git a/src/apps/lwiperf/lwiperf.c b/src/apps/lwiperf/lwiperf.c
+index 1aa73b9..cff268e 100644
+--- a/src/apps/lwiperf/lwiperf.c
++++ b/src/apps/lwiperf/lwiperf.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * lwIP iPerf server implementation
+diff --git a/src/apps/mdns/mdns.c b/src/apps/mdns/mdns.c
+index a4011e9..92c46ba 100644
+--- a/src/apps/mdns/mdns.c
++++ b/src/apps/mdns/mdns.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * MDNS responder implementation
+diff --git a/src/apps/mqtt/mqtt.c b/src/apps/mqtt/mqtt.c
+index f8323f0..a71008b 100644
+--- a/src/apps/mqtt/mqtt.c
++++ b/src/apps/mqtt/mqtt.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * MQTT client
+diff --git a/src/apps/netbiosns/netbiosns.c b/src/apps/netbiosns/netbiosns.c
+index d1dd74d..f2e8138 100644
+--- a/src/apps/netbiosns/netbiosns.c
++++ b/src/apps/netbiosns/netbiosns.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+   /**
+  * @file
+  * NetBIOS name service responder
+diff --git a/src/apps/smtp/smtp.c b/src/apps/smtp/smtp.c
+index 8016b3c..0f55882 100644
+--- a/src/apps/smtp/smtp.c
++++ b/src/apps/smtp/smtp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * SMTP client module
+diff --git a/src/apps/snmp/snmp_asn1.c b/src/apps/snmp/snmp_asn1.c
+index e135b03..9606806 100644
+--- a/src/apps/snmp/snmp_asn1.c
++++ b/src/apps/snmp/snmp_asn1.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Abstract Syntax Notation One (ISO 8824, 8825) encoding
+diff --git a/src/apps/snmp/snmp_core.c b/src/apps/snmp/snmp_core.c
+index e4f97c7..0276240 100644
+--- a/src/apps/snmp/snmp_core.c
++++ b/src/apps/snmp/snmp_core.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * MIB tree access/construction functions.
+diff --git a/src/apps/snmp/snmp_mib2.c b/src/apps/snmp/snmp_mib2.c
+index b691ed4..dfff66c 100644
+--- a/src/apps/snmp/snmp_mib2.c
++++ b/src/apps/snmp/snmp_mib2.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Management Information Base II (RFC1213) objects and functions.
+diff --git a/src/apps/snmp/snmp_mib2_icmp.c b/src/apps/snmp/snmp_mib2_icmp.c
+index ce557e0..0748fcc 100644
+--- a/src/apps/snmp/snmp_mib2_icmp.c
++++ b/src/apps/snmp/snmp_mib2_icmp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Management Information Base II (RFC1213) ICMP objects and functions.
+diff --git a/src/apps/snmp/snmp_mib2_interfaces.c b/src/apps/snmp/snmp_mib2_interfaces.c
+index b9d5dc0..0052a37 100644
+--- a/src/apps/snmp/snmp_mib2_interfaces.c
++++ b/src/apps/snmp/snmp_mib2_interfaces.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Management Information Base II (RFC1213) INTERFACES objects and functions.
+diff --git a/src/apps/snmp/snmp_mib2_ip.c b/src/apps/snmp/snmp_mib2_ip.c
+index bd24147..d26b265 100644
+--- a/src/apps/snmp/snmp_mib2_ip.c
++++ b/src/apps/snmp/snmp_mib2_ip.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Management Information Base II (RFC1213) IP objects and functions.
+diff --git a/src/apps/snmp/snmp_mib2_snmp.c b/src/apps/snmp/snmp_mib2_snmp.c
+index 0087f98..c6da13e 100644
+--- a/src/apps/snmp/snmp_mib2_snmp.c
++++ b/src/apps/snmp/snmp_mib2_snmp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Management Information Base II (RFC1213) SNMP objects and functions.
+diff --git a/src/apps/snmp/snmp_mib2_system.c b/src/apps/snmp/snmp_mib2_system.c
+index 060c499..303337d 100644
+--- a/src/apps/snmp/snmp_mib2_system.c
++++ b/src/apps/snmp/snmp_mib2_system.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Management Information Base II (RFC1213) SYSTEM objects and functions.
+diff --git a/src/apps/snmp/snmp_mib2_tcp.c b/src/apps/snmp/snmp_mib2_tcp.c
+index 3faf8ed..52dd888 100644
+--- a/src/apps/snmp/snmp_mib2_tcp.c
++++ b/src/apps/snmp/snmp_mib2_tcp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Management Information Base II (RFC1213) TCP objects and functions.
+diff --git a/src/apps/snmp/snmp_mib2_udp.c b/src/apps/snmp/snmp_mib2_udp.c
+index c8a2287..33d1700 100644
+--- a/src/apps/snmp/snmp_mib2_udp.c
++++ b/src/apps/snmp/snmp_mib2_udp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Management Information Base II (RFC1213) UDP objects and functions.
+diff --git a/src/apps/snmp/snmp_msg.c b/src/apps/snmp/snmp_msg.c
+index 23182a6..11a71ae 100644
+--- a/src/apps/snmp/snmp_msg.c
++++ b/src/apps/snmp/snmp_msg.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * SNMP message processing (RFC1157).
+diff --git a/src/apps/snmp/snmp_netconn.c b/src/apps/snmp/snmp_netconn.c
+index 5e9df0f..9cfce3c 100644
+--- a/src/apps/snmp/snmp_netconn.c
++++ b/src/apps/snmp/snmp_netconn.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * SNMP netconn frontend.
+diff --git a/src/apps/snmp/snmp_pbuf_stream.c b/src/apps/snmp/snmp_pbuf_stream.c
+index 8b9ef34..fa23c6e 100644
+--- a/src/apps/snmp/snmp_pbuf_stream.c
++++ b/src/apps/snmp/snmp_pbuf_stream.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * SNMP pbuf stream wrapper implementation (internal API, do not use in client code).
+diff --git a/src/apps/snmp/snmp_raw.c b/src/apps/snmp/snmp_raw.c
+index 2b1f65d..e5ad0e1 100644
+--- a/src/apps/snmp/snmp_raw.c
++++ b/src/apps/snmp/snmp_raw.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * SNMP RAW API frontend.
+diff --git a/src/apps/snmp/snmp_scalar.c b/src/apps/snmp/snmp_scalar.c
+index 328322c..72be6e1 100644
+--- a/src/apps/snmp/snmp_scalar.c
++++ b/src/apps/snmp/snmp_scalar.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * SNMP scalar node support implementation.
+diff --git a/src/apps/snmp/snmp_snmpv2_framework.c b/src/apps/snmp/snmp_snmpv2_framework.c
+index c5b5ecd..6fbf222 100644
+--- a/src/apps/snmp/snmp_snmpv2_framework.c
++++ b/src/apps/snmp/snmp_snmpv2_framework.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+ Generated by LwipMibCompiler
+ */
+diff --git a/src/apps/snmp/snmp_snmpv2_usm.c b/src/apps/snmp/snmp_snmpv2_usm.c
+index b1cffa9..9eb82cc 100644
+--- a/src/apps/snmp/snmp_snmpv2_usm.c
++++ b/src/apps/snmp/snmp_snmpv2_usm.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+ Generated by LwipMibCompiler
+ */
+diff --git a/src/apps/snmp/snmp_table.c b/src/apps/snmp/snmp_table.c
+index 909f15c..aba658f 100644
+--- a/src/apps/snmp/snmp_table.c
++++ b/src/apps/snmp/snmp_table.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * SNMP table support implementation.
+diff --git a/src/apps/snmp/snmp_threadsync.c b/src/apps/snmp/snmp_threadsync.c
+index 872e29c..1cec510 100644
+--- a/src/apps/snmp/snmp_threadsync.c
++++ b/src/apps/snmp/snmp_threadsync.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * SNMP thread synchronization implementation.
+diff --git a/src/apps/snmp/snmp_traps.c b/src/apps/snmp/snmp_traps.c
+index 4e6ee3d..85ef215 100644
+--- a/src/apps/snmp/snmp_traps.c
++++ b/src/apps/snmp/snmp_traps.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * SNMPv1 traps implementation.
+diff --git a/src/apps/snmp/snmpv3.c b/src/apps/snmp/snmpv3.c
+index 3004bc1..0399982 100644
+--- a/src/apps/snmp/snmpv3.c
++++ b/src/apps/snmp/snmpv3.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Additional SNMPv3 functionality RFC3414 and RFC3826.
+diff --git a/src/apps/snmp/snmpv3_mbedtls.c b/src/apps/snmp/snmpv3_mbedtls.c
+index 2e46f7e..3a5754b 100644
+--- a/src/apps/snmp/snmpv3_mbedtls.c
++++ b/src/apps/snmp/snmpv3_mbedtls.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * SNMPv3 crypto/auth functions implemented for ARM mbedtls.
+diff --git a/src/apps/sntp/sntp.c b/src/apps/sntp/sntp.c
+index b8bf8d1..6a09779 100644
+--- a/src/apps/sntp/sntp.c
++++ b/src/apps/sntp/sntp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * SNTP client module
+diff --git a/src/apps/tftp/tftp_server.c b/src/apps/tftp/tftp_server.c
+index 953904c..3af56c4 100644
+--- a/src/apps/tftp/tftp_server.c
++++ b/src/apps/tftp/tftp_server.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  *
+  * @file tftp_server.c
+diff --git a/src/core/altcp.c b/src/core/altcp.c
+index 030061b..2b9227a 100644
+--- a/src/core/altcp.c
++++ b/src/core/altcp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * @defgroup altcp Application layered TCP Functions
+diff --git a/src/core/altcp_alloc.c b/src/core/altcp_alloc.c
+index 525fe02..7fc6b53 100644
+--- a/src/core/altcp_alloc.c
++++ b/src/core/altcp_alloc.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Application layered TCP connection API (to be used from TCPIP thread)\n
+diff --git a/src/core/altcp_tcp.c b/src/core/altcp_tcp.c
+index bce6006..813703d 100644
+--- a/src/core/altcp_tcp.c
++++ b/src/core/altcp_tcp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Application layered TCP connection API (to be used from TCPIP thread)\n
+diff --git a/src/core/def.c b/src/core/def.c
+index ed23f89..9eec5ff 100644
+--- a/src/core/def.c
++++ b/src/core/def.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Common functions used throughout the stack.
+diff --git a/src/core/dns.c b/src/core/dns.c
+index 2669141..bcd8154 100644
+--- a/src/core/dns.c
++++ b/src/core/dns.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * DNS - host name to IP address resolver.
+diff --git a/src/core/inet_chksum.c b/src/core/inet_chksum.c
+index 7fbe263..b41cf1a 100644
+--- a/src/core/inet_chksum.c
++++ b/src/core/inet_chksum.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Internet checksum functions.\n
+diff --git a/src/core/init.c b/src/core/init.c
+index e3bef09..2fdcc26 100644
+--- a/src/core/init.c
++++ b/src/core/init.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Modules initialization
+diff --git a/src/core/ip.c b/src/core/ip.c
+index 05a0bb7..d313d89 100644
+--- a/src/core/ip.c
++++ b/src/core/ip.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Common IPv4 and IPv6 code
+diff --git a/src/core/ipv4/autoip.c b/src/core/ipv4/autoip.c
+index 0cd34ed..bdf42b9 100644
+--- a/src/core/ipv4/autoip.c
++++ b/src/core/ipv4/autoip.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * AutoIP Automatic LinkLocal IP Configuration
+diff --git a/src/core/ipv4/dhcp.c b/src/core/ipv4/dhcp.c
+index f99643f..fa8bd0f 100644
+--- a/src/core/ipv4/dhcp.c
++++ b/src/core/ipv4/dhcp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Dynamic Host Configuration Protocol client
+diff --git a/src/core/ipv4/etharp.c b/src/core/ipv4/etharp.c
+index 0d10764..21b4488 100644
+--- a/src/core/ipv4/etharp.c
++++ b/src/core/ipv4/etharp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Address Resolution Protocol module for IP over Ethernet
+diff --git a/src/core/ipv4/icmp.c b/src/core/ipv4/icmp.c
+index 1fef632..44a10ee 100644
+--- a/src/core/ipv4/icmp.c
++++ b/src/core/ipv4/icmp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * ICMP - Internet Control Message Protocol
+diff --git a/src/core/ipv4/igmp.c b/src/core/ipv4/igmp.c
+index 1debdab..4310167 100644
+--- a/src/core/ipv4/igmp.c
++++ b/src/core/ipv4/igmp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * IGMP - Internet Group Management Protocol
+diff --git a/src/core/ipv4/ip4.c b/src/core/ipv4/ip4.c
+index d0829f4..7f32657 100644
+--- a/src/core/ipv4/ip4.c
++++ b/src/core/ipv4/ip4.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * This is the IPv4 layer implementation for incoming and outgoing IP traffic.
+diff --git a/src/core/ipv4/ip4_addr.c b/src/core/ipv4/ip4_addr.c
+index aaed1b2..562b2b7 100644
+--- a/src/core/ipv4/ip4_addr.c
++++ b/src/core/ipv4/ip4_addr.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * This is the IPv4 address tools implementation.
+diff --git a/src/core/ipv4/ip4_frag.c b/src/core/ipv4/ip4_frag.c
+index f73f59f..b3972bd 100644
+--- a/src/core/ipv4/ip4_frag.c
++++ b/src/core/ipv4/ip4_frag.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * This is the IPv4 packet segmentation and reassembly implementation.
+diff --git a/src/core/ipv6/dhcp6.c b/src/core/ipv6/dhcp6.c
+index b1029b7..4feef5c 100644
+--- a/src/core/ipv6/dhcp6.c
++++ b/src/core/ipv6/dhcp6.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  *
+diff --git a/src/core/ipv6/ethip6.c b/src/core/ipv6/ethip6.c
+index 17add98..d4c866b 100644
+--- a/src/core/ipv6/ethip6.c
++++ b/src/core/ipv6/ethip6.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  *
+diff --git a/src/core/ipv6/icmp6.c b/src/core/ipv6/icmp6.c
+index 510b7c0..7500e7c 100644
+--- a/src/core/ipv6/icmp6.c
++++ b/src/core/ipv6/icmp6.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  *
+diff --git a/src/core/ipv6/inet6.c b/src/core/ipv6/inet6.c
+index 789b1c4..49072a7 100644
+--- a/src/core/ipv6/inet6.c
++++ b/src/core/ipv6/inet6.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  *
+diff --git a/src/core/ipv6/ip6.c b/src/core/ipv6/ip6.c
+index 2851759..afbcbc1 100644
+--- a/src/core/ipv6/ip6.c
++++ b/src/core/ipv6/ip6.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  *
+diff --git a/src/core/ipv6/ip6_addr.c b/src/core/ipv6/ip6_addr.c
+index a1a6c3d..c3d45ca 100644
+--- a/src/core/ipv6/ip6_addr.c
++++ b/src/core/ipv6/ip6_addr.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  *
+diff --git a/src/core/ipv6/ip6_frag.c b/src/core/ipv6/ip6_frag.c
+index 0da3d67..268b910 100644
+--- a/src/core/ipv6/ip6_frag.c
++++ b/src/core/ipv6/ip6_frag.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  *
+diff --git a/src/core/ipv6/mld6.c b/src/core/ipv6/mld6.c
+index 7742689..9a76df5 100644
+--- a/src/core/ipv6/mld6.c
++++ b/src/core/ipv6/mld6.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Multicast listener discovery
+diff --git a/src/core/ipv6/nd6.c b/src/core/ipv6/nd6.c
+index e51d3a6..e410c9e 100644
+--- a/src/core/ipv6/nd6.c
++++ b/src/core/ipv6/nd6.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  *
+diff --git a/src/core/mem.c b/src/core/mem.c
+index 51af8e2..df97fa5 100644
+--- a/src/core/mem.c
++++ b/src/core/mem.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Dynamic memory manager
+diff --git a/src/core/memp.c b/src/core/memp.c
+index c15e166..70eb8c7 100644
+--- a/src/core/memp.c
++++ b/src/core/memp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Dynamic pool memory manager
+diff --git a/src/core/netif.c b/src/core/netif.c
+index 395fbfd..4ae3d84 100644
+--- a/src/core/netif.c
++++ b/src/core/netif.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * lwIP network interface abstraction
+diff --git a/src/core/pbuf.c b/src/core/pbuf.c
+index 4a82a74..ab34530 100644
+--- a/src/core/pbuf.c
++++ b/src/core/pbuf.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Packet buffer management
+diff --git a/src/core/raw.c b/src/core/raw.c
+index 493f5ca..4cd8d6f 100644
+--- a/src/core/raw.c
++++ b/src/core/raw.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Implementation of raw protocol PCBs for low-level handling of
+diff --git a/src/core/stats.c b/src/core/stats.c
+index 686dbfd..207e93f 100644
+--- a/src/core/stats.c
++++ b/src/core/stats.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Statistics module
+diff --git a/src/core/sys.c b/src/core/sys.c
+index 730de38..833bfe6 100644
+--- a/src/core/sys.c
++++ b/src/core/sys.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * lwIP Operating System abstraction
+diff --git a/src/core/tcp.c b/src/core/tcp.c
+index b972e87..45f514d 100644
+--- a/src/core/tcp.c
++++ b/src/core/tcp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Transmission Control Protocol for IP
+diff --git a/src/core/tcp_in.c b/src/core/tcp_in.c
+index 00050ee..beac5e2 100644
+--- a/src/core/tcp_in.c
++++ b/src/core/tcp_in.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Transmission Control Protocol, incoming traffic
+diff --git a/src/core/tcp_out.c b/src/core/tcp_out.c
+index c526756..72ddfcf 100644
+--- a/src/core/tcp_out.c
++++ b/src/core/tcp_out.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Transmission Control Protocol, outgoing traffic
+diff --git a/src/core/timeouts.c b/src/core/timeouts.c
+index 89f3d0a..2eeca58 100644
+--- a/src/core/timeouts.c
++++ b/src/core/timeouts.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Stack-internal timers implementation.
+diff --git a/src/core/udp.c b/src/core/udp.c
+index 01f0d19..07085d1 100644
+--- a/src/core/udp.c
++++ b/src/core/udp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * User Datagram Protocol module\n
+diff --git a/src/netif/bridgeif.c b/src/netif/bridgeif.c
+index c3b637a..dbf2018 100644
+--- a/src/netif/bridgeif.c
++++ b/src/netif/bridgeif.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * lwIP netif implementing an IEEE 802.1D MAC Bridge
+diff --git a/src/netif/bridgeif_fdb.c b/src/netif/bridgeif_fdb.c
+index d3bce98..b46467d 100644
+--- a/src/netif/bridgeif_fdb.c
++++ b/src/netif/bridgeif_fdb.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * lwIP netif implementing an FDB for IEEE 802.1D MAC Bridge
+diff --git a/src/netif/ethernet.c b/src/netif/ethernet.c
+index bc51b7f..36bcc68 100644
+--- a/src/netif/ethernet.c
++++ b/src/netif/ethernet.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Ethernet common functions
+diff --git a/src/netif/lowpan6.c b/src/netif/lowpan6.c
+index 6b521b0..dc1ec68 100644
+--- a/src/netif/lowpan6.c
++++ b/src/netif/lowpan6.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  *
+diff --git a/src/netif/lowpan6_ble.c b/src/netif/lowpan6_ble.c
+index f3e38d1..2ce44d2 100644
+--- a/src/netif/lowpan6_ble.c
++++ b/src/netif/lowpan6_ble.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * 6LowPAN over BLE output for IPv6 (RFC7668).
+diff --git a/src/netif/lowpan6_common.c b/src/netif/lowpan6_common.c
+index fe5ba78..009a6ee 100644
+--- a/src/netif/lowpan6_common.c
++++ b/src/netif/lowpan6_common.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  *
+diff --git a/src/netif/ppp/auth.c b/src/netif/ppp/auth.c
+index 07a8fd4..f030336 100644
+--- a/src/netif/ppp/auth.c
++++ b/src/netif/ppp/auth.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * auth.c - PPP authentication and phase control.
+  *
+diff --git a/src/netif/ppp/ccp.c b/src/netif/ppp/ccp.c
+index d85f197..89b062c 100644
+--- a/src/netif/ppp/ccp.c
++++ b/src/netif/ppp/ccp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * ccp.c - PPP Compression Control Protocol.
+  *
+diff --git a/src/netif/ppp/chap-md5.c b/src/netif/ppp/chap-md5.c
+index fd7b7d9..e6fb944 100644
+--- a/src/netif/ppp/chap-md5.c
++++ b/src/netif/ppp/chap-md5.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * chap-md5.c - New CHAP/MD5 implementation.
+  *
+diff --git a/src/netif/ppp/chap-new.c b/src/netif/ppp/chap-new.c
+index 8af954b..f99e858 100644
+--- a/src/netif/ppp/chap-new.c
++++ b/src/netif/ppp/chap-new.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * chap-new.c - New CHAP implementation.
+  *
+diff --git a/src/netif/ppp/chap_ms.c b/src/netif/ppp/chap_ms.c
+index f817fa5..c4148d7 100644
+--- a/src/netif/ppp/chap_ms.c
++++ b/src/netif/ppp/chap_ms.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * chap_ms.c - Microsoft MS-CHAP compatible implementation.
+  *
+diff --git a/src/netif/ppp/demand.c b/src/netif/ppp/demand.c
+index 12d9270..4fb3eb1 100644
+--- a/src/netif/ppp/demand.c
++++ b/src/netif/ppp/demand.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * demand.c - Support routines for demand-dialling.
+  *
+diff --git a/src/netif/ppp/eap.c b/src/netif/ppp/eap.c
+index 94d19b9..0847ae3 100644
+--- a/src/netif/ppp/eap.c
++++ b/src/netif/ppp/eap.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * eap.c - Extensible Authentication Protocol for PPP (RFC 2284)
+  *
+diff --git a/src/netif/ppp/ecp.c b/src/netif/ppp/ecp.c
+index 50d043b..f9654f0 100644
+--- a/src/netif/ppp/ecp.c
++++ b/src/netif/ppp/ecp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * ecp.c - PPP Encryption Control Protocol.
+  *
+diff --git a/src/netif/ppp/eui64.c b/src/netif/ppp/eui64.c
+index 72a8ebf..87eaee5 100644
+--- a/src/netif/ppp/eui64.c
++++ b/src/netif/ppp/eui64.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * eui64.c - EUI64 routines for IPv6CP.
+  *
+diff --git a/src/netif/ppp/fsm.c b/src/netif/ppp/fsm.c
+index 880be67..ba1206a 100644
+--- a/src/netif/ppp/fsm.c
++++ b/src/netif/ppp/fsm.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * fsm.c - {Link, IP} Control Protocol Finite State Machine.
+  *
+diff --git a/src/netif/ppp/ipcp.c b/src/netif/ppp/ipcp.c
+index 54ce3fd..72e30ac 100644
+--- a/src/netif/ppp/ipcp.c
++++ b/src/netif/ppp/ipcp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * ipcp.c - PPP IP Control Protocol.
+  *
+diff --git a/src/netif/ppp/ipv6cp.c b/src/netif/ppp/ipv6cp.c
+index 64d16a7..cbe42b9 100644
+--- a/src/netif/ppp/ipv6cp.c
++++ b/src/netif/ppp/ipv6cp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * ipv6cp.c - PPP IPV6 Control Protocol.
+  *
+diff --git a/src/netif/ppp/lcp.c b/src/netif/ppp/lcp.c
+index 4a5f0ee..f615e58 100644
+--- a/src/netif/ppp/lcp.c
++++ b/src/netif/ppp/lcp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * lcp.c - PPP Link Control Protocol.
+  *
+diff --git a/src/netif/ppp/magic.c b/src/netif/ppp/magic.c
+index 1db719a..ae0b1cc 100644
+--- a/src/netif/ppp/magic.c
++++ b/src/netif/ppp/magic.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * magic.c - PPP Magic Number routines.
+  *
+diff --git a/src/netif/ppp/mppe.c b/src/netif/ppp/mppe.c
+index 7146071..640f362 100644
+--- a/src/netif/ppp/mppe.c
++++ b/src/netif/ppp/mppe.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * mppe.c - interface MPPE to the PPP code.
+  *
+diff --git a/src/netif/ppp/multilink.c b/src/netif/ppp/multilink.c
+index 1ae2ef3..d696e0e 100644
+--- a/src/netif/ppp/multilink.c
++++ b/src/netif/ppp/multilink.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * multilink.c - support routines for multilink.
+  *
+diff --git a/src/netif/ppp/polarssl/arc4.c b/src/netif/ppp/polarssl/arc4.c
+index c9febc6..95575cb 100644
+--- a/src/netif/ppp/polarssl/arc4.c
++++ b/src/netif/ppp/polarssl/arc4.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  *  An implementation of the ARCFOUR algorithm
+  *
+diff --git a/src/netif/ppp/polarssl/des.c b/src/netif/ppp/polarssl/des.c
+index 52ed40d..fa0520b 100644
+--- a/src/netif/ppp/polarssl/des.c
++++ b/src/netif/ppp/polarssl/des.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  *  FIPS-46-3 compliant Triple-DES implementation
+  *
+diff --git a/src/netif/ppp/polarssl/md4.c b/src/netif/ppp/polarssl/md4.c
+index 42d31a1..86e9009 100644
+--- a/src/netif/ppp/polarssl/md4.c
++++ b/src/netif/ppp/polarssl/md4.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  *  RFC 1186/1320 compliant MD4 implementation
+  *
+diff --git a/src/netif/ppp/polarssl/md5.c b/src/netif/ppp/polarssl/md5.c
+index c4f23e2..028eb0c 100644
+--- a/src/netif/ppp/polarssl/md5.c
++++ b/src/netif/ppp/polarssl/md5.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  *  RFC 1321 compliant MD5 implementation
+  *
+diff --git a/src/netif/ppp/polarssl/sha1.c b/src/netif/ppp/polarssl/sha1.c
+index f4848e4..b9b4485 100644
+--- a/src/netif/ppp/polarssl/sha1.c
++++ b/src/netif/ppp/polarssl/sha1.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  *  FIPS-180-1 compliant SHA-1 implementation
+  *
+diff --git a/src/netif/ppp/ppp.c b/src/netif/ppp/ppp.c
+index df296a7..820baa5 100644
+--- a/src/netif/ppp/ppp.c
++++ b/src/netif/ppp/ppp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*****************************************************************************
+ * ppp.c - Network Point to Point Protocol program file.
+ *
+diff --git a/src/netif/ppp/pppapi.c b/src/netif/ppp/pppapi.c
+index ca71cba..7c9f545 100644
+--- a/src/netif/ppp/pppapi.c
++++ b/src/netif/ppp/pppapi.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Point To Point Protocol Sequential API module
+diff --git a/src/netif/ppp/pppcrypt.c b/src/netif/ppp/pppcrypt.c
+index af02019..cb8760d 100644
+--- a/src/netif/ppp/pppcrypt.c
++++ b/src/netif/ppp/pppcrypt.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * pppcrypt.c - PPP/DES linkage for MS-CHAP and EAP SRP-SHA1
+  *
+diff --git a/src/netif/ppp/pppoe.c b/src/netif/ppp/pppoe.c
+index 53c3770..f333447 100644
+--- a/src/netif/ppp/pppoe.c
++++ b/src/netif/ppp/pppoe.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*****************************************************************************
+ * pppoe.c - PPP Over Ethernet implementation for lwIP.
+ *
+diff --git a/src/netif/ppp/pppol2tp.c b/src/netif/ppp/pppol2tp.c
+index 675bf03..bd4ada9 100644
+--- a/src/netif/ppp/pppol2tp.c
++++ b/src/netif/ppp/pppol2tp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Network Point to Point Protocol over Layer 2 Tunneling Protocol program file.
+diff --git a/src/netif/ppp/pppos.c b/src/netif/ppp/pppos.c
+index 2b570d8..b1cee16 100644
+--- a/src/netif/ppp/pppos.c
++++ b/src/netif/ppp/pppos.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Network Point to Point Protocol over Serial file.
+diff --git a/src/netif/ppp/upap.c b/src/netif/ppp/upap.c
+index 80f1319..fbb1195 100644
+--- a/src/netif/ppp/upap.c
++++ b/src/netif/ppp/upap.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * upap.c - User/Password Authentication Protocol.
+  *
+diff --git a/src/netif/ppp/utils.c b/src/netif/ppp/utils.c
+index f7a5548..e558426 100644
+--- a/src/netif/ppp/utils.c
++++ b/src/netif/ppp/utils.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * utils.c - various utility functions used in pppd.
+  *
+diff --git a/src/netif/ppp/vj.c b/src/netif/ppp/vj.c
+index 2699a13..1612bb7 100644
+--- a/src/netif/ppp/vj.c
++++ b/src/netif/ppp/vj.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * Routines to compress and uncompess tcp packets (for transmission
+  * over low speed serial lines.
+diff --git a/src/netif/slipif.c b/src/netif/slipif.c
+index 52644a9..f2b1da7 100644
+--- a/src/netif/slipif.c
++++ b/src/netif/slipif.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * SLIP Interface
+diff --git a/src/netif/zepif.c b/src/netif/zepif.c
+index 5bd6673..454a134 100644
+--- a/src/netif/zepif.c
++++ b/src/netif/zepif.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  *
+diff --git a/test/fuzz/fuzz.c b/test/fuzz/fuzz.c
+index 85eaa4f..2e242d3 100644
+--- a/test/fuzz/fuzz.c
++++ b/test/fuzz/fuzz.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * Copyright (c) 2001-2003 Swedish Institute of Computer Science.
+  * All rights reserved. 
+diff --git a/test/sockets/sockets_stresstest.c b/test/sockets/sockets_stresstest.c
+index 3fb6b06..314bfdb 100644
+--- a/test/sockets/sockets_stresstest.c
++++ b/test/sockets/sockets_stresstest.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /**
+  * @file
+  * Sockets stresstest
+diff --git a/test/unit/api/test_sockets.c b/test/unit/api/test_sockets.c
+index ed43427..c524b3b 100644
+--- a/test/unit/api/test_sockets.c
++++ b/test/unit/api/test_sockets.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_sockets.h"
+ 
+ #include "lwip/mem.h"
+diff --git a/test/unit/arch/sys_arch.c b/test/unit/arch/sys_arch.c
+index 288fb73..0703a29 100644
+--- a/test/unit/arch/sys_arch.c
++++ b/test/unit/arch/sys_arch.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * Copyright (c) 2017 Simon Goldschmidt
+  * All rights reserved. 
+diff --git a/test/unit/core/test_def.c b/test/unit/core/test_def.c
+index 2f28ab0..10f6c22 100644
+--- a/test/unit/core/test_def.c
++++ b/test/unit/core/test_def.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_def.h"
+ 
+ #include "lwip/def.h"
+diff --git a/test/unit/core/test_mem.c b/test/unit/core/test_mem.c
+index fa221ad..16f2a68 100644
+--- a/test/unit/core/test_mem.c
++++ b/test/unit/core/test_mem.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_mem.h"
+ 
+ #include "lwip/mem.h"
+diff --git a/test/unit/core/test_netif.c b/test/unit/core/test_netif.c
+index d862939..6639ee2 100644
+--- a/test/unit/core/test_netif.c
++++ b/test/unit/core/test_netif.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_netif.h"
+ 
+ #include "lwip/netif.h"
+diff --git a/test/unit/core/test_pbuf.c b/test/unit/core/test_pbuf.c
+index d20b358..2e63174 100644
+--- a/test/unit/core/test_pbuf.c
++++ b/test/unit/core/test_pbuf.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_pbuf.h"
+ 
+ #include "lwip/pbuf.h"
+diff --git a/test/unit/core/test_timers.c b/test/unit/core/test_timers.c
+index 6b64c6f..49b5f7f 100644
+--- a/test/unit/core/test_timers.c
++++ b/test/unit/core/test_timers.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_timers.h"
+ 
+ #include "lwip/def.h"
+diff --git a/test/unit/dhcp/test_dhcp.c b/test/unit/dhcp/test_dhcp.c
+index 6165880..2feb060 100644
+--- a/test/unit/dhcp/test_dhcp.c
++++ b/test/unit/dhcp/test_dhcp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_dhcp.h"
+ 
+ #include "lwip/netif.h"
+diff --git a/test/unit/etharp/test_etharp.c b/test/unit/etharp/test_etharp.c
+index cbeb339..6242b05 100644
+--- a/test/unit/etharp/test_etharp.c
++++ b/test/unit/etharp/test_etharp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_etharp.h"
+ 
+ #include "lwip/udp.h"
+diff --git a/test/unit/ip4/test_ip4.c b/test/unit/ip4/test_ip4.c
+index aecc6d3..87aad41 100644
+--- a/test/unit/ip4/test_ip4.c
++++ b/test/unit/ip4/test_ip4.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_ip4.h"
+ 
+ #include "lwip/ip4.h"
+diff --git a/test/unit/ip6/test_ip6.c b/test/unit/ip6/test_ip6.c
+index 886256d..f2e92a4 100644
+--- a/test/unit/ip6/test_ip6.c
++++ b/test/unit/ip6/test_ip6.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_ip6.h"
+ 
+ #include "lwip/ethip6.h"
+diff --git a/test/unit/lwip_unittests.c b/test/unit/lwip_unittests.c
+index f5ed5ed..18a50bd 100644
+--- a/test/unit/lwip_unittests.c
++++ b/test/unit/lwip_unittests.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "lwip_check.h"
+ 
+ #include "ip4/test_ip4.h"
+diff --git a/test/unit/mdns/test_mdns.c b/test/unit/mdns/test_mdns.c
+index 57c1257..16b67d4 100644
+--- a/test/unit/mdns/test_mdns.c
++++ b/test/unit/mdns/test_mdns.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ /*
+  * Copyright (c) 2015 Verisure Innovation AB
+  * All rights reserved.
+diff --git a/test/unit/mqtt/test_mqtt.c b/test/unit/mqtt/test_mqtt.c
+index cd2f342..05b1782 100644
+--- a/test/unit/mqtt/test_mqtt.c
++++ b/test/unit/mqtt/test_mqtt.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_mqtt.h"
+ 
+ #include "lwip/pbuf.h"
+diff --git a/test/unit/tcp/tcp_helper.c b/test/unit/tcp/tcp_helper.c
+index c6dfabc..c372271 100644
+--- a/test/unit/tcp/tcp_helper.c
++++ b/test/unit/tcp/tcp_helper.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "tcp_helper.h"
+ 
+ #include "lwip/priv/tcp_priv.h"
+diff --git a/test/unit/tcp/test_tcp.c b/test/unit/tcp/test_tcp.c
+index 95d1988..c854b7e 100644
+--- a/test/unit/tcp/test_tcp.c
++++ b/test/unit/tcp/test_tcp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_tcp.h"
+ 
+ #include "lwip/priv/tcp_priv.h"
+diff --git a/test/unit/tcp/test_tcp_oos.c b/test/unit/tcp/test_tcp_oos.c
+index 1c855b7..d48a415 100644
+--- a/test/unit/tcp/test_tcp_oos.c
++++ b/test/unit/tcp/test_tcp_oos.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_tcp_oos.h"
+ 
+ #include "lwip/priv/tcp_priv.h"
+diff --git a/test/unit/udp/test_udp.c b/test/unit/udp/test_udp.c
+index 986e11a..d29fb13 100644
+--- a/test/unit/udp/test_udp.c
++++ b/test/unit/udp/test_udp.c
+@@ -1,4 +1,5 @@
+-static volatile int __A_VARIABLE;
++#include <flexos/isolation.h>
++static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+ #include "test_udp.h"
+ 
+ #include "lwip/udp.h"
+-- 
+2.34.1
+
