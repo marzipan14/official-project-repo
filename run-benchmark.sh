@@ -22,8 +22,8 @@ RESULTS=${RESULTS:-./output.txt}
 BOOT_WARMUP_SLEEP=${BOOT_WARMUP_SLEEP:-4}
 NUM_REQUESTS=${NUM_REQUESTS:-100000}
 
-# BYTES=(2 4)
-BYTES=(2 4 8 16 32 64 128 256)
+BYTES=(2 4)
+# BYTES=(2 4 8 16 32 64 128 256)
 PATCHES="./patches"
 
 function cleanup {
@@ -54,13 +54,16 @@ function setup_container {
 
   echo "Setting up..."
   create_bridge
-  add_clang_compatibility
 
   if [[ "$benchmark" == "instrumentation" ]]; then
     add_instrumentation
     add_instrumentation_flags
   elif [[ "$benchmark" == "exit-points" ]]; then
-    send_patch "0006-Touch-memory-at-every-exit-point.patch" "/root/.unikraft/libs/redis/patches"
+    send_patch "0006-Touch-memory-at-every-exit-point-redis.patch" "redis"
+    #send_patch "0008-Touch-memory-at-every-exit-point-lwip.patch" "lwip"
+    send_patch "0011-Touch-memory-at-every-exit-point-newlib.patch" "newlib"
+    send_patch "0014-Touch-memory-at-every-exit-point-pthread-embedded.patch" "pthread-embedded"
+    #send_patch "05-Touch-memory-at-every-exit-point-tlsf.patch" "tlsf"
   elif [[ "$benchmark" == "llvm" ]]; then
     send_pass "llvm-pass"
     add_llvm_pass_flags "llvm-pass"
@@ -70,18 +73,6 @@ function setup_container {
   fi
 
   compile_redis
-}
-
-function add_clang_compatibility {
-  echo "Adding clang compatibility..."
-  DOCKER_EXEC bash -c "
-    cd /root/.unikraft;
-    find . -type f -exec sed -i 's/#pragma GCC optimize(\"O0\")/ /g' {} \\;
-    find . -type f -exec sed -i 's/#pragma GCC push_options/#pragma clang attribute push(__attribute__((optnone)), apply_to = any(function)) /g' {} \\;
-    find . -type f -exec sed -i 's/#pragma GCC pop_options/#pragma clang attribute pop /g' {} \\;
-    find . -type f -exec sed -i 's/__attribute__((fallthrough))/ /g' {} \\;
-    find . -type f -exec sed -i 's/ __VA_OPT__(,) /, ##/g' {} \\;
-  "
 }
 
 function send_pass {
@@ -102,17 +93,25 @@ function compile_pass {
 }
 
 function add_llvm_pass_flags {
-  pass_name="$1"
   echo "Adding LLVM pass flags..."
-  add_flags "LIBREDIS_CFLAGS-y += -Xclang -load -Xclang /root/.unikraft/$pass_name/build/touchmemory/libTouchMemoryPass.so"
+  pass_name="$1"
+  pass_flags="-Xclang -load -Xclang /root/.unikraft/$pass_name/build/touchmemory/libTouchMemoryPass.so"
+  add_flags "LIBREDIS_CFLAGS-y += $pass_flags" "redis"
+  add_flags "LIBPTHREAD-EMBEDDED_CFLAGS-y += $pass_flags" "pthread-embedded"
+  #add_flags "LIBLWIP_CFLAGS-y += $pass_flags" "lwip"
+  #add_flags "LIBTLSF_CFLAGS-y += $pass_flags" "tlsf"
+  #add_flags "LIBNEWLIBGLUE_CFLAGS-y += $pass_flags" "newlib"
+  #add_flags "LIBNEWLIBC_CFLAGS-y += $pass_flags" "newlib"
+  #add_flags "LIBNEWLIBM_CFLAGS-y += $pass_flags" "newlib"
 }
 
 function add_flags {
+  lib_name=$2
   DOCKER_EXEC bash -c "
     echo '
       $1
     ' | \
-    cat - /root/.unikraft/libs/redis/Makefile.uk > /tmp/out && mv /tmp/out /root/.unikraft/libs/redis/Makefile.uk
+    cat - /root/.unikraft/libs/$lib_name/Makefile.uk > /tmp/out && mv /tmp/out /root/.unikraft/libs/$lib_name/Makefile.uk
   "
 }
 
@@ -128,18 +127,18 @@ function add_instrumentation {
   echo "Adding instrumentation..."
   DOCKER_EXEC bash -c "
     echo '
-      #ifndef ADD_INSTRUMENTATION
-      #define ADD_INSTRUMENTATION
-  
+    	#include <flexos/isolation.h>
+
+	static volatile int __A_VARIABLE __attribute__((flexos_whitelist));
+
       void __cyg_profile_func_enter (void *func, void	*call_site) __attribute__((no_instrument_function));
       void __cyg_profile_func_exit (void *func, void *call_site) __attribute__((no_instrument_function));
 
       void __cyg_profile_func_enter (void *this_fn, void *call_site) __attribute__((no_instrument_function)){}
   
       void __cyg_profile_func_exit (void *this_fn, void *call_site) __attribute__((no_instrument_function)){
-        static volatile int __A_VARIABLE; __A_VARIABLE = 1;
+        __A_VARIABLE = 1;
       }
-      #endif
     ' | \
     cat - /root/.unikraft/libs/redis/main.c > /tmp/out && mv /tmp/out /root/.unikraft/libs/redis/main.c
   "
@@ -147,13 +146,19 @@ function add_instrumentation {
 
 function add_instrumentation_flags {
   echo "Adding instrumentation flags..."
-  add_flags "LIBREDIS_CFLAGS-y += -finstrument-functions"
+  add_flags "LIBREDIS_CFLAGS-y += -finstrument-functions" "redis"
+  add_flags "LIBTLSF_CFLAGS-y += -finstrument-functions" "tlsf"
+  add_flags "LIBLWIP_CFLAGS-y += -finstrument-functions" "lwip"
+  add_flags "LIBPTHREAD-EMBEDDED_CFLAGS-y += -finstrument-functions" "pthread-embedded"
+  add_flags "LIBNEWLIBC_CFLAGS-y += -finstrument-functions" "newlib"
+  add_flags "LIBNEWLIBM_CFLAGS-y += -finstrument-functions" "newlib"
+  add_flags "LIBNEWLIBGLUE_CFLAGS-y += -finstrument-functions" "newlib"
 }
 
 function send_patch {
   patch_file="$1"
   patch_directory="$2"
-  docker cp "$PATCHES/$patch_file" "$CONTAINER:$patch_directory"
+  docker cp "$PATCHES/$patch_file" "$CONTAINER:/root/.unikraft/libs/$patch_directory/patches"
 }
 
 function compile_redis {
@@ -170,8 +175,7 @@ function compile_redis {
       -y LWIP_UKNETDEV_POLLONLY \
       -y LWIP_TCP_KEEPALIVE;
     make prepare;
-    kraft -v build --no-progress --fast --compartmentalize |& grep 'AAA*' | sed 's/AAA//g' - > log.log;"
-    docker cp "$CONTAINER:/root/.unikraft/apps/redis/log.log" "./"
+    kraft -v build --no-progress --fast --compartmentalize"
 }
 
 function prepare_results_file {
@@ -254,5 +258,5 @@ benchmark="$1"
 start_container
 trap "cleanup" EXIT
 setup_container "$benchmark"
-# prepare_results_file
-# run_benchmark
+prepare_results_file
+run_benchmark
