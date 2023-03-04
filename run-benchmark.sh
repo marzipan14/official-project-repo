@@ -17,13 +17,13 @@ UNIKERNEL_IP=${UNIKERNEL_IP:-172.0.1.2}
 UNIKERNEL_IMAGE=${UNIKERNEL_IMAGE:-/root/.unikraft/apps/redis/build/redis_kvm-x86_64}
 
 ITERATIONS=${ITERATIONS:-10}
-ITERATIONS=${ITERATIONS:-50}
+# ITERATIONS=${ITERATIONS:-50}
 RESULTS=${RESULTS:-./output.txt}
 BOOT_WARMUP_SLEEP=${BOOT_WARMUP_SLEEP:-4}
 NUM_REQUESTS=${NUM_REQUESTS:-100000}
 
-BYTES=(2 4)
-# BYTES=(2 4 8 16 32 64 128 256)
+# BYTES=(2 4)
+BYTES=(2 4 8 16 32 64 128 256)
 PATCHES="./patches"
 
 function cleanup {
@@ -60,10 +60,10 @@ function setup_container {
     add_instrumentation_flags
   elif [[ "$benchmark" == "exit-points" ]]; then
     send_patch "0006-Touch-memory-at-every-exit-point-redis.patch" "redis"
-    #send_patch "0008-Touch-memory-at-every-exit-point-lwip.patch" "lwip"
+    send_patch "0008-Touch-memory-at-every-exit-point-lwip.patch" "lwip"
     send_patch "0011-Touch-memory-at-every-exit-point-newlib.patch" "newlib"
     send_patch "0014-Touch-memory-at-every-exit-point-pthread-embedded.patch" "pthread-embedded"
-    #send_patch "05-Touch-memory-at-every-exit-point-tlsf.patch" "tlsf"
+    send_patch "05-Touch-memory-at-every-exit-point-tlsf.patch" "tlsf"
   elif [[ "$benchmark" == "llvm" ]]; then
     send_pass "llvm-pass"
     add_llvm_pass_flags "llvm-pass"
