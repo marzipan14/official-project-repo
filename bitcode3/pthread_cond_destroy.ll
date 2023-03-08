@@ -1,0 +1,912 @@
+; ModuleID = '/root/.unikraft/apps/redis/build/libpthread-embedded/origin/pthread-embedded-44b41d760a433915d70a7be9809651b0a65e001d/pthread_cond_destroy.c'
+source_filename = "/root/.unikraft/apps/redis/build/libpthread-embedded/origin/pthread-embedded-44b41d760a433915d70a7be9809651b0a65e001d/pthread_cond_destroy.c"
+target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-pc-linux-gnu"
+
+%struct.uk_mutex = type { i32, %struct.uk_thread*, %struct.uk_waitq }
+%struct.uk_thread = type { i8*, i8*, i8*, i8*, %struct.anon.0, i32, i64, i8, %struct.uk_waitq, %struct.uk_sched*, i8*, i32, %struct._reent*, %struct.uk_thread_sig* }
+%struct.anon.0 = type { %struct.uk_thread*, %struct.uk_thread** }
+%struct.uk_sched = type { void (%struct.uk_sched*)*, i32 (%struct.uk_sched*, %struct.uk_thread*, %struct.uk_thread_attr*)*, void (%struct.uk_sched*, %struct.uk_thread*)*, void (%struct.uk_sched*, %struct.uk_thread*)*, void (%struct.uk_sched*, %struct.uk_thread*)*, i32 (%struct.uk_sched*, %struct.uk_thread*, i32)*, i32 (%struct.uk_sched*, %struct.uk_thread*, i32*)*, i32 (%struct.uk_sched*, %struct.uk_thread*, i32)*, i32 (%struct.uk_sched*, %struct.uk_thread*, i32*)*, i8, %struct.uk_thread, %struct.uk_thread_list, %struct.ukplat_ctx_callbacks, %struct.uk_alloc*, %struct.uk_sched*, i8* }
+%struct.uk_thread_attr = type { i8, i32, i64 }
+%struct.uk_thread_list = type { %struct.uk_thread*, %struct.uk_thread** }
+%struct.ukplat_ctx_callbacks = type { i8* (%struct.uk_alloc*, i64, i64)*, void (i8*)*, void (i8*, i8*)* }
+%struct.uk_alloc = type { i8* (%struct.uk_alloc*, i64)*, {}*, i8* (%struct.uk_alloc*, i8*, i64)*, i32 (%struct.uk_alloc*, i8**, i64, i64)*, {}*, void (%struct.uk_alloc*, i8*)*, void (%struct.uk_alloc*, i8*)*, i8* (%struct.uk_alloc*, i64)*, i8* (%struct.uk_alloc*, i64)*, void (%struct.uk_alloc*, i8*, i64)*, i32 (%struct.uk_alloc*, i8*, i64)*, i64, %struct.uk_alloc*, [0 x i8] }
+%struct._reent = type { i32, %struct.__sFILE*, %struct.__sFILE*, %struct.__sFILE*, i32, [25 x i8], i32, %struct.__locale_t*, i32, void (%struct._reent*)*, %struct._Bigint*, i32, %struct._Bigint*, %struct._Bigint**, i32, i8*, %union.anon.1, %struct._atexit*, %struct._atexit, void (i32)**, %struct._glue, [3 x %struct.__sFILE] }
+%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i64 (%struct._reent*, i8*, i8*, i32)*, i64 (%struct._reent*, i8*, i8*, i32)*, i64 (%struct._reent*, i8*, i64, i32)*, i32 (%struct._reent*, i8*)*, %struct.__sbuf, i8*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64, %struct._reent*, i32, %struct._mbstate_t, i32 }
+%struct.__sbuf = type { i8*, i32 }
+%struct._mbstate_t = type { i32, %union.anon }
+%union.anon = type { i32 }
+%struct.__locale_t = type opaque
+%struct._Bigint = type { %struct._Bigint*, i32, i32, i32, i32, [1 x i32] }
+%union.anon.1 = type { %struct.anon.3 }
+%struct.anon.3 = type { [30 x i8*], [30 x i32] }
+%struct._atexit = type { %struct._atexit*, i32, [32 x void ()*], %struct._on_exit_args }
+%struct._on_exit_args = type { [32 x i8*], [32 x i8*], i32, i32 }
+%struct._glue = type { %struct._glue*, i32, %struct.__sFILE* }
+%struct.uk_thread_sig = type { i64, i64, %struct.uk_list_head, %struct.uk_thread_sig_wait, %struct.uk_list_head }
+%struct.uk_thread_sig_wait = type { i32, i64, %struct.siginfo_t }
+%struct.siginfo_t = type { i32, i32, i32 }
+%struct.uk_list_head = type { %struct.uk_list_head*, %struct.uk_list_head* }
+%struct.uk_waitq = type { %struct.uk_waitq_entry*, %struct.uk_waitq_entry** }
+%struct.uk_waitq_entry = type { i32, %struct.uk_thread*, %struct.anon }
+%struct.anon = type { %struct.uk_waitq_entry* }
+%struct.pthread_cond_t_ = type { i64, i64, i64, %struct.sem_t_*, %struct.sem_t_*, %struct.pthread_mutex_t_*, %struct.pthread_cond_t_*, %struct.pthread_cond_t_* }
+%struct.sem_t_ = type { i32, %struct.pthread_mutex_t_*, %struct.uk_semaphore* }
+%struct.uk_semaphore = type { i64, %struct.uk_waitq }
+%struct.pthread_mutex_t_ = type { %struct.uk_semaphore*, i32, i32, i32, %struct.pte_handle_t }
+%struct.pte_handle_t = type { i8*, i32 }
+
+@pte_cond_list_lock = external dso_local local_unnamed_addr global %struct.uk_mutex*, align 8
+@pte_cond_list_head = external dso_local local_unnamed_addr global %struct.pthread_cond_t_*, align 8
+@pte_cond_list_tail = external dso_local local_unnamed_addr global %struct.pthread_cond_t_*, align 8
+@pte_cond_test_init_lock = external dso_local local_unnamed_addr global %struct.uk_mutex*, align 8
+
+; Function Attrs: noredzone nounwind
+define dso_local i32 @pthread_cond_destroy(%struct.pthread_cond_t_**) local_unnamed_addr #0 !dbg !502 {
+  %2 = icmp eq %struct.pthread_cond_t_** %0, null, !dbg !516
+  br i1 %2, label %113, label %3, !dbg !518
+
+; <label>:3:                                      ; preds = %1
+  %4 = bitcast %struct.pthread_cond_t_** %0 to i64*, !dbg !519
+  %5 = load i64, i64* %4, align 8, !dbg !519, !tbaa !520
+  switch i64 %5, label %6 [
+    i64 0, label %113
+    i64 -1, label %85
+  ], !dbg !524
+
+; <label>:6:                                      ; preds = %3
+  %7 = load %struct.uk_mutex*, %struct.uk_mutex** @pte_cond_list_lock, align 8, !dbg !525, !tbaa !520
+  %8 = tail call i32 @pte_osMutexLock(%struct.uk_mutex* %7) #3, !dbg !528
+  %9 = load %struct.pthread_cond_t_*, %struct.pthread_cond_t_** %0, align 8, !dbg !529, !tbaa !520
+  %10 = getelementptr inbounds %struct.pthread_cond_t_, %struct.pthread_cond_t_* %9, i64 0, i32 4, !dbg !531
+  %11 = tail call i32 @sem_wait(%struct.sem_t_** nonnull %10) #3, !dbg !533
+  %12 = icmp eq i32 %11, 0, !dbg !534
+  br i1 %12, label %16, label %13, !dbg !535
+
+; <label>:13:                                     ; preds = %6
+  %14 = tail call i32* @__errno() #3, !dbg !536
+  %15 = load i32, i32* %14, align 4, !dbg !536, !tbaa !538
+  br label %113, !dbg !540
+
+; <label>:16:                                     ; preds = %6
+  %17 = getelementptr inbounds %struct.pthread_cond_t_, %struct.pthread_cond_t_* %9, i64 0, i32 5, !dbg !541
+  %18 = tail call i32 @pthread_mutex_trylock(%struct.pthread_mutex_t_** nonnull %17) #3, !dbg !543
+  %19 = icmp eq i32 %18, 0, !dbg !544
+  br i1 %19, label %22, label %20, !dbg !545
+
+; <label>:20:                                     ; preds = %16
+  %21 = tail call i32 @sem_post(%struct.sem_t_** nonnull %10) #3, !dbg !546
+  br label %113, !dbg !548
+
+; <label>:22:                                     ; preds = %16
+  %23 = getelementptr inbounds %struct.pthread_cond_t_, %struct.pthread_cond_t_* %9, i64 0, i32 0, !dbg !549
+  %24 = load i64, i64* %23, align 8, !dbg !549, !tbaa !551
+  %25 = getelementptr inbounds %struct.pthread_cond_t_, %struct.pthread_cond_t_* %9, i64 0, i32 1, !dbg !554
+  %26 = load i64, i64* %25, align 8, !dbg !554, !tbaa !555
+  %27 = icmp sgt i64 %24, %26, !dbg !556
+  br i1 %27, label %28, label %37, !dbg !557
+
+; <label>:28:                                     ; preds = %22
+  %29 = tail call i32 @sem_post(%struct.sem_t_** nonnull %10) #3, !dbg !558
+  %30 = icmp eq i32 %29, 0, !dbg !561
+  br i1 %30, label %34, label %31, !dbg !562
+
+; <label>:31:                                     ; preds = %28
+  %32 = tail call i32* @__errno() #3, !dbg !563
+  %33 = load i32, i32* %32, align 4, !dbg !563, !tbaa !538
+  br label %34, !dbg !565
+
+; <label>:34:                                     ; preds = %28, %31
+  %35 = phi i32 [ %33, %31 ], [ 0, %28 ], !dbg !566
+  %36 = tail call i32 @pthread_mutex_unlock(%struct.pthread_mutex_t_** nonnull %17) #3, !dbg !567
+  br label %96, !dbg !568
+
+; <label>:37:                                     ; preds = %22
+  store %struct.pthread_cond_t_* null, %struct.pthread_cond_t_** %0, align 8, !dbg !569, !tbaa !520
+  %38 = tail call i32 @sem_destroy(%struct.sem_t_** nonnull %10) #3, !dbg !571
+  %39 = icmp eq i32 %38, 0, !dbg !573
+  br i1 %39, label %43, label %40, !dbg !574
+
+; <label>:40:                                     ; preds = %37
+  %41 = tail call i32* @__errno() #3, !dbg !575
+  %42 = load i32, i32* %41, align 4, !dbg !575, !tbaa !538
+  br label %43, !dbg !577
+
+; <label>:43:                                     ; preds = %37, %40
+  %44 = phi i32 [ %42, %40 ], [ 0, %37 ], !dbg !566
+  %45 = getelementptr inbounds %struct.pthread_cond_t_, %struct.pthread_cond_t_* %9, i64 0, i32 3, !dbg !578
+  %46 = tail call i32 @sem_destroy(%struct.sem_t_** nonnull %45) #3, !dbg !580
+  %47 = icmp eq i32 %46, 0, !dbg !581
+  br i1 %47, label %51, label %48, !dbg !582
+
+; <label>:48:                                     ; preds = %43
+  %49 = tail call i32* @__errno() #3, !dbg !583
+  %50 = load i32, i32* %49, align 4, !dbg !583, !tbaa !538
+  br label %51, !dbg !585
+
+; <label>:51:                                     ; preds = %43, %48
+  %52 = phi i32 [ %50, %48 ], [ 0, %43 ], !dbg !586
+  %53 = tail call i32 @pthread_mutex_unlock(%struct.pthread_mutex_t_** nonnull %17) #3, !dbg !587
+  %54 = icmp eq i32 %53, 0, !dbg !589
+  br i1 %54, label %55, label %57, !dbg !590
+
+; <label>:55:                                     ; preds = %51
+  %56 = tail call i32 @pthread_mutex_destroy(%struct.pthread_mutex_t_** nonnull %17) #3, !dbg !591
+  br label %57, !dbg !593
+
+; <label>:57:                                     ; preds = %55, %51
+  %58 = phi i32 [ %56, %55 ], [ %53, %51 ], !dbg !594
+  %59 = load %struct.pthread_cond_t_*, %struct.pthread_cond_t_** @pte_cond_list_head, align 8, !dbg !595, !tbaa !520
+  %60 = icmp eq %struct.pthread_cond_t_* %59, %9, !dbg !597
+  %61 = getelementptr inbounds %struct.pthread_cond_t_, %struct.pthread_cond_t_* %9, i64 0, i32 6, !dbg !598
+  %62 = bitcast %struct.pthread_cond_t_** %61 to i64*, !dbg !598
+  %63 = load i64, i64* %62, align 8, !dbg !598, !tbaa !600
+  br i1 %60, label %64, label %68, !dbg !601
+
+; <label>:64:                                     ; preds = %57
+  store i64 %63, i64* bitcast (%struct.pthread_cond_t_** @pte_cond_list_head to i64*), align 8, !dbg !602, !tbaa !520
+  %65 = getelementptr inbounds %struct.pthread_cond_t_, %struct.pthread_cond_t_* %9, i64 0, i32 7
+  %66 = bitcast %struct.pthread_cond_t_** %65 to i64*
+  %67 = load i64, i64* %66, align 8, !dbg !604, !tbaa !607
+  br label %74, !dbg !608
+
+; <label>:68:                                     ; preds = %57
+  %69 = getelementptr inbounds %struct.pthread_cond_t_, %struct.pthread_cond_t_* %9, i64 0, i32 7, !dbg !609
+  %70 = load %struct.pthread_cond_t_*, %struct.pthread_cond_t_** %69, align 8, !dbg !609, !tbaa !607
+  %71 = getelementptr inbounds %struct.pthread_cond_t_, %struct.pthread_cond_t_* %70, i64 0, i32 6, !dbg !610
+  %72 = bitcast %struct.pthread_cond_t_** %71 to i64*, !dbg !611
+  store i64 %63, i64* %72, align 8, !dbg !611, !tbaa !600
+  %73 = ptrtoint %struct.pthread_cond_t_* %70 to i64
+  br label %74
+
+; <label>:74:                                     ; preds = %68, %64
+  %75 = phi i64 [ %73, %68 ], [ %67, %64 ], !dbg !604
+  %76 = load %struct.pthread_cond_t_*, %struct.pthread_cond_t_** @pte_cond_list_tail, align 8, !dbg !612, !tbaa !520
+  %77 = icmp eq %struct.pthread_cond_t_* %76, %9, !dbg !613
+  br i1 %77, label %82, label %78, !dbg !614
+
+; <label>:78:                                     ; preds = %74
+  %79 = load %struct.pthread_cond_t_*, %struct.pthread_cond_t_** %61, align 8, !dbg !615, !tbaa !600
+  %80 = getelementptr inbounds %struct.pthread_cond_t_, %struct.pthread_cond_t_* %79, i64 0, i32 7, !dbg !616
+  %81 = bitcast %struct.pthread_cond_t_** %80 to i64*, !dbg !617
+  br label %82
+
+; <label>:82:                                     ; preds = %74, %78
+  %83 = phi i64* [ %81, %78 ], [ bitcast (%struct.pthread_cond_t_** @pte_cond_list_tail to i64*), %74 ]
+  store i64 %75, i64* %83, align 8, !dbg !618, !tbaa !520
+  %84 = bitcast %struct.pthread_cond_t_* %9 to i8*, !dbg !620
+  tail call void @free(i8* %84) #3, !dbg !621
+  br label %96
+
+; <label>:85:                                     ; preds = %3
+  %86 = load %struct.uk_mutex*, %struct.uk_mutex** @pte_cond_test_init_lock, align 8, !dbg !622, !tbaa !520
+  %87 = tail call i32 @pte_osMutexLock(%struct.uk_mutex* %86) #3, !dbg !624
+  %88 = load %struct.pthread_cond_t_*, %struct.pthread_cond_t_** %0, align 8, !dbg !625, !tbaa !520
+  %89 = icmp eq %struct.pthread_cond_t_* %88, inttoptr (i64 -1 to %struct.pthread_cond_t_*), !dbg !627
+  br i1 %89, label %90, label %91, !dbg !628
+
+; <label>:90:                                     ; preds = %85
+  store %struct.pthread_cond_t_* null, %struct.pthread_cond_t_** %0, align 8, !dbg !629, !tbaa !520
+  br label %91, !dbg !631
+
+; <label>:91:                                     ; preds = %90, %85
+  %92 = phi i32 [ 0, %90 ], [ 16, %85 ], !dbg !632
+  %93 = load %struct.uk_mutex*, %struct.uk_mutex** @pte_cond_test_init_lock, align 8, !dbg !634, !tbaa !520
+  %94 = tail call i32 @pte_osMutexUnlock(%struct.uk_mutex* %93) #3, !dbg !635
+  %95 = icmp eq i32 %92, 0, !dbg !636
+  br label %104, !dbg !637
+
+; <label>:96:                                     ; preds = %34, %82
+  %97 = phi i32 [ %35, %34 ], [ %44, %82 ], !dbg !638
+  %98 = phi i32 [ %36, %34 ], [ %52, %82 ], !dbg !639
+  %99 = phi i32 [ 16, %34 ], [ %58, %82 ], !dbg !640
+  %100 = load %struct.uk_mutex*, %struct.uk_mutex** @pte_cond_list_lock, align 8, !dbg !641, !tbaa !520
+  %101 = tail call i32 @pte_osMutexUnlock(%struct.uk_mutex* %100) #3, !dbg !642
+  %102 = icmp eq i32 %97, 0, !dbg !636
+  %103 = icmp eq i32 %98, 0, !dbg !643
+  br i1 %103, label %104, label %108, !dbg !637
+
+; <label>:104:                                    ; preds = %91, %96
+  %105 = phi i1 [ %95, %91 ], [ %102, %96 ]
+  %106 = phi i32 [ 0, %91 ], [ %99, %96 ]
+  %107 = phi i32 [ %92, %91 ], [ %97, %96 ]
+  br label %108, !dbg !637
+
+; <label>:108:                                    ; preds = %96, %104
+  %109 = phi i1 [ %105, %104 ], [ %102, %96 ]
+  %110 = phi i32 [ %107, %104 ], [ %97, %96 ]
+  %111 = phi i32 [ %106, %104 ], [ %98, %96 ]
+  %112 = select i1 %109, i32 %111, i32 %110, !dbg !644
+  br label %113, !dbg !644
+
+; <label>:113:                                    ; preds = %108, %3, %1, %20, %13
+  %114 = phi i32 [ %15, %13 ], [ %18, %20 ], [ 22, %3 ], [ 22, %1 ], [ %112, %108 ], !dbg !586
+  ret i32 %114, !dbg !645
+}
+
+; Function Attrs: noredzone
+declare dso_local i32 @pte_osMutexLock(%struct.uk_mutex*) local_unnamed_addr #1
+
+; Function Attrs: noredzone
+declare dso_local i32 @sem_wait(%struct.sem_t_**) local_unnamed_addr #1
+
+; Function Attrs: noredzone
+declare dso_local i32* @__errno() local_unnamed_addr #1
+
+; Function Attrs: noredzone
+declare dso_local i32 @pthread_mutex_trylock(%struct.pthread_mutex_t_**) local_unnamed_addr #1
+
+; Function Attrs: noredzone
+declare dso_local i32 @sem_post(%struct.sem_t_**) local_unnamed_addr #1
+
+; Function Attrs: noredzone
+declare dso_local i32 @pthread_mutex_unlock(%struct.pthread_mutex_t_**) local_unnamed_addr #1
+
+; Function Attrs: noredzone
+declare dso_local i32 @sem_destroy(%struct.sem_t_**) local_unnamed_addr #1
+
+; Function Attrs: noredzone
+declare dso_local i32 @pthread_mutex_destroy(%struct.pthread_mutex_t_**) local_unnamed_addr #1
+
+; Function Attrs: noredzone
+declare dso_local void @free(i8*) local_unnamed_addr #1
+
+; Function Attrs: noredzone
+declare dso_local i32 @pte_osMutexUnlock(%struct.uk_mutex*) local_unnamed_addr #1
+
+; Function Attrs: nounwind readnone speculatable
+
+attributes #0 = { noredzone nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { noredzone "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind readnone speculatable }
+attributes #3 = { nobuiltin noredzone nounwind }
+
+!llvm.module.flags = !{!498, !499, !500}
+!llvm.ident = !{!501}
+
+!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "clang version 7.0.1-8+deb10u2 (tags/RELEASE_701/final)", isOptimized: true, runtimeVersion: 0, emissionKind: FullDebug, enums: !2, retainedTypes: !10)
+!1 = !DIFile(filename: "/root/.unikraft/apps/redis/build/libpthread-embedded/origin/pthread-embedded-44b41d760a433915d70a7be9809651b0a65e001d/pthread_cond_destroy.c", directory: "/root/.unikraft/apps/redis/build")
+!2 = !{!3}
+!3 = !DICompositeType(tag: DW_TAG_enumeration_type, name: "uk_sig_waiting", file: !4, line: 92, baseType: !5, size: 32, elements: !6)
+!4 = !DIFile(filename: "/root/.unikraft/unikraft/lib/uksignal/include/uk/uk_signal.h", directory: "/root/.unikraft/apps/redis/build")
+!5 = !DIBasicType(name: "unsigned int", size: 32, encoding: DW_ATE_unsigned)
+!6 = !{!7, !8, !9}
+!7 = !DIEnumerator(name: "UK_SIG_NOT_WAITING", value: 0, isUnsigned: true)
+!8 = !DIEnumerator(name: "UK_SIG_WAITING", value: 1, isUnsigned: true)
+!9 = !DIEnumerator(name: "UK_SIG_WAITING_SCHED", value: 2, isUnsigned: true)
+!10 = !{!11, !12}
+!11 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64)
+!12 = !DIDerivedType(tag: DW_TAG_typedef, name: "pthread_cond_t", file: !13, line: 419, baseType: !14)
+!13 = !DIFile(filename: "/root/.unikraft/apps/redis/build/libpthread-embedded/origin/pthread-embedded-44b41d760a433915d70a7be9809651b0a65e001d/pthread.h", directory: "/root/.unikraft/apps/redis/build")
+!14 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !15, size: 64)
+!15 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "pthread_cond_t_", file: !16, line: 233, size: 512, elements: !17)
+!16 = !DIFile(filename: "/root/.unikraft/apps/redis/build/libpthread-embedded/origin/pthread-embedded-44b41d760a433915d70a7be9809651b0a65e001d/implement.h", directory: "/root/.unikraft/apps/redis/build")
+!17 = !{!18, !20, !21, !22, !494, !495, !496, !497}
+!18 = !DIDerivedType(tag: DW_TAG_member, name: "nWaitersBlocked", scope: !15, file: !16, line: 235, baseType: !19, size: 64)
+!19 = !DIBasicType(name: "long int", size: 64, encoding: DW_ATE_signed)
+!20 = !DIDerivedType(tag: DW_TAG_member, name: "nWaitersGone", scope: !15, file: !16, line: 236, baseType: !19, size: 64, offset: 64)
+!21 = !DIDerivedType(tag: DW_TAG_member, name: "nWaitersToUnblock", scope: !15, file: !16, line: 237, baseType: !19, size: 64, offset: 128)
+!22 = !DIDerivedType(tag: DW_TAG_member, name: "semBlockQueue", scope: !15, file: !16, line: 238, baseType: !23, size: 64, offset: 192)
+!23 = !DIDerivedType(tag: DW_TAG_typedef, name: "sem_t", file: !24, line: 78, baseType: !25)
+!24 = !DIFile(filename: "/root/.unikraft/apps/redis/build/libpthread-embedded/origin/pthread-embedded-44b41d760a433915d70a7be9809651b0a65e001d/semaphore.h", directory: "/root/.unikraft/apps/redis/build")
+!25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64)
+!26 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "sem_t_", file: !16, line: 136, size: 192, elements: !27)
+!27 = !{!28, !30, !493}
+!28 = !DIDerivedType(tag: DW_TAG_member, name: "value", scope: !26, file: !16, line: 138, baseType: !29, size: 32)
+!29 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+!30 = !DIDerivedType(tag: DW_TAG_member, name: "lock", scope: !26, file: !16, line: 139, baseType: !31, size: 64, offset: 64)
+!31 = !DIDerivedType(tag: DW_TAG_typedef, name: "pthread_mutex_t", file: !13, line: 417, baseType: !32)
+!32 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !33, size: 64)
+!33 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "pthread_mutex_t_", file: !16, line: 146, size: 320, elements: !34)
+!34 = !{!35, !483, !484, !485, !486}
+!35 = !DIDerivedType(tag: DW_TAG_member, name: "handle", scope: !33, file: !16, line: 148, baseType: !36, size: 64)
+!36 = !DIDerivedType(tag: DW_TAG_typedef, name: "pte_osSemaphoreHandle", file: !37, line: 12, baseType: !38)
+!37 = !DIFile(filename: "/root/.unikraft/libs/pthread-embedded/include/pte_osal.h", directory: "/root/.unikraft/apps/redis/build")
+!38 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !39, size: 64)
+!39 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "uk_semaphore", file: !40, line: 51, size: 192, elements: !41)
+!40 = !DIFile(filename: "/root/.unikraft/unikraft/lib/uklock/include/uk/semaphore.h", directory: "/root/.unikraft/apps/redis/build")
+!41 = !{!42, !43}
+!42 = !DIDerivedType(tag: DW_TAG_member, name: "count", scope: !39, file: !40, line: 52, baseType: !19, size: 64)
+!43 = !DIDerivedType(tag: DW_TAG_member, name: "wait", scope: !39, file: !40, line: 53, baseType: !44, size: 128, offset: 64)
+!44 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "uk_waitq", file: !45, line: 42, size: 128, elements: !46)
+!45 = !DIFile(filename: "/root/.unikraft/unikraft/lib/uksched/include/uk/wait_types.h", directory: "/root/.unikraft/apps/redis/build")
+!46 = !{!47, !481}
+!47 = !DIDerivedType(tag: DW_TAG_member, name: "stqh_first", scope: !44, file: !45, line: 42, baseType: !48, size: 64)
+!48 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !49, size: 64)
+!49 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "uk_waitq_entry", file: !45, line: 35, size: 192, elements: !50)
+!50 = !{!51, !52, !477}
+!51 = !DIDerivedType(tag: DW_TAG_member, name: "waiting", scope: !49, file: !45, line: 36, baseType: !29, size: 32)
+!52 = !DIDerivedType(tag: DW_TAG_member, name: "thread", scope: !49, file: !45, line: 37, baseType: !53, size: 64, offset: 64)
+!53 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !54, size: 64)
+!54 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "uk_thread", file: !55, line: 59, size: 1024, elements: !56)
+!55 = !DIFile(filename: "/root/.unikraft/unikraft/lib/uksched/include/uk/thread.h", directory: "/root/.unikraft/apps/redis/build")
+!56 = !{!57, !61, !62, !63, !64, !70, !75, !80, !82, !83, !232, !233, !234, !447}
+!57 = !DIDerivedType(tag: DW_TAG_member, name: "name", scope: !54, file: !55, line: 60, baseType: !58, size: 64)
+!58 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !59, size: 64)
+!59 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !60)
+!60 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+!61 = !DIDerivedType(tag: DW_TAG_member, name: "stack", scope: !54, file: !55, line: 61, baseType: !11, size: 64, offset: 64)
+!62 = !DIDerivedType(tag: DW_TAG_member, name: "tls", scope: !54, file: !55, line: 62, baseType: !11, size: 64, offset: 128)
+!63 = !DIDerivedType(tag: DW_TAG_member, name: "ctx", scope: !54, file: !55, line: 63, baseType: !11, size: 64, offset: 192)
+!64 = !DIDerivedType(tag: DW_TAG_member, name: "thread_list", scope: !54, file: !55, line: 64, baseType: !65, size: 128, offset: 256)
+!65 = distinct !DICompositeType(tag: DW_TAG_structure_type, scope: !54, file: !55, line: 64, size: 128, elements: !66)
+!66 = !{!67, !68}
+!67 = !DIDerivedType(tag: DW_TAG_member, name: "tqe_next", scope: !65, file: !55, line: 64, baseType: !53, size: 64)
+!68 = !DIDerivedType(tag: DW_TAG_member, name: "tqe_prev", scope: !65, file: !55, line: 64, baseType: !69, size: 64, offset: 64)
+!69 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !53, size: 64)
+!70 = !DIDerivedType(tag: DW_TAG_member, name: "flags", scope: !54, file: !55, line: 65, baseType: !71, size: 32, offset: 384)
+!71 = !DIDerivedType(tag: DW_TAG_typedef, name: "uint32_t", file: !72, line: 48, baseType: !73)
+!72 = !DIFile(filename: "/root/.unikraft/apps/redis/build/libnewlibc/origin/newlib-2.5.0.20170922/newlib/libc/include/sys/_stdint.h", directory: "/root/.unikraft/apps/redis/build")
+!73 = !DIDerivedType(tag: DW_TAG_typedef, name: "__uint32_t", file: !74, line: 79, baseType: !5)
+!74 = !DIFile(filename: "/root/.unikraft/apps/redis/build/libnewlibc/origin/newlib-2.5.0.20170922/newlib/libc/include/machine/_default_types.h", directory: "/root/.unikraft/apps/redis/build")
+!75 = !DIDerivedType(tag: DW_TAG_member, name: "wakeup_time", scope: !54, file: !55, line: 66, baseType: !76, size: 64, offset: 448)
+!76 = !DIDerivedType(tag: DW_TAG_typedef, name: "__snsec", file: !77, line: 49, baseType: !78)
+!77 = !DIFile(filename: "/root/.unikraft/unikraft/include/uk/arch/time.h", directory: "/root/.unikraft/apps/redis/build")
+!78 = !DIDerivedType(tag: DW_TAG_typedef, name: "__s64", file: !79, line: 128, baseType: !19)
+!79 = !DIFile(filename: "/root/.unikraft/unikraft/include/uk/arch/types.h", directory: "/root/.unikraft/apps/redis/build")
+!80 = !DIDerivedType(tag: DW_TAG_member, name: "detached", scope: !54, file: !55, line: 67, baseType: !81, size: 8, offset: 512)
+!81 = !DIBasicType(name: "_Bool", size: 8, encoding: DW_ATE_boolean)
+!82 = !DIDerivedType(tag: DW_TAG_member, name: "waiting_threads", scope: !54, file: !55, line: 68, baseType: !44, size: 128, offset: 576)
+!83 = !DIDerivedType(tag: DW_TAG_member, name: "sched", scope: !54, file: !55, line: 69, baseType: !84, size: 64, offset: 704)
+!84 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !85, size: 64)
+!85 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "uk_sched", file: !86, line: 90, size: 2176, elements: !87)
+!86 = !DIFile(filename: "/root/.unikraft/unikraft/lib/uksched/include/uk/sched.h", directory: "/root/.unikraft/apps/redis/build")
+!87 = !{!88, !93, !111, !116, !118, !120, !125, !133, !138, !144, !145, !146, !151, !229, !230, !231}
+!88 = !DIDerivedType(tag: DW_TAG_member, name: "yield", scope: !85, file: !86, line: 91, baseType: !89, size: 64)
+!89 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_sched_yield_func_t", file: !86, line: 68, baseType: !90)
+!90 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !91, size: 64)
+!91 = !DISubroutineType(types: !92)
+!92 = !{null, !84}
+!93 = !DIDerivedType(tag: DW_TAG_member, name: "thread_add", scope: !85, file: !86, line: 93, baseType: !94, size: 64, offset: 64)
+!94 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_sched_thread_add_func_t", file: !86, line: 71, baseType: !95)
+!95 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !96, size: 64)
+!96 = !DISubroutineType(types: !97)
+!97 = !{!29, !84, !53, !98}
+!98 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !99, size: 64)
+!99 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !100)
+!100 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_thread_attr_t", file: !101, line: 62, baseType: !102)
+!101 = !DIFile(filename: "/root/.unikraft/unikraft/lib/uksched/include/uk/thread_attr.h", directory: "/root/.unikraft/apps/redis/build")
+!102 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "uk_thread_attr", file: !101, line: 55, size: 128, elements: !103)
+!103 = !{!104, !105, !107}
+!104 = !DIDerivedType(tag: DW_TAG_member, name: "detached", scope: !102, file: !101, line: 57, baseType: !81, size: 8)
+!105 = !DIDerivedType(tag: DW_TAG_member, name: "prio", scope: !102, file: !101, line: 59, baseType: !106, size: 32, offset: 32)
+!106 = !DIDerivedType(tag: DW_TAG_typedef, name: "prio_t", file: !101, line: 53, baseType: !29)
+!107 = !DIDerivedType(tag: DW_TAG_member, name: "timeslice", scope: !102, file: !101, line: 61, baseType: !108, size: 64, offset: 64)
+!108 = !DIDerivedType(tag: DW_TAG_typedef, name: "__nsec", file: !77, line: 48, baseType: !109)
+!109 = !DIDerivedType(tag: DW_TAG_typedef, name: "__u64", file: !79, line: 129, baseType: !110)
+!110 = !DIBasicType(name: "long unsigned int", size: 64, encoding: DW_ATE_unsigned)
+!111 = !DIDerivedType(tag: DW_TAG_member, name: "thread_remove", scope: !85, file: !86, line: 94, baseType: !112, size: 64, offset: 128)
+!112 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_sched_thread_remove_func_t", file: !86, line: 74, baseType: !113)
+!113 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !114, size: 64)
+!114 = !DISubroutineType(types: !115)
+!115 = !{null, !84, !53}
+!116 = !DIDerivedType(tag: DW_TAG_member, name: "thread_blocked", scope: !85, file: !86, line: 95, baseType: !117, size: 64, offset: 192)
+!117 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_sched_thread_blocked_func_t", file: !86, line: 76, baseType: !113)
+!118 = !DIDerivedType(tag: DW_TAG_member, name: "thread_woken", scope: !85, file: !86, line: 96, baseType: !119, size: 64, offset: 256)
+!119 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_sched_thread_woken_func_t", file: !86, line: 78, baseType: !113)
+!120 = !DIDerivedType(tag: DW_TAG_member, name: "thread_set_prio", scope: !85, file: !86, line: 98, baseType: !121, size: 64, offset: 320)
+!121 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_sched_thread_set_prio_func_t", file: !86, line: 81, baseType: !122)
+!122 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !123, size: 64)
+!123 = !DISubroutineType(types: !124)
+!124 = !{!29, !84, !53, !106}
+!125 = !DIDerivedType(tag: DW_TAG_member, name: "thread_get_prio", scope: !85, file: !86, line: 99, baseType: !126, size: 64, offset: 384)
+!126 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_sched_thread_get_prio_func_t", file: !86, line: 83, baseType: !127)
+!127 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !128, size: 64)
+!128 = !DISubroutineType(types: !129)
+!129 = !{!29, !84, !130, !132}
+!130 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !131, size: 64)
+!131 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !54)
+!132 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !106, size: 64)
+!133 = !DIDerivedType(tag: DW_TAG_member, name: "thread_set_tslice", scope: !85, file: !86, line: 100, baseType: !134, size: 64, offset: 448)
+!134 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_sched_thread_set_tslice_func_t", file: !86, line: 85, baseType: !135)
+!135 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !136, size: 64)
+!136 = !DISubroutineType(types: !137)
+!137 = !{!29, !84, !53, !29}
+!138 = !DIDerivedType(tag: DW_TAG_member, name: "thread_get_tslice", scope: !85, file: !86, line: 101, baseType: !139, size: 64, offset: 512)
+!139 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_sched_thread_get_tslice_func_t", file: !86, line: 87, baseType: !140)
+!140 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !141, size: 64)
+!141 = !DISubroutineType(types: !142)
+!142 = !{!29, !84, !130, !143}
+!143 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !29, size: 64)
+!144 = !DIDerivedType(tag: DW_TAG_member, name: "threads_started", scope: !85, file: !86, line: 104, baseType: !81, size: 8, offset: 576)
+!145 = !DIDerivedType(tag: DW_TAG_member, name: "idle", scope: !85, file: !86, line: 105, baseType: !54, size: 1024, offset: 640)
+!146 = !DIDerivedType(tag: DW_TAG_member, name: "exited_threads", scope: !85, file: !86, line: 106, baseType: !147, size: 128, offset: 1664)
+!147 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "uk_thread_list", file: !55, line: 93, size: 128, elements: !148)
+!148 = !{!149, !150}
+!149 = !DIDerivedType(tag: DW_TAG_member, name: "tqh_first", scope: !147, file: !55, line: 93, baseType: !53, size: 64)
+!150 = !DIDerivedType(tag: DW_TAG_member, name: "tqh_last", scope: !147, file: !55, line: 93, baseType: !69, size: 64, offset: 64)
+!151 = !DIDerivedType(tag: DW_TAG_member, name: "plat_ctx_cbs", scope: !85, file: !86, line: 107, baseType: !152, size: 192, offset: 1792)
+!152 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "ukplat_ctx_callbacks", file: !153, line: 59, size: 192, elements: !154)
+!153 = !DIFile(filename: "/root/.unikraft/unikraft/include/uk/plat/thread.h", directory: "/root/.unikraft/apps/redis/build")
+!154 = !{!155, !220, !224}
+!155 = !DIDerivedType(tag: DW_TAG_member, name: "create_cb", scope: !152, file: !153, line: 61, baseType: !156, size: 64)
+!156 = !DIDerivedType(tag: DW_TAG_typedef, name: "ukplat_ctx_create_func_t", file: !153, line: 51, baseType: !157)
+!157 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !158, size: 64)
+!158 = !DISubroutineType(types: !159)
+!159 = !{!11, !160, !110, !110}
+!160 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !161, size: 64)
+!161 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "uk_alloc", file: !162, line: 77, size: 832, elements: !163)
+!162 = !DIFile(filename: "/root/.unikraft/unikraft/lib/ukalloc/include/uk/alloc.h", directory: "/root/.unikraft/apps/redis/build")
+!163 = !{!164, !171, !176, !181, !187, !189, !194, !195, !196, !201, !206, !211, !212, !213}
+!164 = !DIDerivedType(tag: DW_TAG_member, name: "malloc", scope: !161, file: !162, line: 79, baseType: !165, size: 64)
+!165 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_alloc_malloc_func_t", file: !162, line: 54, baseType: !166)
+!166 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !167, size: 64)
+!167 = !DISubroutineType(types: !168)
+!168 = !{!11, !160, !169}
+!169 = !DIDerivedType(tag: DW_TAG_typedef, name: "size_t", file: !170, line: 58, baseType: !110)
+!170 = !DIFile(filename: "/root/.unikraft/libs/newlib/include/stddef.h", directory: "/root/.unikraft/apps/redis/build")
+!171 = !DIDerivedType(tag: DW_TAG_member, name: "calloc", scope: !161, file: !162, line: 80, baseType: !172, size: 64, offset: 64)
+!172 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_alloc_calloc_func_t", file: !162, line: 56, baseType: !173)
+!173 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !174, size: 64)
+!174 = !DISubroutineType(types: !175)
+!175 = !{!11, !160, !169, !169}
+!176 = !DIDerivedType(tag: DW_TAG_member, name: "realloc", scope: !161, file: !162, line: 81, baseType: !177, size: 64, offset: 128)
+!177 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_alloc_realloc_func_t", file: !162, line: 62, baseType: !178)
+!178 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !179, size: 64)
+!179 = !DISubroutineType(types: !180)
+!180 = !{!11, !160, !11, !169}
+!181 = !DIDerivedType(tag: DW_TAG_member, name: "posix_memalign", scope: !161, file: !162, line: 82, baseType: !182, size: 64, offset: 192)
+!182 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_alloc_posix_memalign_func_t", file: !162, line: 58, baseType: !183)
+!183 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !184, size: 64)
+!184 = !DISubroutineType(types: !185)
+!185 = !{!29, !160, !186, !169, !169}
+!186 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !11, size: 64)
+!187 = !DIDerivedType(tag: DW_TAG_member, name: "memalign", scope: !161, file: !162, line: 83, baseType: !188, size: 64, offset: 256)
+!188 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_alloc_memalign_func_t", file: !162, line: 60, baseType: !173)
+!189 = !DIDerivedType(tag: DW_TAG_member, name: "free", scope: !161, file: !162, line: 84, baseType: !190, size: 64, offset: 320)
+!190 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_alloc_free_func_t", file: !162, line: 64, baseType: !191)
+!191 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !192, size: 64)
+!192 = !DISubroutineType(types: !193)
+!193 = !{null, !160, !11}
+!194 = !DIDerivedType(tag: DW_TAG_member, name: "free_backend", scope: !161, file: !162, line: 87, baseType: !190, size: 64, offset: 384)
+!195 = !DIDerivedType(tag: DW_TAG_member, name: "malloc_backend", scope: !161, file: !162, line: 88, baseType: !165, size: 64, offset: 448)
+!196 = !DIDerivedType(tag: DW_TAG_member, name: "palloc", scope: !161, file: !162, line: 92, baseType: !197, size: 64, offset: 512)
+!197 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_alloc_palloc_func_t", file: !162, line: 66, baseType: !198)
+!198 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !199, size: 64)
+!199 = !DISubroutineType(types: !200)
+!200 = !{!11, !160, !110}
+!201 = !DIDerivedType(tag: DW_TAG_member, name: "pfree", scope: !161, file: !162, line: 93, baseType: !202, size: 64, offset: 576)
+!202 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_alloc_pfree_func_t", file: !162, line: 68, baseType: !203)
+!203 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !204, size: 64)
+!204 = !DISubroutineType(types: !205)
+!205 = !{null, !160, !11, !110}
+!206 = !DIDerivedType(tag: DW_TAG_member, name: "addmem", scope: !161, file: !162, line: 99, baseType: !207, size: 64, offset: 640)
+!207 = !DIDerivedType(tag: DW_TAG_typedef, name: "uk_alloc_addmem_func_t", file: !162, line: 70, baseType: !208)
+!208 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !209, size: 64)
+!209 = !DISubroutineType(types: !210)
+!210 = !{!29, !160, !11, !169}
+!211 = !DIDerivedType(tag: DW_TAG_member, name: "len", scope: !161, file: !162, line: 100, baseType: !169, size: 64, offset: 704)
+!212 = !DIDerivedType(tag: DW_TAG_member, name: "next", scope: !161, file: !162, line: 103, baseType: !160, size: 64, offset: 768)
+!213 = !DIDerivedType(tag: DW_TAG_member, name: "priv", scope: !161, file: !162, line: 104, baseType: !214, offset: 832)
+!214 = !DICompositeType(tag: DW_TAG_array_type, baseType: !215, elements: !218)
+!215 = !DIDerivedType(tag: DW_TAG_typedef, name: "int8_t", file: !72, line: 20, baseType: !216)
+!216 = !DIDerivedType(tag: DW_TAG_typedef, name: "__int8_t", file: !74, line: 41, baseType: !217)
+!217 = !DIBasicType(name: "signed char", size: 8, encoding: DW_ATE_signed_char)
+!218 = !{!219}
+!219 = !DISubrange(count: -1)
+!220 = !DIDerivedType(tag: DW_TAG_member, name: "start_cb", scope: !152, file: !153, line: 63, baseType: !221, size: 64, offset: 64)
+!221 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !222, size: 64)
+!222 = !DISubroutineType(types: !223)
+!223 = !{null, !11}
+!224 = !DIDerivedType(tag: DW_TAG_member, name: "switch_cb", scope: !152, file: !153, line: 65, baseType: !225, size: 64, offset: 128)
+!225 = !DIDerivedType(tag: DW_TAG_typedef, name: "ukplat_ctx_switch_func_t", file: !153, line: 56, baseType: !226)
+!226 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !227, size: 64)
+!227 = !DISubroutineType(types: !228)
+!228 = !{null, !11, !11}
+!229 = !DIDerivedType(tag: DW_TAG_member, name: "allocator", scope: !85, file: !86, line: 108, baseType: !160, size: 64, offset: 1984)
+!230 = !DIDerivedType(tag: DW_TAG_member, name: "next", scope: !85, file: !86, line: 109, baseType: !84, size: 64, offset: 2048)
+!231 = !DIDerivedType(tag: DW_TAG_member, name: "prv", scope: !85, file: !86, line: 110, baseType: !11, size: 64, offset: 2112)
+!232 = !DIDerivedType(tag: DW_TAG_member, name: "prv", scope: !54, file: !55, line: 70, baseType: !11, size: 64, offset: 768)
+!233 = !DIDerivedType(tag: DW_TAG_member, name: "tid", scope: !54, file: !55, line: 72, baseType: !29, size: 32, offset: 832)
+!234 = !DIDerivedType(tag: DW_TAG_member, name: "reent", scope: !54, file: !55, line: 82, baseType: !235, size: 64, offset: 896)
+!235 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !236, size: 64)
+!236 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "_reent", file: !237, line: 569, size: 14912, elements: !238)
+!237 = !DIFile(filename: "/root/.unikraft/apps/redis/build/libnewlibc/origin/newlib-2.5.0.20170922/newlib/libc/include/sys/reent.h", directory: "/root/.unikraft/apps/redis/build")
+!238 = !{!239, !240, !315, !316, !317, !318, !322, !323, !326, !327, !331, !343, !344, !345, !347, !348, !349, !411, !432, !433, !438, !445}
+!239 = !DIDerivedType(tag: DW_TAG_member, name: "_errno", scope: !236, file: !237, line: 571, baseType: !29, size: 32)
+!240 = !DIDerivedType(tag: DW_TAG_member, name: "_stdin", scope: !236, file: !237, line: 576, baseType: !241, size: 64, offset: 64)
+!241 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !242, size: 64)
+!242 = !DIDerivedType(tag: DW_TAG_typedef, name: "__FILE", file: !237, line: 287, baseType: !243)
+!243 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "__sFILE", file: !237, line: 181, size: 1408, elements: !244)
+!244 = !{!245, !248, !249, !250, !252, !253, !258, !259, !260, !267, !271, !276, !280, !281, !282, !283, !287, !291, !292, !293, !295, !296, !300, !314}
+!245 = !DIDerivedType(tag: DW_TAG_member, name: "_p", scope: !243, file: !237, line: 182, baseType: !246, size: 64)
+!246 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !247, size: 64)
+!247 = !DIBasicType(name: "unsigned char", size: 8, encoding: DW_ATE_unsigned_char)
+!248 = !DIDerivedType(tag: DW_TAG_member, name: "_r", scope: !243, file: !237, line: 183, baseType: !29, size: 32, offset: 64)
+!249 = !DIDerivedType(tag: DW_TAG_member, name: "_w", scope: !243, file: !237, line: 184, baseType: !29, size: 32, offset: 96)
+!250 = !DIDerivedType(tag: DW_TAG_member, name: "_flags", scope: !243, file: !237, line: 185, baseType: !251, size: 16, offset: 128)
+!251 = !DIBasicType(name: "short", size: 16, encoding: DW_ATE_signed)
+!252 = !DIDerivedType(tag: DW_TAG_member, name: "_file", scope: !243, file: !237, line: 186, baseType: !251, size: 16, offset: 144)
+!253 = !DIDerivedType(tag: DW_TAG_member, name: "_bf", scope: !243, file: !237, line: 187, baseType: !254, size: 128, offset: 192)
+!254 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "__sbuf", file: !237, line: 117, size: 128, elements: !255)
+!255 = !{!256, !257}
+!256 = !DIDerivedType(tag: DW_TAG_member, name: "_base", scope: !254, file: !237, line: 118, baseType: !246, size: 64)
+!257 = !DIDerivedType(tag: DW_TAG_member, name: "_size", scope: !254, file: !237, line: 119, baseType: !29, size: 32, offset: 64)
+!258 = !DIDerivedType(tag: DW_TAG_member, name: "_lbfsize", scope: !243, file: !237, line: 188, baseType: !29, size: 32, offset: 320)
+!259 = !DIDerivedType(tag: DW_TAG_member, name: "_cookie", scope: !243, file: !237, line: 195, baseType: !11, size: 64, offset: 384)
+!260 = !DIDerivedType(tag: DW_TAG_member, name: "_read", scope: !243, file: !237, line: 197, baseType: !261, size: 64, offset: 448)
+!261 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !262, size: 64)
+!262 = !DISubroutineType(types: !263)
+!263 = !{!264, !235, !11, !266, !29}
+!264 = !DIDerivedType(tag: DW_TAG_typedef, name: "_ssize_t", file: !265, line: 145, baseType: !19)
+!265 = !DIFile(filename: "/root/.unikraft/apps/redis/build/libnewlibc/origin/newlib-2.5.0.20170922/newlib/libc/include/sys/_types.h", directory: "/root/.unikraft/apps/redis/build")
+!266 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !60, size: 64)
+!267 = !DIDerivedType(tag: DW_TAG_member, name: "_write", scope: !243, file: !237, line: 199, baseType: !268, size: 64, offset: 512)
+!268 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !269, size: 64)
+!269 = !DISubroutineType(types: !270)
+!270 = !{!264, !235, !11, !58, !29}
+!271 = !DIDerivedType(tag: DW_TAG_member, name: "_seek", scope: !243, file: !237, line: 202, baseType: !272, size: 64, offset: 576)
+!272 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !273, size: 64)
+!273 = !DISubroutineType(types: !274)
+!274 = !{!275, !235, !11, !275, !29}
+!275 = !DIDerivedType(tag: DW_TAG_typedef, name: "_fpos_t", file: !265, line: 114, baseType: !19)
+!276 = !DIDerivedType(tag: DW_TAG_member, name: "_close", scope: !243, file: !237, line: 203, baseType: !277, size: 64, offset: 640)
+!277 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !278, size: 64)
+!278 = !DISubroutineType(types: !279)
+!279 = !{!29, !235, !11}
+!280 = !DIDerivedType(tag: DW_TAG_member, name: "_ub", scope: !243, file: !237, line: 206, baseType: !254, size: 128, offset: 704)
+!281 = !DIDerivedType(tag: DW_TAG_member, name: "_up", scope: !243, file: !237, line: 207, baseType: !246, size: 64, offset: 832)
+!282 = !DIDerivedType(tag: DW_TAG_member, name: "_ur", scope: !243, file: !237, line: 208, baseType: !29, size: 32, offset: 896)
+!283 = !DIDerivedType(tag: DW_TAG_member, name: "_ubuf", scope: !243, file: !237, line: 211, baseType: !284, size: 24, offset: 928)
+!284 = !DICompositeType(tag: DW_TAG_array_type, baseType: !247, size: 24, elements: !285)
+!285 = !{!286}
+!286 = !DISubrange(count: 3)
+!287 = !DIDerivedType(tag: DW_TAG_member, name: "_nbuf", scope: !243, file: !237, line: 212, baseType: !288, size: 8, offset: 952)
+!288 = !DICompositeType(tag: DW_TAG_array_type, baseType: !247, size: 8, elements: !289)
+!289 = !{!290}
+!290 = !DISubrange(count: 1)
+!291 = !DIDerivedType(tag: DW_TAG_member, name: "_lb", scope: !243, file: !237, line: 215, baseType: !254, size: 128, offset: 960)
+!292 = !DIDerivedType(tag: DW_TAG_member, name: "_blksize", scope: !243, file: !237, line: 218, baseType: !29, size: 32, offset: 1088)
+!293 = !DIDerivedType(tag: DW_TAG_member, name: "_offset", scope: !243, file: !237, line: 219, baseType: !294, size: 64, offset: 1152)
+!294 = !DIDerivedType(tag: DW_TAG_typedef, name: "_off_t", file: !265, line: 44, baseType: !19)
+!295 = !DIDerivedType(tag: DW_TAG_member, name: "_data", scope: !243, file: !237, line: 222, baseType: !235, size: 64, offset: 1216)
+!296 = !DIDerivedType(tag: DW_TAG_member, name: "_lock", scope: !243, file: !237, line: 226, baseType: !297, size: 32, offset: 1280)
+!297 = !DIDerivedType(tag: DW_TAG_typedef, name: "_flock_t", file: !265, line: 175, baseType: !298)
+!298 = !DIDerivedType(tag: DW_TAG_typedef, name: "_LOCK_RECURSIVE_T", file: !299, line: 12, baseType: !29)
+!299 = !DIFile(filename: "/root/.unikraft/apps/redis/build/libnewlibc/origin/newlib-2.5.0.20170922/newlib/libc/include/sys/lock.h", directory: "/root/.unikraft/apps/redis/build")
+!300 = !DIDerivedType(tag: DW_TAG_member, name: "_mbstate", scope: !243, file: !237, line: 228, baseType: !301, size: 64, offset: 1312)
+!301 = !DIDerivedType(tag: DW_TAG_typedef, name: "_mbstate_t", file: !265, line: 171, baseType: !302)
+!302 = distinct !DICompositeType(tag: DW_TAG_structure_type, file: !265, line: 163, size: 64, elements: !303)
+!303 = !{!304, !305}
+!304 = !DIDerivedType(tag: DW_TAG_member, name: "__count", scope: !302, file: !265, line: 165, baseType: !29, size: 32)
+!305 = !DIDerivedType(tag: DW_TAG_member, name: "__value", scope: !302, file: !265, line: 170, baseType: !306, size: 32, offset: 32)
+!306 = distinct !DICompositeType(tag: DW_TAG_union_type, scope: !302, file: !265, line: 166, size: 32, elements: !307)
+!307 = !{!308, !310}
+!308 = !DIDerivedType(tag: DW_TAG_member, name: "__wch", scope: !306, file: !265, line: 168, baseType: !309, size: 32)
+!309 = !DIDerivedType(tag: DW_TAG_typedef, name: "wint_t", file: !170, line: 124, baseType: !5)
+!310 = !DIDerivedType(tag: DW_TAG_member, name: "__wchb", scope: !306, file: !265, line: 169, baseType: !311, size: 32)
+!311 = !DICompositeType(tag: DW_TAG_array_type, baseType: !247, size: 32, elements: !312)
+!312 = !{!313}
+!313 = !DISubrange(count: 4)
+!314 = !DIDerivedType(tag: DW_TAG_member, name: "_flags2", scope: !243, file: !237, line: 229, baseType: !29, size: 32, offset: 1376)
+!315 = !DIDerivedType(tag: DW_TAG_member, name: "_stdout", scope: !236, file: !237, line: 576, baseType: !241, size: 64, offset: 128)
+!316 = !DIDerivedType(tag: DW_TAG_member, name: "_stderr", scope: !236, file: !237, line: 576, baseType: !241, size: 64, offset: 192)
+!317 = !DIDerivedType(tag: DW_TAG_member, name: "_inc", scope: !236, file: !237, line: 578, baseType: !29, size: 32, offset: 256)
+!318 = !DIDerivedType(tag: DW_TAG_member, name: "_emergency", scope: !236, file: !237, line: 579, baseType: !319, size: 200, offset: 288)
+!319 = !DICompositeType(tag: DW_TAG_array_type, baseType: !60, size: 200, elements: !320)
+!320 = !{!321}
+!321 = !DISubrange(count: 25)
+!322 = !DIDerivedType(tag: DW_TAG_member, name: "_unspecified_locale_info", scope: !236, file: !237, line: 582, baseType: !29, size: 32, offset: 512)
+!323 = !DIDerivedType(tag: DW_TAG_member, name: "_locale", scope: !236, file: !237, line: 583, baseType: !324, size: 64, offset: 576)
+!324 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !325, size: 64)
+!325 = !DICompositeType(tag: DW_TAG_structure_type, name: "__locale_t", file: !237, line: 40, flags: DIFlagFwdDecl)
+!326 = !DIDerivedType(tag: DW_TAG_member, name: "__sdidinit", scope: !236, file: !237, line: 585, baseType: !29, size: 32, offset: 640)
+!327 = !DIDerivedType(tag: DW_TAG_member, name: "__cleanup", scope: !236, file: !237, line: 587, baseType: !328, size: 64, offset: 704)
+!328 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !329, size: 64)
+!329 = !DISubroutineType(types: !330)
+!330 = !{null, !235}
+!331 = !DIDerivedType(tag: DW_TAG_member, name: "_result", scope: !236, file: !237, line: 590, baseType: !332, size: 64, offset: 768)
+!332 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !333, size: 64)
+!333 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "_Bigint", file: !237, line: 47, size: 256, elements: !334)
+!334 = !{!335, !336, !337, !338, !339, !340}
+!335 = !DIDerivedType(tag: DW_TAG_member, name: "_next", scope: !333, file: !237, line: 49, baseType: !332, size: 64)
+!336 = !DIDerivedType(tag: DW_TAG_member, name: "_k", scope: !333, file: !237, line: 50, baseType: !29, size: 32, offset: 64)
+!337 = !DIDerivedType(tag: DW_TAG_member, name: "_maxwds", scope: !333, file: !237, line: 50, baseType: !29, size: 32, offset: 96)
+!338 = !DIDerivedType(tag: DW_TAG_member, name: "_sign", scope: !333, file: !237, line: 50, baseType: !29, size: 32, offset: 128)
+!339 = !DIDerivedType(tag: DW_TAG_member, name: "_wds", scope: !333, file: !237, line: 50, baseType: !29, size: 32, offset: 160)
+!340 = !DIDerivedType(tag: DW_TAG_member, name: "_x", scope: !333, file: !237, line: 51, baseType: !341, size: 32, offset: 192)
+!341 = !DICompositeType(tag: DW_TAG_array_type, baseType: !342, size: 32, elements: !289)
+!342 = !DIDerivedType(tag: DW_TAG_typedef, name: "__ULong", file: !237, line: 25, baseType: !5)
+!343 = !DIDerivedType(tag: DW_TAG_member, name: "_result_k", scope: !236, file: !237, line: 591, baseType: !29, size: 32, offset: 832)
+!344 = !DIDerivedType(tag: DW_TAG_member, name: "_p5s", scope: !236, file: !237, line: 592, baseType: !332, size: 64, offset: 896)
+!345 = !DIDerivedType(tag: DW_TAG_member, name: "_freelist", scope: !236, file: !237, line: 593, baseType: !346, size: 64, offset: 960)
+!346 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !332, size: 64)
+!347 = !DIDerivedType(tag: DW_TAG_member, name: "_cvtlen", scope: !236, file: !237, line: 596, baseType: !29, size: 32, offset: 1024)
+!348 = !DIDerivedType(tag: DW_TAG_member, name: "_cvtbuf", scope: !236, file: !237, line: 597, baseType: !266, size: 64, offset: 1088)
+!349 = !DIDerivedType(tag: DW_TAG_member, name: "_new", scope: !236, file: !237, line: 632, baseType: !350, size: 2880, offset: 1152)
+!350 = distinct !DICompositeType(tag: DW_TAG_union_type, scope: !236, file: !237, line: 599, size: 2880, elements: !351)
+!351 = !{!352, !402}
+!352 = !DIDerivedType(tag: DW_TAG_member, name: "_reent", scope: !350, file: !237, line: 622, baseType: !353, size: 1728)
+!353 = distinct !DICompositeType(tag: DW_TAG_structure_type, scope: !350, file: !237, line: 601, size: 1728, elements: !354)
+!354 = !{!355, !356, !357, !361, !373, !374, !376, !384, !385, !386, !387, !391, !395, !396, !397, !398, !399, !400, !401}
+!355 = !DIDerivedType(tag: DW_TAG_member, name: "_unused_rand", scope: !353, file: !237, line: 603, baseType: !5, size: 32)
+!356 = !DIDerivedType(tag: DW_TAG_member, name: "_strtok_last", scope: !353, file: !237, line: 604, baseType: !266, size: 64, offset: 64)
+!357 = !DIDerivedType(tag: DW_TAG_member, name: "_asctime_buf", scope: !353, file: !237, line: 605, baseType: !358, size: 208, offset: 128)
+!358 = !DICompositeType(tag: DW_TAG_array_type, baseType: !60, size: 208, elements: !359)
+!359 = !{!360}
+!360 = !DISubrange(count: 26)
+!361 = !DIDerivedType(tag: DW_TAG_member, name: "_localtime_buf", scope: !353, file: !237, line: 606, baseType: !362, size: 288, offset: 352)
+!362 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "__tm", file: !237, line: 55, size: 288, elements: !363)
+!363 = !{!364, !365, !366, !367, !368, !369, !370, !371, !372}
+!364 = !DIDerivedType(tag: DW_TAG_member, name: "__tm_sec", scope: !362, file: !237, line: 57, baseType: !29, size: 32)
+!365 = !DIDerivedType(tag: DW_TAG_member, name: "__tm_min", scope: !362, file: !237, line: 58, baseType: !29, size: 32, offset: 32)
+!366 = !DIDerivedType(tag: DW_TAG_member, name: "__tm_hour", scope: !362, file: !237, line: 59, baseType: !29, size: 32, offset: 64)
+!367 = !DIDerivedType(tag: DW_TAG_member, name: "__tm_mday", scope: !362, file: !237, line: 60, baseType: !29, size: 32, offset: 96)
+!368 = !DIDerivedType(tag: DW_TAG_member, name: "__tm_mon", scope: !362, file: !237, line: 61, baseType: !29, size: 32, offset: 128)
+!369 = !DIDerivedType(tag: DW_TAG_member, name: "__tm_year", scope: !362, file: !237, line: 62, baseType: !29, size: 32, offset: 160)
+!370 = !DIDerivedType(tag: DW_TAG_member, name: "__tm_wday", scope: !362, file: !237, line: 63, baseType: !29, size: 32, offset: 192)
+!371 = !DIDerivedType(tag: DW_TAG_member, name: "__tm_yday", scope: !362, file: !237, line: 64, baseType: !29, size: 32, offset: 224)
+!372 = !DIDerivedType(tag: DW_TAG_member, name: "__tm_isdst", scope: !362, file: !237, line: 65, baseType: !29, size: 32, offset: 256)
+!373 = !DIDerivedType(tag: DW_TAG_member, name: "_gamma_signgam", scope: !353, file: !237, line: 607, baseType: !29, size: 32, offset: 640)
+!374 = !DIDerivedType(tag: DW_TAG_member, name: "_rand_next", scope: !353, file: !237, line: 608, baseType: !375, size: 64, offset: 704)
+!375 = !DIBasicType(name: "long long unsigned int", size: 64, encoding: DW_ATE_unsigned)
+!376 = !DIDerivedType(tag: DW_TAG_member, name: "_r48", scope: !353, file: !237, line: 609, baseType: !377, size: 112, offset: 768)
+!377 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "_rand48", file: !237, line: 319, size: 112, elements: !378)
+!378 = !{!379, !382, !383}
+!379 = !DIDerivedType(tag: DW_TAG_member, name: "_seed", scope: !377, file: !237, line: 320, baseType: !380, size: 48)
+!380 = !DICompositeType(tag: DW_TAG_array_type, baseType: !381, size: 48, elements: !285)
+!381 = !DIBasicType(name: "unsigned short", size: 16, encoding: DW_ATE_unsigned)
+!382 = !DIDerivedType(tag: DW_TAG_member, name: "_mult", scope: !377, file: !237, line: 321, baseType: !380, size: 48, offset: 48)
+!383 = !DIDerivedType(tag: DW_TAG_member, name: "_add", scope: !377, file: !237, line: 322, baseType: !381, size: 16, offset: 96)
+!384 = !DIDerivedType(tag: DW_TAG_member, name: "_mblen_state", scope: !353, file: !237, line: 610, baseType: !301, size: 64, offset: 896)
+!385 = !DIDerivedType(tag: DW_TAG_member, name: "_mbtowc_state", scope: !353, file: !237, line: 611, baseType: !301, size: 64, offset: 960)
+!386 = !DIDerivedType(tag: DW_TAG_member, name: "_wctomb_state", scope: !353, file: !237, line: 612, baseType: !301, size: 64, offset: 1024)
+!387 = !DIDerivedType(tag: DW_TAG_member, name: "_l64a_buf", scope: !353, file: !237, line: 613, baseType: !388, size: 64, offset: 1088)
+!388 = !DICompositeType(tag: DW_TAG_array_type, baseType: !60, size: 64, elements: !389)
+!389 = !{!390}
+!390 = !DISubrange(count: 8)
+!391 = !DIDerivedType(tag: DW_TAG_member, name: "_signal_buf", scope: !353, file: !237, line: 614, baseType: !392, size: 192, offset: 1152)
+!392 = !DICompositeType(tag: DW_TAG_array_type, baseType: !60, size: 192, elements: !393)
+!393 = !{!394}
+!394 = !DISubrange(count: 24)
+!395 = !DIDerivedType(tag: DW_TAG_member, name: "_getdate_err", scope: !353, file: !237, line: 615, baseType: !29, size: 32, offset: 1344)
+!396 = !DIDerivedType(tag: DW_TAG_member, name: "_mbrlen_state", scope: !353, file: !237, line: 616, baseType: !301, size: 64, offset: 1376)
+!397 = !DIDerivedType(tag: DW_TAG_member, name: "_mbrtowc_state", scope: !353, file: !237, line: 617, baseType: !301, size: 64, offset: 1440)
+!398 = !DIDerivedType(tag: DW_TAG_member, name: "_mbsrtowcs_state", scope: !353, file: !237, line: 618, baseType: !301, size: 64, offset: 1504)
+!399 = !DIDerivedType(tag: DW_TAG_member, name: "_wcrtomb_state", scope: !353, file: !237, line: 619, baseType: !301, size: 64, offset: 1568)
+!400 = !DIDerivedType(tag: DW_TAG_member, name: "_wcsrtombs_state", scope: !353, file: !237, line: 620, baseType: !301, size: 64, offset: 1632)
+!401 = !DIDerivedType(tag: DW_TAG_member, name: "_h_errno", scope: !353, file: !237, line: 621, baseType: !29, size: 32, offset: 1696)
+!402 = !DIDerivedType(tag: DW_TAG_member, name: "_unused", scope: !350, file: !237, line: 631, baseType: !403, size: 2880)
+!403 = distinct !DICompositeType(tag: DW_TAG_structure_type, scope: !350, file: !237, line: 626, size: 2880, elements: !404)
+!404 = !{!405, !409}
+!405 = !DIDerivedType(tag: DW_TAG_member, name: "_nextf", scope: !403, file: !237, line: 629, baseType: !406, size: 1920)
+!406 = !DICompositeType(tag: DW_TAG_array_type, baseType: !246, size: 1920, elements: !407)
+!407 = !{!408}
+!408 = !DISubrange(count: 30)
+!409 = !DIDerivedType(tag: DW_TAG_member, name: "_nmalloc", scope: !403, file: !237, line: 630, baseType: !410, size: 960, offset: 1920)
+!410 = !DICompositeType(tag: DW_TAG_array_type, baseType: !5, size: 960, elements: !407)
+!411 = !DIDerivedType(tag: DW_TAG_member, name: "_atexit", scope: !236, file: !237, line: 636, baseType: !412, size: 64, offset: 4032)
+!412 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !413, size: 64)
+!413 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "_atexit", file: !237, line: 93, size: 6336, elements: !414)
+!414 = !{!415, !416, !417, !424}
+!415 = !DIDerivedType(tag: DW_TAG_member, name: "_next", scope: !413, file: !237, line: 94, baseType: !412, size: 64)
+!416 = !DIDerivedType(tag: DW_TAG_member, name: "_ind", scope: !413, file: !237, line: 95, baseType: !29, size: 32, offset: 64)
+!417 = !DIDerivedType(tag: DW_TAG_member, name: "_fns", scope: !413, file: !237, line: 97, baseType: !418, size: 2048, offset: 128)
+!418 = !DICompositeType(tag: DW_TAG_array_type, baseType: !419, size: 2048, elements: !422)
+!419 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !420, size: 64)
+!420 = !DISubroutineType(types: !421)
+!421 = !{null}
+!422 = !{!423}
+!423 = !DISubrange(count: 32)
+!424 = !DIDerivedType(tag: DW_TAG_member, name: "_on_exit_args", scope: !413, file: !237, line: 98, baseType: !425, size: 4160, offset: 2176)
+!425 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "_on_exit_args", file: !237, line: 74, size: 4160, elements: !426)
+!426 = !{!427, !429, !430, !431}
+!427 = !DIDerivedType(tag: DW_TAG_member, name: "_fnargs", scope: !425, file: !237, line: 75, baseType: !428, size: 2048)
+!428 = !DICompositeType(tag: DW_TAG_array_type, baseType: !11, size: 2048, elements: !422)
+!429 = !DIDerivedType(tag: DW_TAG_member, name: "_dso_handle", scope: !425, file: !237, line: 76, baseType: !428, size: 2048, offset: 2048)
+!430 = !DIDerivedType(tag: DW_TAG_member, name: "_fntypes", scope: !425, file: !237, line: 78, baseType: !342, size: 32, offset: 4096)
+!431 = !DIDerivedType(tag: DW_TAG_member, name: "_is_cxa", scope: !425, file: !237, line: 81, baseType: !342, size: 32, offset: 4128)
+!432 = !DIDerivedType(tag: DW_TAG_member, name: "_atexit0", scope: !236, file: !237, line: 637, baseType: !413, size: 6336, offset: 4096)
+!433 = !DIDerivedType(tag: DW_TAG_member, name: "_sig_func", scope: !236, file: !237, line: 641, baseType: !434, size: 64, offset: 10432)
+!434 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !435, size: 64)
+!435 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !436, size: 64)
+!436 = !DISubroutineType(types: !437)
+!437 = !{null, !29}
+!438 = !DIDerivedType(tag: DW_TAG_member, name: "__sglue", scope: !236, file: !237, line: 646, baseType: !439, size: 192, offset: 10496)
+!439 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "_glue", file: !237, line: 291, size: 192, elements: !440)
+!440 = !{!441, !443, !444}
+!441 = !DIDerivedType(tag: DW_TAG_member, name: "_next", scope: !439, file: !237, line: 293, baseType: !442, size: 64)
+!442 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !439, size: 64)
+!443 = !DIDerivedType(tag: DW_TAG_member, name: "_niobs", scope: !439, file: !237, line: 294, baseType: !29, size: 32, offset: 64)
+!444 = !DIDerivedType(tag: DW_TAG_member, name: "_iobs", scope: !439, file: !237, line: 295, baseType: !241, size: 64, offset: 128)
+!445 = !DIDerivedType(tag: DW_TAG_member, name: "__sf", scope: !236, file: !237, line: 648, baseType: !446, size: 4224, offset: 10688)
+!446 = !DICompositeType(tag: DW_TAG_array_type, baseType: !242, size: 4224, elements: !285)
+!447 = !DIDerivedType(tag: DW_TAG_member, name: "signals_container", scope: !54, file: !55, line: 85, baseType: !448, size: 64, offset: 960)
+!448 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !449, size: 64)
+!449 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "uk_thread_sig", file: !4, line: 114, size: 640, elements: !450)
+!450 = !{!451, !455, !456, !463, !476}
+!451 = !DIDerivedType(tag: DW_TAG_member, name: "mask", scope: !449, file: !4, line: 116, baseType: !452, size: 64)
+!452 = !DIDerivedType(tag: DW_TAG_typedef, name: "sigset_t", file: !453, line: 64, baseType: !454)
+!453 = !DIFile(filename: "/root/.unikraft/libs/newlib/musl-imported/include/signal.h", directory: "/root/.unikraft/apps/redis/build")
+!454 = !DIDerivedType(tag: DW_TAG_typedef, name: "__sigset_t", file: !453, line: 63, baseType: !110)
+!455 = !DIDerivedType(tag: DW_TAG_member, name: "pending", scope: !449, file: !4, line: 118, baseType: !452, size: 64, offset: 64)
+!456 = !DIDerivedType(tag: DW_TAG_member, name: "pending_signals", scope: !449, file: !4, line: 120, baseType: !457, size: 128, offset: 128)
+!457 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "uk_list_head", file: !458, line: 51, size: 128, elements: !459)
+!458 = !DIFile(filename: "/root/.unikraft/unikraft/include/uk/list.h", directory: "/root/.unikraft/apps/redis/build")
+!459 = !{!460, !462}
+!460 = !DIDerivedType(tag: DW_TAG_member, name: "next", scope: !457, file: !458, line: 52, baseType: !461, size: 64)
+!461 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !457, size: 64)
+!462 = !DIDerivedType(tag: DW_TAG_member, name: "prev", scope: !457, file: !458, line: 53, baseType: !461, size: 64, offset: 64)
+!463 = !DIDerivedType(tag: DW_TAG_member, name: "wait", scope: !449, file: !4, line: 122, baseType: !464, size: 256, offset: 256)
+!464 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "uk_thread_sig_wait", file: !4, line: 98, size: 256, elements: !465)
+!465 = !{!466, !467, !468}
+!466 = !DIDerivedType(tag: DW_TAG_member, name: "status", scope: !464, file: !4, line: 107, baseType: !3, size: 32)
+!467 = !DIDerivedType(tag: DW_TAG_member, name: "awaited", scope: !464, file: !4, line: 109, baseType: !452, size: 64, offset: 64)
+!468 = !DIDerivedType(tag: DW_TAG_member, name: "received_signal", scope: !464, file: !4, line: 111, baseType: !469, size: 96, offset: 128)
+!469 = !DIDerivedType(tag: DW_TAG_typedef, name: "siginfo_t", file: !453, line: 72, baseType: !470)
+!470 = distinct !DICompositeType(tag: DW_TAG_structure_type, file: !453, line: 68, size: 96, elements: !471)
+!471 = !{!472, !473, !474}
+!472 = !DIDerivedType(tag: DW_TAG_member, name: "si_signo", scope: !470, file: !453, line: 69, baseType: !29, size: 32)
+!473 = !DIDerivedType(tag: DW_TAG_member, name: "si_code", scope: !470, file: !453, line: 70, baseType: !29, size: 32, offset: 32)
+!474 = !DIDerivedType(tag: DW_TAG_member, name: "si_pid", scope: !470, file: !453, line: 71, baseType: !475, size: 32, offset: 64)
+!475 = !DIDerivedType(tag: DW_TAG_typedef, name: "pid_t", file: !453, line: 61, baseType: !29)
+!476 = !DIDerivedType(tag: DW_TAG_member, name: "list_node", scope: !449, file: !4, line: 124, baseType: !457, size: 128, offset: 512)
+!477 = !DIDerivedType(tag: DW_TAG_member, name: "thread_list", scope: !49, file: !45, line: 38, baseType: !478, size: 64, offset: 128)
+!478 = distinct !DICompositeType(tag: DW_TAG_structure_type, scope: !49, file: !45, line: 38, size: 64, elements: !479)
+!479 = !{!480}
+!480 = !DIDerivedType(tag: DW_TAG_member, name: "stqe_next", scope: !478, file: !45, line: 38, baseType: !48, size: 64)
+!481 = !DIDerivedType(tag: DW_TAG_member, name: "stqh_last", scope: !44, file: !45, line: 42, baseType: !482, size: 64, offset: 64)
+!482 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !48, size: 64)
+!483 = !DIDerivedType(tag: DW_TAG_member, name: "lock_idx", scope: !33, file: !16, line: 149, baseType: !29, size: 32, offset: 64)
+!484 = !DIDerivedType(tag: DW_TAG_member, name: "recursive_count", scope: !33, file: !16, line: 156, baseType: !29, size: 32, offset: 96)
+!485 = !DIDerivedType(tag: DW_TAG_member, name: "kind", scope: !33, file: !16, line: 159, baseType: !29, size: 32, offset: 128)
+!486 = !DIDerivedType(tag: DW_TAG_member, name: "ownerThread", scope: !33, file: !16, line: 160, baseType: !487, size: 128, offset: 192)
+!487 = !DIDerivedType(tag: DW_TAG_typedef, name: "pthread_t", file: !13, line: 413, baseType: !488)
+!488 = !DIDerivedType(tag: DW_TAG_typedef, name: "pte_handle_t", file: !13, line: 411, baseType: !489)
+!489 = distinct !DICompositeType(tag: DW_TAG_structure_type, file: !13, line: 395, size: 128, elements: !490)
+!490 = !{!491, !492}
+!491 = !DIDerivedType(tag: DW_TAG_member, name: "p", scope: !489, file: !13, line: 398, baseType: !11, size: 64)
+!492 = !DIDerivedType(tag: DW_TAG_member, name: "x", scope: !489, file: !13, line: 399, baseType: !5, size: 32, offset: 64)
+!493 = !DIDerivedType(tag: DW_TAG_member, name: "sem", scope: !26, file: !16, line: 140, baseType: !36, size: 64, offset: 128)
+!494 = !DIDerivedType(tag: DW_TAG_member, name: "semBlockLock", scope: !15, file: !16, line: 240, baseType: !23, size: 64, offset: 256)
+!495 = !DIDerivedType(tag: DW_TAG_member, name: "mtxUnblockLock", scope: !15, file: !16, line: 243, baseType: !31, size: 64, offset: 320)
+!496 = !DIDerivedType(tag: DW_TAG_member, name: "next", scope: !15, file: !16, line: 246, baseType: !12, size: 64, offset: 384)
+!497 = !DIDerivedType(tag: DW_TAG_member, name: "prev", scope: !15, file: !16, line: 247, baseType: !12, size: 64, offset: 448)
+!498 = !{i32 2, !"Dwarf Version", i32 4}
+!499 = !{i32 2, !"Debug Info Version", i32 3}
+!500 = !{i32 1, !"wchar_size", i32 4}
+!501 = !{!"clang version 7.0.1-8+deb10u2 (tags/RELEASE_701/final)"}
+!502 = distinct !DISubprogram(name: "pthread_cond_destroy", scope: !1, file: !1, line: 51, type: !503, isLocal: false, isDefinition: true, scopeLine: 124, flags: DIFlagPrototyped, isOptimized: true, unit: !0, retainedNodes: !506)
+!503 = !DISubroutineType(types: !504)
+!504 = !{!29, !505}
+!505 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !12, size: 64)
+!506 = !{!507, !508, !509, !510, !511}
+!507 = !DILocalVariable(name: "cond", arg: 1, scope: !502, file: !1, line: 51, type: !505)
+!508 = !DILocalVariable(name: "cv", scope: !502, file: !1, line: 125, type: !12)
+!509 = !DILocalVariable(name: "result", scope: !502, file: !1, line: 126, type: !29)
+!510 = !DILocalVariable(name: "result1", scope: !502, file: !1, line: 126, type: !29)
+!511 = !DILocalVariable(name: "result2", scope: !502, file: !1, line: 126, type: !29)
+!512 = !DILocation(line: 51, column: 40, scope: !502)
+!513 = !DILocation(line: 126, column: 7, scope: !502)
+!514 = !DILocation(line: 126, column: 19, scope: !502)
+!515 = !DILocation(line: 126, column: 32, scope: !502)
+!516 = !DILocation(line: 131, column: 12, scope: !517)
+!517 = distinct !DILexicalBlock(scope: !502, file: !1, line: 131, column: 7)
+!518 = !DILocation(line: 131, column: 20, scope: !517)
+!519 = !DILocation(line: 131, column: 23, scope: !517)
+!520 = !{!521, !521, i64 0}
+!521 = !{!"any pointer", !522, i64 0}
+!522 = !{!"omnipotent char", !523, i64 0}
+!523 = !{!"Simple C/C++ TBAA"}
+!524 = !DILocation(line: 131, column: 7, scope: !502)
+!525 = !DILocation(line: 139, column: 24, scope: !526)
+!526 = distinct !DILexicalBlock(scope: !527, file: !1, line: 137, column: 5)
+!527 = distinct !DILexicalBlock(scope: !502, file: !1, line: 136, column: 7)
+!528 = !DILocation(line: 139, column: 7, scope: !526)
+!529 = !DILocation(line: 141, column: 12, scope: !526)
+!530 = !DILocation(line: 125, column: 18, scope: !502)
+!531 = !DILocation(line: 148, column: 27, scope: !532)
+!532 = distinct !DILexicalBlock(scope: !526, file: !1, line: 148, column: 11)
+!533 = !DILocation(line: 148, column: 11, scope: !532)
+!534 = !DILocation(line: 148, column: 42, scope: !532)
+!535 = !DILocation(line: 148, column: 11, scope: !526)
+!536 = !DILocation(line: 150, column: 18, scope: !537)
+!537 = distinct !DILexicalBlock(scope: !532, file: !1, line: 149, column: 9)
+!538 = !{!539, !539, i64 0}
+!539 = !{!"int", !522, i64 0}
+!540 = !DILocation(line: 150, column: 11, scope: !537)
+!541 = !DILocation(line: 158, column: 50, scope: !542)
+!542 = distinct !DILexicalBlock(scope: !526, file: !1, line: 158, column: 11)
+!543 = !DILocation(line: 158, column: 21, scope: !542)
+!544 = !DILocation(line: 158, column: 68, scope: !542)
+!545 = !DILocation(line: 158, column: 11, scope: !526)
+!546 = !DILocation(line: 160, column: 18, scope: !547)
+!547 = distinct !DILexicalBlock(scope: !542, file: !1, line: 159, column: 9)
+!548 = !DILocation(line: 161, column: 11, scope: !547)
+!549 = !DILocation(line: 167, column: 15, scope: !550)
+!550 = distinct !DILexicalBlock(scope: !526, file: !1, line: 167, column: 11)
+!551 = !{!552, !553, i64 0}
+!552 = !{!"pthread_cond_t_", !553, i64 0, !553, i64 8, !553, i64 16, !521, i64 24, !521, i64 32, !521, i64 40, !521, i64 48, !521, i64 56}
+!553 = !{!"long", !522, i64 0}
+!554 = !DILocation(line: 167, column: 37, scope: !550)
+!555 = !{!552, !553, i64 8}
+!556 = !DILocation(line: 167, column: 31, scope: !550)
+!557 = !DILocation(line: 167, column: 11, scope: !526)
+!558 = !DILocation(line: 169, column: 15, scope: !559)
+!559 = distinct !DILexicalBlock(scope: !560, file: !1, line: 169, column: 15)
+!560 = distinct !DILexicalBlock(scope: !550, file: !1, line: 168, column: 9)
+!561 = !DILocation(line: 169, column: 46, scope: !559)
+!562 = !DILocation(line: 169, column: 15, scope: !560)
+!563 = !DILocation(line: 171, column: 24, scope: !564)
+!564 = distinct !DILexicalBlock(scope: !559, file: !1, line: 170, column: 13)
+!565 = !DILocation(line: 172, column: 13, scope: !564)
+!566 = !DILocation(line: 0, scope: !542)
+!567 = !DILocation(line: 173, column: 21, scope: !560)
+!568 = !DILocation(line: 175, column: 9, scope: !560)
+!569 = !DILocation(line: 181, column: 17, scope: !570)
+!570 = distinct !DILexicalBlock(scope: !550, file: !1, line: 177, column: 9)
+!571 = !DILocation(line: 183, column: 15, scope: !572)
+!572 = distinct !DILexicalBlock(scope: !570, file: !1, line: 183, column: 15)
+!573 = !DILocation(line: 183, column: 49, scope: !572)
+!574 = !DILocation(line: 183, column: 15, scope: !570)
+!575 = !DILocation(line: 185, column: 24, scope: !576)
+!576 = distinct !DILexicalBlock(scope: !572, file: !1, line: 184, column: 13)
+!577 = !DILocation(line: 186, column: 13, scope: !576)
+!578 = !DILocation(line: 187, column: 34, scope: !579)
+!579 = distinct !DILexicalBlock(scope: !570, file: !1, line: 187, column: 15)
+!580 = !DILocation(line: 187, column: 15, scope: !579)
+!581 = !DILocation(line: 187, column: 50, scope: !579)
+!582 = !DILocation(line: 187, column: 15, scope: !570)
+!583 = !DILocation(line: 189, column: 25, scope: !584)
+!584 = distinct !DILexicalBlock(scope: !579, file: !1, line: 188, column: 13)
+!585 = !DILocation(line: 190, column: 13, scope: !584)
+!586 = !DILocation(line: 0, scope: !502)
+!587 = !DILocation(line: 191, column: 26, scope: !588)
+!588 = distinct !DILexicalBlock(scope: !570, file: !1, line: 191, column: 15)
+!589 = !DILocation(line: 191, column: 72, scope: !588)
+!590 = !DILocation(line: 191, column: 15, scope: !570)
+!591 = !DILocation(line: 193, column: 25, scope: !592)
+!592 = distinct !DILexicalBlock(scope: !588, file: !1, line: 192, column: 13)
+!593 = !DILocation(line: 194, column: 13, scope: !592)
+!594 = !DILocation(line: 0, scope: !588)
+!595 = !DILocation(line: 198, column: 15, scope: !596)
+!596 = distinct !DILexicalBlock(scope: !570, file: !1, line: 198, column: 15)
+!597 = !DILocation(line: 198, column: 34, scope: !596)
+!598 = !DILocation(line: 0, scope: !599)
+!599 = distinct !DILexicalBlock(scope: !596, file: !1, line: 203, column: 13)
+!600 = !{!552, !521, i64 48}
+!601 = !DILocation(line: 198, column: 15, scope: !570)
+!602 = !DILocation(line: 200, column: 34, scope: !603)
+!603 = distinct !DILexicalBlock(scope: !596, file: !1, line: 199, column: 13)
+!604 = !DILocation(line: 0, scope: !605)
+!605 = distinct !DILexicalBlock(scope: !606, file: !1, line: 212, column: 13)
+!606 = distinct !DILexicalBlock(scope: !570, file: !1, line: 207, column: 15)
+!607 = !{!552, !521, i64 56}
+!608 = !DILocation(line: 201, column: 13, scope: !603)
+!609 = !DILocation(line: 204, column: 19, scope: !599)
+!610 = !DILocation(line: 204, column: 25, scope: !599)
+!611 = !DILocation(line: 204, column: 30, scope: !599)
+!612 = !DILocation(line: 207, column: 15, scope: !606)
+!613 = !DILocation(line: 207, column: 34, scope: !606)
+!614 = !DILocation(line: 207, column: 15, scope: !570)
+!615 = !DILocation(line: 213, column: 19, scope: !605)
+!616 = !DILocation(line: 213, column: 25, scope: !605)
+!617 = !DILocation(line: 213, column: 30, scope: !605)
+!618 = !DILocation(line: 0, scope: !619)
+!619 = distinct !DILexicalBlock(scope: !606, file: !1, line: 208, column: 13)
+!620 = !DILocation(line: 216, column: 24, scope: !570)
+!621 = !DILocation(line: 216, column: 18, scope: !570)
+!622 = !DILocation(line: 228, column: 24, scope: !623)
+!623 = distinct !DILexicalBlock(scope: !527, file: !1, line: 223, column: 5)
+!624 = !DILocation(line: 228, column: 7, scope: !623)
+!625 = !DILocation(line: 233, column: 11, scope: !626)
+!626 = distinct !DILexicalBlock(scope: !623, file: !1, line: 233, column: 11)
+!627 = !DILocation(line: 233, column: 17, scope: !626)
+!628 = !DILocation(line: 233, column: 11, scope: !623)
+!629 = !DILocation(line: 241, column: 17, scope: !630)
+!630 = distinct !DILexicalBlock(scope: !626, file: !1, line: 234, column: 9)
+!631 = !DILocation(line: 242, column: 9, scope: !630)
+!632 = !DILocation(line: 0, scope: !633)
+!633 = distinct !DILexicalBlock(scope: !626, file: !1, line: 244, column: 9)
+!634 = !DILocation(line: 252, column: 25, scope: !623)
+!635 = !DILocation(line: 252, column: 7, scope: !623)
+!636 = !DILocation(line: 255, column: 19, scope: !502)
+!637 = !DILocation(line: 255, column: 37, scope: !502)
+!638 = !DILocation(line: 0, scope: !576)
+!639 = !DILocation(line: 0, scope: !584)
+!640 = !DILocation(line: 0, scope: !592)
+!641 = !DILocation(line: 219, column: 25, scope: !526)
+!642 = !DILocation(line: 219, column: 7, scope: !526)
+!643 = !DILocation(line: 255, column: 46, scope: !502)
+!644 = !DILocation(line: 255, column: 11, scope: !502)
+!645 = !DILocation(line: 256, column: 1, scope: !502)

@@ -1,0 +1,496 @@
+	.text
+	.file	"notify.c"
+	.globl	keyspaceEventsStringToFlags # -- Begin function keyspaceEventsStringToFlags
+	.p2align	4, 0x90
+	.type	keyspaceEventsStringToFlags,@function
+keyspaceEventsStringToFlags:            # @keyspaceEventsStringToFlags
+# %bb.0:
+	movb	(%rdi), %dl
+	testb	%dl, %dl
+	je	.LBB0_1
+# %bb.2:                                # %.preheader
+	addq	$1, %rdi
+	xorl	%ecx, %ecx
+	jmp	.LBB0_3
+.LBB0_15:                               #   in Loop: Header=BB0_3 Depth=1
+	movl	$1024, %edx             # imm = 0x400
+	.p2align	4, 0x90
+.LBB0_16:                               #   in Loop: Header=BB0_3 Depth=1
+	orl	%edx, %ecx
+	movzbl	(%rdi), %edx
+	addq	$1, %rdi
+	movl	%ecx, %eax
+	testb	%dl, %dl
+	je	.LBB0_17
+.LBB0_3:                                # =>This Inner Loop Header: Depth=1
+	movsbl	%dl, %esi
+	movl	$-1, %eax
+	addl	$-36, %esi
+	cmpl	$86, %esi
+	ja	.LBB0_17
+# %bb.4:                                #   in Loop: Header=BB0_3 Depth=1
+	movl	$2044, %edx             # imm = 0x7FC
+	jmpq	*.LJTI0_0(,%rsi,8)
+.LBB0_6:                                #   in Loop: Header=BB0_3 Depth=1
+	movl	$8, %edx
+	jmp	.LBB0_16
+.LBB0_14:                               #   in Loop: Header=BB0_3 Depth=1
+	movl	$2, %edx
+	jmp	.LBB0_16
+.LBB0_13:                               #   in Loop: Header=BB0_3 Depth=1
+	movl	$1, %edx
+	jmp	.LBB0_16
+.LBB0_12:                               #   in Loop: Header=BB0_3 Depth=1
+	movl	$512, %edx              # imm = 0x200
+	jmp	.LBB0_16
+.LBB0_5:                                #   in Loop: Header=BB0_3 Depth=1
+	movl	$4, %edx
+	jmp	.LBB0_16
+.LBB0_9:                                #   in Loop: Header=BB0_3 Depth=1
+	movl	$64, %edx
+	jmp	.LBB0_16
+.LBB0_7:                                #   in Loop: Header=BB0_3 Depth=1
+	movl	$16, %edx
+	jmp	.LBB0_16
+.LBB0_8:                                #   in Loop: Header=BB0_3 Depth=1
+	movl	$32, %edx
+	jmp	.LBB0_16
+.LBB0_11:                               #   in Loop: Header=BB0_3 Depth=1
+	movl	$256, %edx              # imm = 0x100
+	jmp	.LBB0_16
+.LBB0_10:                               #   in Loop: Header=BB0_3 Depth=1
+	movl	$128, %edx
+	jmp	.LBB0_16
+.LBB0_17:
+	retq
+.LBB0_1:
+	xorl	%eax, %eax
+	retq
+.Lfunc_end0:
+	.size	keyspaceEventsStringToFlags, .Lfunc_end0-keyspaceEventsStringToFlags
+	.section	.rodata,"a",@progbits
+	.p2align	3
+.LJTI0_0:
+	.quad	.LBB0_6
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_16
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_14
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_13
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_12
+	.quad	.LBB0_17
+	.quad	.LBB0_5
+	.quad	.LBB0_9
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_7
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_8
+	.quad	.LBB0_15
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_17
+	.quad	.LBB0_11
+	.quad	.LBB0_17
+	.quad	.LBB0_10
+                                        # -- End function
+	.text
+	.globl	keyspaceEventsFlagsToString # -- Begin function keyspaceEventsFlagsToString
+	.p2align	4, 0x90
+	.type	keyspaceEventsFlagsToString,@function
+keyspaceEventsFlagsToString:            # @keyspaceEventsFlagsToString
+# %bb.0:
+	pushq	%rbp
+	movq	%rsp, %rbp
+	pushq	%rbx
+	pushq	%rax
+	movl	%edi, %ebx
+	callq	sdsempty
+	movl	%ebx, %ecx
+	andl	$2044, %ecx             # imm = 0x7FC
+	cmpl	$2044, %ecx             # imm = 0x7FC
+	jne	.LBB1_2
+# %bb.1:
+	movl	$.L.str, %esi
+	jmp	.LBB1_20
+.LBB1_2:
+	testb	$4, %bl
+	jne	.LBB1_3
+# %bb.4:
+	testb	$8, %bl
+	jne	.LBB1_5
+.LBB1_6:
+	testb	$16, %bl
+	jne	.LBB1_7
+.LBB1_8:
+	testb	$32, %bl
+	jne	.LBB1_9
+.LBB1_10:
+	testb	$64, %bl
+	jne	.LBB1_11
+.LBB1_12:
+	testb	%bl, %bl
+	js	.LBB1_13
+.LBB1_14:
+	testl	$256, %ebx              # imm = 0x100
+	jne	.LBB1_15
+.LBB1_16:
+	testl	$512, %ebx              # imm = 0x200
+	jne	.LBB1_17
+.LBB1_18:
+	testl	$1024, %ebx             # imm = 0x400
+	jne	.LBB1_19
+.LBB1_21:
+	testb	$1, %bl
+	jne	.LBB1_22
+.LBB1_23:
+	testb	$2, %bl
+	jne	.LBB1_25
+.LBB1_24:
+	addq	$8, %rsp
+	popq	%rbx
+	popq	%rbp
+	retq
+.LBB1_3:
+	movl	$.L.str.1, %esi
+	movl	$1, %edx
+	movq	%rax, %rdi
+	callq	sdscatlen
+	testb	$8, %bl
+	je	.LBB1_6
+.LBB1_5:
+	movl	$.L.str.2, %esi
+	movl	$1, %edx
+	movq	%rax, %rdi
+	callq	sdscatlen
+	testb	$16, %bl
+	je	.LBB1_8
+.LBB1_7:
+	movl	$.L.str.3, %esi
+	movl	$1, %edx
+	movq	%rax, %rdi
+	callq	sdscatlen
+	testb	$32, %bl
+	je	.LBB1_10
+.LBB1_9:
+	movl	$.L.str.4, %esi
+	movl	$1, %edx
+	movq	%rax, %rdi
+	callq	sdscatlen
+	testb	$64, %bl
+	je	.LBB1_12
+.LBB1_11:
+	movl	$.L.str.5, %esi
+	movl	$1, %edx
+	movq	%rax, %rdi
+	callq	sdscatlen
+	testb	%bl, %bl
+	jns	.LBB1_14
+.LBB1_13:
+	movl	$.L.str.6, %esi
+	movl	$1, %edx
+	movq	%rax, %rdi
+	callq	sdscatlen
+	testl	$256, %ebx              # imm = 0x100
+	je	.LBB1_16
+.LBB1_15:
+	movl	$.L.str.7, %esi
+	movl	$1, %edx
+	movq	%rax, %rdi
+	callq	sdscatlen
+	testl	$512, %ebx              # imm = 0x200
+	je	.LBB1_18
+.LBB1_17:
+	movl	$.L.str.8, %esi
+	movl	$1, %edx
+	movq	%rax, %rdi
+	callq	sdscatlen
+	testl	$1024, %ebx             # imm = 0x400
+	je	.LBB1_21
+.LBB1_19:
+	movl	$.L.str.9, %esi
+.LBB1_20:
+	movl	$1, %edx
+	movq	%rax, %rdi
+	callq	sdscatlen
+	testb	$1, %bl
+	je	.LBB1_23
+.LBB1_22:
+	movl	$.L.str.10, %esi
+	movl	$1, %edx
+	movq	%rax, %rdi
+	callq	sdscatlen
+	testb	$2, %bl
+	je	.LBB1_24
+.LBB1_25:
+	movl	$.L.str.11, %esi
+	movl	$1, %edx
+	movq	%rax, %rdi
+	addq	$8, %rsp
+	popq	%rbx
+	popq	%rbp
+	jmp	sdscatlen               # TAILCALL
+.Lfunc_end1:
+	.size	keyspaceEventsFlagsToString, .Lfunc_end1-keyspaceEventsFlagsToString
+                                        # -- End function
+	.globl	notifyKeyspaceEvent     # -- Begin function notifyKeyspaceEvent
+	.p2align	4, 0x90
+	.type	notifyKeyspaceEvent,@function
+notifyKeyspaceEvent:                    # @notifyKeyspaceEvent
+# %bb.0:
+	pushq	%rbp
+	movq	%rsp, %rbp
+	pushq	%r15
+	pushq	%r14
+	pushq	%r13
+	pushq	%r12
+	pushq	%rbx
+	subq	$24, %rsp
+	movl	%ecx, %r12d
+	movq	%rdx, %r15
+	movq	%rsi, %r14
+	movl	%edi, %ebx
+	callq	moduleNotifyKeyspaceEvent
+	testl	%ebx, server+2920(%rip)
+	je	.LBB2_8
+# %bb.1:
+	movq	%r14, %rdi
+	callq	strlen
+	movq	%r14, %rdi
+	movq	%rax, %rsi
+	callq	createStringObject
+	movq	%rax, %r13
+	movl	server+2920(%rip), %eax
+	movl	$-1, %r14d
+	testb	$1, %al
+	je	.LBB2_3
+# %bb.2:
+	movl	$.L.str.12, %edi
+	movl	$11, %esi
+	callq	sdsnewlen
+	movq	%r13, %rbx
+	movq	%rax, %r13
+	movslq	%r12d, %rdx
+	leaq	-64(%rbp), %rdi
+	movl	$24, %esi
+	callq	ll2string
+	movl	%eax, %r14d
+	movslq	%eax, %rdx
+	movq	%r13, %rdi
+	movq	%rbx, %r13
+	leaq	-64(%rbp), %rsi
+	callq	sdscatlen
+	movl	$.L.str.13, %esi
+	movl	$3, %edx
+	movq	%rax, %rdi
+	callq	sdscatlen
+	movq	8(%r15), %rsi
+	movq	%rax, %rdi
+	callq	sdscatsds
+	xorl	%edi, %edi
+	movq	%rax, %rsi
+	callq	createObject
+	movq	%rax, %rbx
+	movq	%rax, %rdi
+	movq	%r13, %rsi
+	callq	pubsubPublishMessage
+	movq	%rbx, %rdi
+	callq	decrRefCount
+	movl	server+2920(%rip), %eax
+.LBB2_3:
+	testb	$2, %al
+	je	.LBB2_7
+# %bb.4:
+	movq	%r13, %rbx
+	movl	$.L.str.14, %edi
+	movl	$11, %esi
+	callq	sdsnewlen
+	movq	%rax, %r13
+	cmpl	$-1, %r14d
+	jne	.LBB2_6
+# %bb.5:
+	movslq	%r12d, %rdx
+	leaq	-64(%rbp), %rdi
+	movl	$24, %esi
+	callq	ll2string
+	movl	%eax, %r14d
+.LBB2_6:
+	movslq	%r14d, %rdx
+	leaq	-64(%rbp), %rsi
+	movq	%r13, %rdi
+	callq	sdscatlen
+	movl	$.L.str.13, %esi
+	movl	$3, %edx
+	movq	%rax, %rdi
+	callq	sdscatlen
+	movq	%rbx, %r13
+	movq	8(%rbx), %rsi
+	movq	%rax, %rdi
+	callq	sdscatsds
+	xorl	%edi, %edi
+	movq	%rax, %rsi
+	callq	createObject
+	movq	%rax, %rbx
+	movq	%rax, %rdi
+	movq	%r15, %rsi
+	callq	pubsubPublishMessage
+	movq	%rbx, %rdi
+	callq	decrRefCount
+.LBB2_7:
+	movq	%r13, %rdi
+	callq	decrRefCount
+.LBB2_8:
+	addq	$24, %rsp
+	popq	%rbx
+	popq	%r12
+	popq	%r13
+	popq	%r14
+	popq	%r15
+	popq	%rbp
+	retq
+.Lfunc_end2:
+	.size	notifyKeyspaceEvent, .Lfunc_end2-notifyKeyspaceEvent
+                                        # -- End function
+	.type	.L.str,@object          # @.str
+	.section	.rodata.str1.1,"aMS",@progbits,1
+.L.str:
+	.asciz	"A"
+	.size	.L.str, 2
+
+	.type	.L.str.1,@object        # @.str.1
+.L.str.1:
+	.asciz	"g"
+	.size	.L.str.1, 2
+
+	.type	.L.str.2,@object        # @.str.2
+.L.str.2:
+	.asciz	"$"
+	.size	.L.str.2, 2
+
+	.type	.L.str.3,@object        # @.str.3
+.L.str.3:
+	.asciz	"l"
+	.size	.L.str.3, 2
+
+	.type	.L.str.4,@object        # @.str.4
+.L.str.4:
+	.asciz	"s"
+	.size	.L.str.4, 2
+
+	.type	.L.str.5,@object        # @.str.5
+.L.str.5:
+	.asciz	"h"
+	.size	.L.str.5, 2
+
+	.type	.L.str.6,@object        # @.str.6
+.L.str.6:
+	.asciz	"z"
+	.size	.L.str.6, 2
+
+	.type	.L.str.7,@object        # @.str.7
+.L.str.7:
+	.asciz	"x"
+	.size	.L.str.7, 2
+
+	.type	.L.str.8,@object        # @.str.8
+.L.str.8:
+	.asciz	"e"
+	.size	.L.str.8, 2
+
+	.type	.L.str.9,@object        # @.str.9
+.L.str.9:
+	.asciz	"t"
+	.size	.L.str.9, 2
+
+	.type	.L.str.10,@object       # @.str.10
+.L.str.10:
+	.asciz	"K"
+	.size	.L.str.10, 2
+
+	.type	.L.str.11,@object       # @.str.11
+.L.str.11:
+	.asciz	"E"
+	.size	.L.str.11, 2
+
+	.type	.L.str.12,@object       # @.str.12
+.L.str.12:
+	.asciz	"__keyspace@"
+	.size	.L.str.12, 12
+
+	.type	.L.str.13,@object       # @.str.13
+.L.str.13:
+	.asciz	"__:"
+	.size	.L.str.13, 4
+
+	.type	.L.str.14,@object       # @.str.14
+.L.str.14:
+	.asciz	"__keyevent@"
+	.size	.L.str.14, 12
+
+	.ident	"clang version 7.0.1-8+deb10u2 (tags/RELEASE_701/final)"
+	.section	".note.GNU-stack","",@progbits
