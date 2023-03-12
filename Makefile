@@ -9,4 +9,4 @@ ir_parsing: ir_parsing.cpp
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $^ $(LLVM_LDFLAGS) -o $@
 
 asm_parsing: asm_parsing.cpp
-	$(CXX) $(CXXFLAGS) -o $@
+	$(CXX) $^ $(CXXFLAGS) -o $@
